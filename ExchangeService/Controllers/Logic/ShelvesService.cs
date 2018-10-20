@@ -21,7 +21,7 @@ namespace ExchangeService.Controllers.Logic
             this.unitOfWork = unitOfWork;
         }
 
-        public bool AddUserGame(NewUserGameDto newUserGameDto, int userId)
+        public bool AddUserGame(UserGameDto newUserGameDto, int userId)
         {
             UserGame newUserGame = new UserGame()
             {
@@ -89,6 +89,20 @@ namespace ExchangeService.Controllers.Logic
             existingGame.PublishDate = updatedGame.PublishDate;
             existingGame.Publisher = updatedGame.Publisher;
             existingGame.Title = updatedGame.Title;
+
+            unitOfWork.CompleteWork();
+            return true;
+        }
+
+        public bool UpdateUserGame(UserGameDto updatedGame, int userId)
+        {
+            var existingGame = userProfiles.GetGame(updatedGame.GameId, userId);
+            if (existingGame == null)
+                return false;
+
+            existingGame.State = updatedGame.State;
+            existingGame.IsComplete = updatedGame.IsComplete;
+            existingGame.Shipment = updatedGame.Shipment;
 
             unitOfWork.CompleteWork();
             return true;

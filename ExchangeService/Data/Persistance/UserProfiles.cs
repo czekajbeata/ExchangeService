@@ -21,5 +21,10 @@ namespace ExchangeService.Data.Persistance
             var result = context.UserGames.Add(game);
             return result.Entity;
         }
+
+        public UserGame GetGame(int gameId, int userId)
+        {
+            return context.UserGames.SingleOrDefault(g => g.GameId == gameId && g.UserId == userId);
+        }
     }
 }

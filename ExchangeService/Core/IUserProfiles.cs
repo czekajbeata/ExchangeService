@@ -9,5 +9,6 @@ namespace ExchangeService.Core
     public interface IUserProfiles
     {
         UserGame AddGame(UserGame game);
+        UserGame GetGame(int gameId, int userId);
     }
 }

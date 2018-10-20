@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExchangeService.Controllers.Resources
 {
-    public class NewUserGameDto
+    public class UserGameDto
     {
         public int GameId { get; set; }
         public State State { get; set; }

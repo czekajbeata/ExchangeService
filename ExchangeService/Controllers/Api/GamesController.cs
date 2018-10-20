@@ -45,7 +45,7 @@ namespace ExchangeService.Controllers.Api
         }
 
         [HttpPost("api/users/games")]
-        public IActionResult AddUserGame([FromBody] NewUserGameDto userGameDto)
+        public IActionResult AddUserGame([FromBody] UserGameDto userGameDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -73,6 +73,18 @@ namespace ExchangeService.Controllers.Api
                 return BadRequest();
 
             var result = shelvesService.UpdateGame(gameDto);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
+        [HttpPut("api/users/games")]
+        public IActionResult UpdateUserGame([FromBody] UserGameDto userGameDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            int userId = 1; //TODO dodać wyciąganie z sesji
+
+            var result = shelvesService.UpdateUserGame(userGameDto, userId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
     }
