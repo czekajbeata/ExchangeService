@@ -33,6 +33,11 @@ namespace ExchangeService.Data.Persistance
             return context.UserGames.SingleOrDefault(g => g.GameId == gameId && g.UserId == userId);
         }
 
+        public IEnumerable<UserGame> GetUserGames(int userId)
+        {
+            return context.UserGames.Where(g => g.UserId == userId);
+        }
+
         public IEnumerable<UserSearchGame> GetUserSearchGames(int userId)
         {
             return context.UserSearchGames.Where(g => g.UserId == userId);

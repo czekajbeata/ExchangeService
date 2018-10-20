@@ -40,5 +40,11 @@ namespace ExchangeService.Data.Persistance
         {
             return context.Genres;
         }
+
+        public Genre GetGenre(int? id)
+        {
+            if (id != null) return context.Genres.FirstOrDefault(g => g.GenreId == id);
+            return null;
+        }
     }
 }

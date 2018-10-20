@@ -49,9 +49,17 @@ namespace ExchangeService.Controllers.Api
         {
             int userId = 1; //TODO dodać wyciąganie z sesji
 
-            return shelvesService.GetUsersSearchGames(userId);
+            return shelvesService.GetUserSearchGames(userId);
         }
-        
+
+        [HttpGet("api/users/games")]
+        public IEnumerable<UserGameView> GetUserGames()
+        {
+            int userId = 1; //TODO dodać wyciąganie z sesji
+
+            return shelvesService.GetUserGames(userId);
+        }
+
         [HttpPost("api/users/games")]
         public IActionResult AddUserGame([FromBody] UserGameDto userGameDto)
         {

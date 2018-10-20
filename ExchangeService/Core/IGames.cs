@@ -11,6 +11,7 @@ namespace ExchangeService.Core
         Game AddGame(Game game);
         IEnumerable<Game> GetGames(string query);
         Game GetGame(int id);
+        Genre GetGenre(int? id);
         IEnumerable<Genre> GetAllGenres();
     }
 }

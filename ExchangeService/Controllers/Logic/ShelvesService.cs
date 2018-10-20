@@ -120,7 +120,7 @@ namespace ExchangeService.Controllers.Logic
             return true;
         }
 
-        public IEnumerable<UserSearchGameView> GetUsersSearchGames(int userId)
+        public IEnumerable<UserSearchGameView> GetUserSearchGames(int userId)
         {
             var searchedGames = userProfiles.GetUserSearchGames(userId);
             List<UserSearchGameView> searchedGameViews = new List<UserSearchGameView>();
@@ -132,6 +132,33 @@ namespace ExchangeService.Controllers.Logic
                     GameId = game.GameId,
                     Title = gamePiece.Title,
                     ImageUrl = gamePiece.ImageUrl
+                });
+            }
+            return searchedGameViews;
+        }
+
+        public IEnumerable<UserGameView> GetUserGames(int userId)
+        {
+            var gamePieces = userProfiles.GetUserGames(userId);
+            List<UserGameView> searchedGameViews = new List<UserGameView>();
+            foreach (var game in gamePieces)
+            {
+                var gameCopy = GetGameDetails(game.GameId);
+                var genreName = games.GetGenre(gameCopy.GenreId).Name;
+                searchedGameViews.Add(new UserGameView()
+                {
+                    GameId = game.GameId,
+                    Title = gameCopy.Title,
+                    Description = gameCopy.Description,
+                    ImageUrl = gameCopy.ImageUrl,
+                    Publisher = gameCopy.Publisher,
+                    PublishDate = gameCopy.PublishDate,
+                    GenreName = genreName,
+                    MinPlayerCount = gameCopy.MinPlayerCount,
+                    MaxPlayerCount = gameCopy.MaxPlayerCount,
+                    State = game.State,
+                    IsComplete = game.IsComplete,
+                    Shipment = game.Shipment
                 });
             }
             return searchedGameViews;
