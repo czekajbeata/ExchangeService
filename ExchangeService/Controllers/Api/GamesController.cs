@@ -44,6 +44,14 @@ namespace ExchangeService.Controllers.Api
             return NotFound();
         }
 
+        [HttpGet("api/users/searches")]
+        public IEnumerable<UserSearchGameView> GetUserGameSearches()
+        {
+            int userId = 1; //TODO dodać wyciąganie z sesji
+
+            return shelvesService.GetUsersSearchGames(userId);
+        }
+        
         [HttpPost("api/users/games")]
         public IActionResult AddUserGame([FromBody] UserGameDto userGameDto)
         {
@@ -53,6 +61,18 @@ namespace ExchangeService.Controllers.Api
             int userId = 1; //TODO dodać wyciąganie z sesji
 
             var result = shelvesService.AddUserGame(userGameDto, userId);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
+        [HttpPost("api/users/searches")]
+        public IActionResult AddUserSearchGame([FromBody] UserSearchGameDto userGameDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            int userId = 1; //TODO dodać wyciąganie z sesji
+
+            var result = shelvesService.AddUserSearchGame(userGameDto, userId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 

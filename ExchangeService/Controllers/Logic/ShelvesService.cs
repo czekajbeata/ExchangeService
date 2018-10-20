@@ -54,6 +54,18 @@ namespace ExchangeService.Controllers.Logic
             return newGame.GameId != 0;
         }
 
+        public bool AddUserSearchGame(UserSearchGameDto newUserSearchGame, int userId)
+        {
+            UserSearchGame newUserSearch = new UserSearchGame()
+            {
+                UserId = userId,
+                GameId = newUserSearchGame.GameId
+            };
+            userProfiles.AddSearchGame(newUserSearch);
+            unitOfWork.CompleteWork();
+            return newUserSearch.UserSearchGameId != 0;
+        }
+
         public GameDto GetGameDetails(int id)
         {
             var game = games.GetGame(id);
@@ -106,6 +118,23 @@ namespace ExchangeService.Controllers.Logic
 
             unitOfWork.CompleteWork();
             return true;
+        }
+
+        public IEnumerable<UserSearchGameView> GetUsersSearchGames(int userId)
+        {
+            var searchedGames = userProfiles.GetUserSearchGames(userId);
+            List<UserSearchGameView> searchedGameViews = new List<UserSearchGameView>();
+            foreach(var game in searchedGames)
+            {
+                var gamePiece = GetGameDetails(game.GameId);
+                searchedGameViews.Add(new UserSearchGameView()
+                {
+                    GameId = game.GameId,
+                    Title = gamePiece.Title,
+                    ImageUrl = gamePiece.ImageUrl
+                });
+            }
+            return searchedGameViews;
         }
     }
 }
