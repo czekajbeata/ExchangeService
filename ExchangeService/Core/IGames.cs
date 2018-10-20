@@ -8,9 +8,9 @@ namespace ExchangeService.Core
 {
     public interface IGames
     {
-        Game Add(Game game);
+        Game AddGame(Game game);
         IEnumerable<Game> GetGames(string query);
-        Game Get(int id);
+        Game GetGame(int id);
         IEnumerable<Genre> GetAllGenres();
     }
 }

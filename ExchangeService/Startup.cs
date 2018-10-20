@@ -43,6 +43,7 @@ namespace ExchangeService
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddTransient<DropDownService>();
+            services.AddTransient<ShelvesService>();
             services.AddTransient<IGames, Games>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IUserProfiles, UserProfiles>();

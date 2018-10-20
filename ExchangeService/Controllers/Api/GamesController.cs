@@ -13,10 +13,12 @@ namespace ExchangeService.Controllers.Api
     public class GamesController : ControllerBase
     {
         private readonly DropDownService dropDownService;
+        private readonly ShelvesService shelvesService;
 
-        public GamesController(DropDownService dropDownService)
+        public GamesController(DropDownService dropDownService, ShelvesService shelvesService)
         {
             this.dropDownService = dropDownService;
+            this.shelvesService = shelvesService;
         }
         
         [HttpGet("api/genres")]
@@ -29,6 +31,17 @@ namespace ExchangeService.Controllers.Api
         public IEnumerable<DropDownItem> GetGames(string query)
         {
             return dropDownService.GetGamesList(query);
+        }
+
+        [HttpGet("api/games/{id}")]
+        public IActionResult GetGameDetails(int id)
+        {
+            var game = shelvesService.GetGameDetails(id);
+
+            if (game != null)
+                return Ok(game);
+
+            return NotFound();
         }
     }
 }

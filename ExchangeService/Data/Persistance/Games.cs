@@ -16,13 +16,13 @@ namespace ExchangeService.Data.Persistance
             this.context = context;
         }
 
-        public Game Add(Game game)
+        public Game AddGame(Game game)
         {
             var result = context.Games.Add(game);
             return result.Entity;
         }
 
-        public Game Get(int id)
+        public Game GetGame(int id)
         {
             return context.Games.Find(id);
         }

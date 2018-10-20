@@ -32,7 +32,23 @@ namespace ExchangeService.Controllers.Logic
 
         public GameDto GetGameDetails(int id)
         {
-            throw new NotImplementedException();
+            var game = games.GetGame(id);
+
+            if (game is null)
+                return null;
+
+            return new GameDto()
+            {
+                Description = game.Description,
+                GameId = game.GameId,
+                GenreId = game.GameId,
+                ImageUrl = game.ImageUrl,
+                MaxPlayerCount = game.MaxPlayerCount,
+                MinPlayerCount = game.MinPlayerCount,
+                PublishDate = game.PublishDate,
+                Publisher = game.Publisher,
+                Title = game.Title
+            };
         }
     }
 }
