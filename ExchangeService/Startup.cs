@@ -12,6 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using ExchangeService.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ExchangeService.Controllers.Logic;
+using ExchangeService.Core;
+using ExchangeService.Data.Persistance;
 
 namespace ExchangeService
 {
@@ -39,6 +42,10 @@ namespace ExchangeService
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddTransient<DropDownService>();
+            services.AddTransient<IGames, Games>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IUserProfiles, UserProfiles>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
