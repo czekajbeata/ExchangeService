@@ -1,5 +1,6 @@
 ﻿using ExchangeService.Controllers.Resources;
 using ExchangeService.Core;
+using ExchangeService.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,37 @@ namespace ExchangeService.Controllers.Logic
             this.unitOfWork = unitOfWork;
         }
 
-        public bool AddUserGame(NewUserGameDto newUserGame)
+        public bool AddUserGame(NewUserGameDto newUserGameDto, int userId)
         {
-            throw new NotImplementedException();
+            UserGame newUserGame = new UserGame()
+            {
+                UserId = userId,
+                GameId = newUserGameDto.GameId,
+                IsComplete = newUserGameDto.IsComplete,
+                Shipment = newUserGameDto.Shipment,
+                State = newUserGameDto.State
+            };
+            userProfiles.AddGame(newUserGame);
+            unitOfWork.CompleteWork();
+            return newUserGame.GameId != 0;
         }
 
         public bool AddGame(GameDto game)
         {
-            throw new NotImplementedException();
+            Game newGame = new Game()
+            {
+                Description = game.Description,
+                GenreId = game.GenreId,
+                ImageUrl = game.ImageUrl,
+                MaxPlayerCount = game.MaxPlayerCount,
+                MinPlayerCount = game.MinPlayerCount,
+                PublishDate = game.PublishDate,
+                Publisher = game.Publisher,
+                Title = game.Title
+            };
+            games.AddGame(newGame);
+            unitOfWork.CompleteWork();
+            return newGame.GameId != 0;
         }
 
         public GameDto GetGameDetails(int id)
@@ -49,6 +73,25 @@ namespace ExchangeService.Controllers.Logic
                 Publisher = game.Publisher,
                 Title = game.Title
             };
+        }
+
+        public bool UpdateGame(GameDto updatedGame)
+        {
+            var existingGame = games.GetGame(updatedGame.GameId);
+            if (existingGame == null)
+                return false;
+
+            existingGame.Description = updatedGame.Description;
+            existingGame.GenreId = updatedGame.GenreId;
+            existingGame.ImageUrl = updatedGame.ImageUrl;
+            existingGame.MaxPlayerCount = updatedGame.MaxPlayerCount;
+            existingGame.MinPlayerCount = updatedGame.MinPlayerCount;
+            existingGame.PublishDate = updatedGame.PublishDate;
+            existingGame.Publisher = updatedGame.Publisher;
+            existingGame.Title = updatedGame.Title;
+
+            unitOfWork.CompleteWork();
+            return true;
         }
     }
 }

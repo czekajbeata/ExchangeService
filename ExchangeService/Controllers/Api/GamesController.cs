@@ -43,5 +43,37 @@ namespace ExchangeService.Controllers.Api
 
             return NotFound();
         }
+
+        [HttpPost("api/users/games")]
+        public IActionResult AddUserGame([FromBody] NewUserGameDto userGameDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            int userId = 1; //TODO dodać wyciąganie z sesji
+
+            var result = shelvesService.AddUserGame(userGameDto, userId);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
+        [HttpPost("api/games")]
+        public IActionResult AddGame([FromBody] GameDto gameDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var result = shelvesService.AddGame(gameDto);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
+        [HttpPut("api/games")]
+        public IActionResult UpdateGame([FromBody] GameDto gameDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var result = shelvesService.UpdateGame(gameDto);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
     }
 }
