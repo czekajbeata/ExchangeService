@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ExchangeService.Core.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace ExchangeService.Data
+{
+    public class ApplicationDbContext : IdentityDbContext
+    {
+        public DbSet<Game> Games { get; set; }
+        public DbSet<Genre> Genres { get; set; }
+        public DbSet<UserGame> UserGames { get; set; }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+    }
+}
