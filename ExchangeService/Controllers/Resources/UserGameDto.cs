@@ -12,5 +12,6 @@ namespace ExchangeService.Controllers.Resources
         public State State { get; set; }
         public bool IsComplete { get; set; }
         public Shipment Shipment { get; set; }
+        public string UserGameDescription { get; set; }
     }
 }

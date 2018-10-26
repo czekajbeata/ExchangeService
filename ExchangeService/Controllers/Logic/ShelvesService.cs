@@ -29,7 +29,8 @@ namespace ExchangeService.Controllers.Logic
                 GameId = newUserGameDto.GameId,
                 IsComplete = newUserGameDto.IsComplete,
                 Shipment = newUserGameDto.Shipment,
-                State = newUserGameDto.State
+                State = newUserGameDto.State,
+                UserGameDescription = newUserGameDto.UserGameDescription
             };
             userProfiles.AddGame(newUserGame);
             unitOfWork.CompleteWork();
@@ -45,6 +46,7 @@ namespace ExchangeService.Controllers.Logic
                 ImageUrl = game.ImageUrl,
                 MaxPlayerCount = game.MaxPlayerCount,
                 MinPlayerCount = game.MinPlayerCount,
+                MinAgeRequired = game.MinAgeRequired,
                 PublishDate = game.PublishDate,
                 Publisher = game.Publisher,
                 Title = game.Title
@@ -81,6 +83,7 @@ namespace ExchangeService.Controllers.Logic
                 ImageUrl = game.ImageUrl,
                 MaxPlayerCount = game.MaxPlayerCount,
                 MinPlayerCount = game.MinPlayerCount,
+                MinAgeRequired = game.MinAgeRequired,
                 PublishDate = game.PublishDate,
                 Publisher = game.Publisher,
                 Title = game.Title
@@ -98,6 +101,7 @@ namespace ExchangeService.Controllers.Logic
             existingGame.ImageUrl = updatedGame.ImageUrl;
             existingGame.MaxPlayerCount = updatedGame.MaxPlayerCount;
             existingGame.MinPlayerCount = updatedGame.MinPlayerCount;
+            existingGame.MinAgeRequired = updatedGame.MinAgeRequired;
             existingGame.PublishDate = updatedGame.PublishDate;
             existingGame.Publisher = updatedGame.Publisher;
             existingGame.Title = updatedGame.Title;
@@ -115,6 +119,7 @@ namespace ExchangeService.Controllers.Logic
             existingGame.State = updatedGame.State;
             existingGame.IsComplete = updatedGame.IsComplete;
             existingGame.Shipment = updatedGame.Shipment;
+            existingGame.UserGameDescription = updatedGame.UserGameDescription;
 
             unitOfWork.CompleteWork();
             return true;
@@ -150,12 +155,14 @@ namespace ExchangeService.Controllers.Logic
                     GameId = game.GameId,
                     Title = gameCopy.Title,
                     Description = gameCopy.Description,
+                    UserGameDescription = game.UserGameDescription,
                     ImageUrl = gameCopy.ImageUrl,
                     Publisher = gameCopy.Publisher,
                     PublishDate = gameCopy.PublishDate,
                     GenreName = genreName,
                     MinPlayerCount = gameCopy.MinPlayerCount,
                     MaxPlayerCount = gameCopy.MaxPlayerCount,
+                    MinAgeRequired = gameCopy.MinAgeRequired,
                     State = game.State,
                     IsComplete = game.IsComplete,
                     Shipment = game.Shipment

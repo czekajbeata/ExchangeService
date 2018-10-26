@@ -25,5 +25,7 @@ namespace ExchangeService.Controllers.Resources
         public int? MinPlayerCount { get; set; }
         [Range(1, int.MaxValue)]
         public int? MaxPlayerCount { get; set; }
+        [Range(1, int.MaxValue)]
+        public int? MinAgeRequired { get; set; }
     }
 }
