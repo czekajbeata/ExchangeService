@@ -49,7 +49,7 @@ namespace ExchangeService.Data.Persistance
             return context.UserGames.Where(g => g.UserId == userId);
         }
 
-        public double GetUsersAvgMark(int userId)
+        public double GetAvgMark(int userId)
         {
             var marks = context.Comments.Where(c => c.ReceivingUserId == userId).Select(o => o.Mark).ToArray();
             double sum = 0;

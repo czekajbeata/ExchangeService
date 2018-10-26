@@ -38,5 +38,12 @@ namespace ExchangeService.Controllers.Api
             int userId = 2; //TODO dodać wyciąganie z sesji
             return evaluatingService.GetComments(userId);
         }
+
+        [HttpGet("api/users/marks")]
+        public double GetAvgMark()
+        {
+            int userId = 2; //TODO dodać wyciąganie z sesji
+            return evaluatingService.GetAvgMark(userId);
+        }
     }
 }

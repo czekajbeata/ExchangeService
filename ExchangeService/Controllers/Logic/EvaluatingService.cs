@@ -49,5 +49,10 @@ namespace ExchangeService.Controllers.Logic
             }
             return commentDtos;
         }
+
+        public double GetAvgMark(int userId)
+        {
+            return userProfiles.GetAvgMark(userId);
+        }
     }
 }
