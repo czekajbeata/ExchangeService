@@ -44,6 +44,7 @@ namespace ExchangeService
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddTransient<DropDownService>();
             services.AddTransient<ShelvesService>();
+            services.AddTransient<EvaluatingService>();
             services.AddTransient<IGames, Games>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IUserProfiles, UserProfiles>();
