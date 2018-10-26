@@ -14,7 +14,6 @@ namespace ExchangeService.Data
         public DbSet<UserGame> UserGames { get; set; }
         public DbSet<UserSearchGame> UserSearchGames { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<UserProfile> UserProfiles { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

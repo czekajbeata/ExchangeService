@@ -13,5 +13,8 @@ namespace ExchangeService.Core
         IEnumerable<UserGame> GetUserGames(int userId);
         UserSearchGame AddSearchGame(UserSearchGame game);
         IEnumerable<UserSearchGame> GetUserSearchGames(int userId);
+        Comment AddComment(Comment comment);
+        IEnumerable<Comment> GetAllComments(int userId);
+        double GetUsersAvgMark(int userId);
     }
 }

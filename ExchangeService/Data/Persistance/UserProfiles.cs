@@ -16,6 +16,12 @@ namespace ExchangeService.Data.Persistance
             this.context = context;
         }
 
+        public Comment AddComment(Comment comment)
+        {
+            var result = context.Comments.Add(comment);
+            return result.Entity;
+        }
+
         public UserGame AddGame(UserGame game)
         {
             var result = context.UserGames.Add(game);
@@ -28,6 +34,11 @@ namespace ExchangeService.Data.Persistance
             return result.Entity;
         }
 
+        public IEnumerable<Comment> GetAllComments(int userId)
+        {
+            return context.Comments.Where(c => c.ReceivingUserId == userId);
+        }
+
         public UserGame GetGame(int gameId, int userId)
         {
             return context.UserGames.SingleOrDefault(g => g.GameId == gameId && g.UserId == userId);
@@ -36,6 +47,17 @@ namespace ExchangeService.Data.Persistance
         public IEnumerable<UserGame> GetUserGames(int userId)
         {
             return context.UserGames.Where(g => g.UserId == userId);
+        }
+
+        public double GetUsersAvgMark(int userId)
+        {
+            var marks = context.Comments.Where(c => c.ReceivingUserId == userId).Select(o => o.Mark).ToArray();
+            double sum = 0;
+            foreach(var mark in marks)
+            {
+                sum += mark;
+            }
+            return sum / marks.Count();
         }
 
         public IEnumerable<UserSearchGame> GetUserSearchGames(int userId)
