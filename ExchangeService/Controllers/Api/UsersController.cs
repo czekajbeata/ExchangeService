@@ -45,5 +45,12 @@ namespace ExchangeService.Controllers.Api
             int userId = 2; //TODO dodać wyciąganie z sesji
             return evaluatingService.GetAvgMark(userId);
         }
+
+        [HttpGet("api/users/matches")]
+        public IEnumerable<MatchView> GetMatches()
+        {
+            int userId = 1; //TODO dodać wyciąganie z sesji
+            return evaluatingService.GetMatches(userId);
+        }
     }
 }

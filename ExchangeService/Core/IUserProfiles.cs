@@ -16,5 +16,7 @@ namespace ExchangeService.Core
         Comment AddComment(Comment comment);
         IEnumerable<Comment> GetAllComments(int userId);
         double GetAvgMark(int userId);
+        IEnumerable<UserGame> GetUserGamesByGame(int gameId);
+        IEnumerable<UserSearchGame> GetUserSearchesByGame(int gameId);
     }
 }

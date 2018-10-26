@@ -64,5 +64,15 @@ namespace ExchangeService.Data.Persistance
         {
             return context.UserSearchGames.Where(g => g.UserId == userId);
         }
+
+        public IEnumerable<UserGame> GetUserGamesByGame(int gameId)
+        {
+            return context.UserGames.Where(g => g.GameId == gameId);
+        }
+
+        public IEnumerable<UserSearchGame> GetUserSearchesByGame(int gameId)
+        {
+            return context.UserSearchGames.Where(g => g.GameId == gameId);
+        }
     }
 }
