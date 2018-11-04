@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ExchangeService.Controllers.Logic;
-using ExchangeService.Controllers.Resources;
+using ExchangeService.Shared.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,8 +22,8 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/comments")]
         public IActionResult AddComment([FromBody] CommentDto comment)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+            // if (!ModelState.IsValid)
+             //   return BadRequest();
 
             int currentUserId = 1; //TODO dodać wyciąganie z sesji
             int receivingUserId = 2;

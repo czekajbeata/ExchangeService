@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ExchangeService.Controllers.Resources
+﻿namespace ExchangeService.Shared.Resources
 {
     public class UserSearchGameView
     {

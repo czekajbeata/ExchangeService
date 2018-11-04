@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using ExchangeService.Controllers.Logic;
-using ExchangeService.Controllers.Resources;
-using Microsoft.AspNetCore.Http;
+using ExchangeService.Shared.Resources;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeService.Controllers.Api
@@ -63,8 +59,8 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/games")]
         public IActionResult AddUserGame([FromBody] UserGameDto userGameDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+           // if (!ModelState.IsValid)
+            //    return BadRequest();
 
             int userId = 1; //TODO dodać wyciąganie z sesji
 
@@ -75,8 +71,8 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/searches")]
         public IActionResult AddUserSearchGame([FromBody] UserSearchGameDto userGameDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+          //  if (!ModelState.IsValid)
+            //    return BadRequest();
 
             int userId = 1; //TODO dodać wyciąganie z sesji
 
@@ -87,8 +83,8 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/games")]
         public IActionResult AddGame([FromBody] GameDto gameDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+          //  if (!ModelState.IsValid)
+             //   return BadRequest();
 
             var result = shelvesService.AddGame(gameDto);
             return result ? (IActionResult)Ok() : BadRequest();
@@ -97,8 +93,8 @@ namespace ExchangeService.Controllers.Api
         [HttpPut("api/games")]
         public IActionResult UpdateGame([FromBody] GameDto gameDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+           // if (!ModelState.IsValid)
+            //    return BadRequest();
 
             var result = shelvesService.UpdateGame(gameDto);
             return result ? (IActionResult)Ok() : BadRequest();
@@ -107,8 +103,8 @@ namespace ExchangeService.Controllers.Api
         [HttpPut("api/users/games")]
         public IActionResult UpdateUserGame([FromBody] UserGameDto userGameDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+           // if (!ModelState.IsValid)
+             //   return BadRequest();
 
             int userId = 1; //TODO dodać wyciąganie z sesji
 
