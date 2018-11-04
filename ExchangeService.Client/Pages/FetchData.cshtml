@@ -1,0 +1,76 @@
+﻿@page "/fetchdata"
+@inject HttpClient Http
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+<button onclick=@(async () => await PrintWebApiResponse())>Print Web API Response</button>
+
+@if (response != null)
+{
+    <select>
+        @foreach (var genre in response)
+        {
+            <option value="@genre.Id">@genre.Name</option>
+        }
+    </select>
+}
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@functions {
+WeatherForecast[] forecasts;
+Genre[] response;
+
+protected override async Task OnInitAsync()
+{
+    forecasts = await Http.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+}
+
+class WeatherForecast
+{
+    public DateTime Date { get; set; }
+    public int TemperatureC { get; set; }
+    public int TemperatureF { get; set; }
+    public string Summary { get; set; }
+}
+
+class Genre
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+private async Task PrintWebApiResponse()
+{
+    response = await Http.GetJsonAsync<Genre[]>("http://localhost:60456/api/genres");
+}
+}
