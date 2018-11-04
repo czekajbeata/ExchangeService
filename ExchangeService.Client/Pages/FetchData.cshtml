@@ -1,4 +1,5 @@
-﻿@page "/fetchdata"
+﻿@using ExchangeService.Shared.Resources;
+@page "/fetchdata"
 @inject HttpClient Http
 
 <h1>Weather forecast</h1>
@@ -48,7 +49,7 @@ else
 
 @functions {
 WeatherForecast[] forecasts;
-Genre[] response;
+DropDownItem[] response;
 
 protected override async Task OnInitAsync()
 {
@@ -63,14 +64,9 @@ class WeatherForecast
     public string Summary { get; set; }
 }
 
-class Genre
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-}
 
 private async Task PrintWebApiResponse()
 {
-    response = await Http.GetJsonAsync<Genre[]>("http://localhost:60456/api/genres");
+    response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:60456/api/genres");
 }
 }
