@@ -67,6 +67,6 @@ class WeatherForecast
 
 private async Task PrintWebApiResponse()
 {
-    response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:60456/api/genres");
+    response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/genres");
 }
 }

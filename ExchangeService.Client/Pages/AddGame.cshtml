@@ -1,0 +1,58 @@
+﻿@using ExchangeService.Shared.Resources;
+@page "/addgame"
+@inject HttpClient Http
+
+<h1>Add game for exchange</h1>
+
+<input type="text" bind="@gameTitle" />
+<button onclick=@(async () => await PrintWebApiResponse())>Search</button>
+
+@if (gameWasSearched)
+{
+    @if (response != null)
+    {
+        <p>Select game from existing or add a new one:</p>
+        <select bind="@selectedId">
+            @foreach (var game in response)
+            {
+                <option value="@game.Id">@game.Name</option>
+            }
+        </select>
+    }
+    <button onclick=@(async () => await AddNewGame())>Add new game</button>
+
+    @if(selectedId != null)
+    {
+        <p>@selectedId</p>
+        @GetGameDetails(selectedId);
+    }
+} 
+
+
+
+
+
+@functions {
+
+    private string gameTitle { get; set; }
+    DropDownItem[] response;
+    bool gameWasSearched = false;
+    string selectedId = null;
+
+
+    private async Task PrintWebApiResponse()
+    {
+        response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameTitle);
+        gameWasSearched = true;
+    }
+
+    private async Task AddNewGame()
+    {
+
+    }
+
+    private async Task GetGameDetails(string selectedId)
+    {
+        response = null;
+    }
+}

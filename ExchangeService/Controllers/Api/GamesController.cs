@@ -29,7 +29,7 @@ namespace ExchangeService.Controllers.Api
             return dropDownService.GetGamesList(query);
         }
 
-        [HttpGet("api/games/{id}")]
+        [HttpGet("api/games/get/{id}")]
         public IActionResult GetGameDetails(int id)
         {
             var game = shelvesService.GetGameDetails(id);
