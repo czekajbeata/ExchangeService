@@ -19,13 +19,17 @@
             }
         </select>
     }
-    <button onclick=@(async () => await AddNewGame())>Add new game</button>
+    <button onclick=@(() => AddNewGame())>Add new game</button>
 
     @if(selectedId != null)
     {
         <p>@selectedId</p>
-        @GetGameDetails(selectedId);
+        @GetGameDetails();    // get that async somewhere
     }
+    
+    // here we have either existing game or empty gamdto
+    //input editable or not values
+    // sset up proper buttons
 } 
 
 
@@ -38,7 +42,8 @@
     DropDownItem[] response;
     bool gameWasSearched = false;
     string selectedId = null;
-
+    GameDto gameDetails = null;
+    bool editableDetails = true;
 
     private async Task PrintWebApiResponse()
     {
@@ -46,13 +51,14 @@
         gameWasSearched = true;
     }
 
-    private async Task AddNewGame()
+    private void AddNewGame()
     {
-
+        gameDetails = new GameDto();
     }
 
-    private async Task GetGameDetails(string selectedId)
+    private async Task GetGameDetails()
     {
-        response = null;
+        gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get" + selectedId);
+        editableDetails = false;
     }
 }
