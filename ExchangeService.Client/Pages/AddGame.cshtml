@@ -11,7 +11,7 @@
     {
         <p>Select game from existing or add a new one:</p>
         <select bind="@SelectedId">
-            <option selected >...</option>
+            <option selected>...</option>
             @foreach (var game in response)
             {
                 <option value="@game.Id">@game.Name</option>
@@ -48,6 +48,15 @@
             <td> <input type="number" bind="@gameDetails.MinAgeRequired" /> </td>
         </tr>
     </table>
+
+    @if(gameDoesntExist)
+    {
+        <button>Add game</button>
+    }
+    else
+    {
+        <button>Update game</button>
+    }
     }
 
 }
@@ -57,55 +66,57 @@
 
 
 @functions {
-
-    private string gameTitle { get; set; }
     DropDownItem[] response;
     bool gameWasSearched = false;
+    bool gameDoesntExist = true;
+    GameDto gameDetails = null;
 
+    string gameTitle = null;
     public string GameTitle
     {
         get => gameTitle;
         set
         {
             gameTitle = value;
-            FillAutoComplete().ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
             StateHasChanged();
         }
     }
 
     string selectedId = null;
-
     public string SelectedId
     {
         get => selectedId;
         set
         {
             selectedId = value;
-            GetGameDetails().ConfigureAwait(false);
+            if(!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
         }
     }
 
-
-    GameDto gameDetails = null;
-    bool editableDetails = true;
 
     private async Task FillAutoComplete()
     {
         response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
         SelectedId = null;
         gameWasSearched = true;
+        gameDetails = null;
         StateHasChanged();
     }
 
     private void AddNewGame()
     {
         gameDetails = new GameDto();
+        SelectedId = string.Empty;
+        GameTitle = string.Empty;
+        gameDoesntExist = true;
     }
 
     private async Task GetGameDetails()
     {
         gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
-        editableDetails = false;
+        gameDoesntExist = false;
+        GameTitle = string.Empty;
         StateHasChanged();
     }
 }

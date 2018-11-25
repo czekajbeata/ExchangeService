@@ -40,7 +40,7 @@ namespace ExchangeService.Controllers.Logic
             Game newGame = new Game()
             {
                 Description = game.Description,
-                GenreId =  game.GenreName != null ? games.GetGenreByName(game.GenreName).GenreId : 0,
+                GenreId =  game.GenreName != null ? games.GetGenreByName(game.GenreName).GenreId : (int?)null,
                 ImageUrl = game.ImageUrl,
                 MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
                 MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
@@ -95,7 +95,7 @@ namespace ExchangeService.Controllers.Logic
                 return false;
 
             existingGame.Description = updatedGame.Description;
-            existingGame.GenreId = updatedGame.GenreName != null ? games.GetGenreByName(updatedGame.GenreName).GenreId : 0;
+            existingGame.GenreId = updatedGame.GenreName != null ? games.GetGenreByName(updatedGame.GenreName).GenreId : (int?)null;
             existingGame.ImageUrl = updatedGame.ImageUrl;
             existingGame.MaxPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item2;
             existingGame.MinPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item1;
