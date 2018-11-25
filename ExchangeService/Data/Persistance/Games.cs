@@ -3,6 +3,7 @@ using ExchangeService.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ExchangeService.Data.Persistance
 {
@@ -44,6 +45,21 @@ namespace ExchangeService.Data.Persistance
         {
             if (id != null) return context.Genres.FirstOrDefault(g => g.GenreId == id);
             return null;
+        }
+
+        public Genre GetGenreByName(string name)
+        {
+            if (name != null) return context.Genres.FirstOrDefault(g => g.Name == name);
+            return null;
+        }
+
+        public (int,int) GetPlayerCounts(string playerCount)
+        {
+            string pattern = @"(\d+)\-(\d+)";
+            var match = Regex.Match(playerCount, pattern);
+            int min = Int32.Parse(match.Groups[1].Value);
+            int max = Int32.Parse(match.Groups[2].Value);
+            return (min, max);
         }
     }
 }

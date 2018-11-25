@@ -39,10 +39,10 @@ namespace ExchangeService.Controllers.Logic
             Game newGame = new Game()
             {
                 Description = game.Description,
-                GenreId = game.GenreId,
+                GenreId = games.GetGenreByName(game.GenreName).GenreId,
                 ImageUrl = game.ImageUrl,
-                MaxPlayerCount = game.MaxPlayerCount,
-                MinPlayerCount = game.MinPlayerCount,
+                MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
+                MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
                 MinAgeRequired = game.MinAgeRequired,
                 PublishDate = game.PublishDate,
                 Publisher = game.Publisher,
@@ -71,15 +71,15 @@ namespace ExchangeService.Controllers.Logic
 
             if (game is null)
                 return null;
-
+            var genreName = games.GetGenre(game.GenreId).Name;
+            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
             return new GameDto()
             {
                 Description = game.Description,
                 GameId = game.GameId,
-                GenreId = game.GameId,
+                GenreName = genreName,
                 ImageUrl = game.ImageUrl,
-                MaxPlayerCount = game.MaxPlayerCount,
-                MinPlayerCount = game.MinPlayerCount,
+                PlayerCount = playerCount,
                 MinAgeRequired = game.MinAgeRequired,
                 PublishDate = game.PublishDate,
                 Publisher = game.Publisher,
@@ -94,11 +94,10 @@ namespace ExchangeService.Controllers.Logic
                 return false;
 
             existingGame.Description = updatedGame.Description;
-            existingGame.GenreId = updatedGame.GenreId;
+            existingGame.GenreId = games.GetGenreByName(updatedGame.GenreName).GenreId;
             existingGame.ImageUrl = updatedGame.ImageUrl;
-            existingGame.MaxPlayerCount = updatedGame.MaxPlayerCount;
-            existingGame.MinPlayerCount = updatedGame.MinPlayerCount;
-            existingGame.MinAgeRequired = updatedGame.MinAgeRequired;
+            existingGame.MaxPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item2;
+            existingGame.MinAgeRequired = games.GetPlayerCounts(updatedGame.PlayerCount).Item1;
             existingGame.PublishDate = updatedGame.PublishDate;
             existingGame.Publisher = updatedGame.Publisher;
             existingGame.Title = updatedGame.Title;
@@ -146,7 +145,6 @@ namespace ExchangeService.Controllers.Logic
             foreach (var game in gamePieces)
             {
                 var gameCopy = GetGameDetails(game.GameId);
-                var genreName = games.GetGenre(gameCopy.GenreId).Name;
                 searchedGameViews.Add(new UserGameView()
                 {
                     GameId = game.GameId,
@@ -156,9 +154,8 @@ namespace ExchangeService.Controllers.Logic
                     ImageUrl = gameCopy.ImageUrl,
                     Publisher = gameCopy.Publisher,
                     PublishDate = gameCopy.PublishDate,
-                    GenreName = genreName,
-                    MinPlayerCount = gameCopy.MinPlayerCount,
-                    MaxPlayerCount = gameCopy.MaxPlayerCount,
+                    GenreName = gameCopy.GenreName,
+                    PlayerCount = gameCopy.PlayerCount,
                     MinAgeRequired = gameCopy.MinAgeRequired,
                     State = game.State,
                     IsComplete = game.IsComplete,

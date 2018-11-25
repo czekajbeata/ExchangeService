@@ -10,9 +10,8 @@ namespace ExchangeService.Shared.Resources
         public string ImageUrl { get; set; }
         public string Publisher { get; set; }
         public DateTime? PublishDate { get; set; }
-        public int? GenreId { get; set; }
-        public int? MinPlayerCount { get; set; }
-        public int? MaxPlayerCount { get; set; }
+        public string GenreName { get; set; }
+        public string PlayerCount { get; set; }
         public int? MinAgeRequired { get; set; }
     }
 }
