@@ -2,6 +2,7 @@
 using ExchangeService.Core;
 using ExchangeService.Core.Entities;
 using System.Collections.Generic;
+using System;
 
 namespace ExchangeService.Controllers.Logic
 {
@@ -39,11 +40,11 @@ namespace ExchangeService.Controllers.Logic
             Game newGame = new Game()
             {
                 Description = game.Description,
-                GenreId = games.GetGenreByName(game.GenreName).GenreId,
+                GenreId =  game.GenreName != null ? games.GetGenreByName(game.GenreName).GenreId : 0,
                 ImageUrl = game.ImageUrl,
                 MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
                 MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
-                MinAgeRequired = game.MinAgeRequired,
+                MinAgeRequired = Int32.Parse(game.MinAgeRequired),
                 PublishDate = game.PublishDate,
                 Publisher = game.Publisher,
                 Title = game.Title
@@ -71,7 +72,7 @@ namespace ExchangeService.Controllers.Logic
 
             if (game is null)
                 return null;
-            var genreName = games.GetGenre(game.GenreId).Name;
+            var genreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name : null;
             var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
             return new GameDto()
             {
@@ -80,7 +81,7 @@ namespace ExchangeService.Controllers.Logic
                 GenreName = genreName,
                 ImageUrl = game.ImageUrl,
                 PlayerCount = playerCount,
-                MinAgeRequired = game.MinAgeRequired,
+                MinAgeRequired = game.MinAgeRequired.ToString(),
                 PublishDate = game.PublishDate,
                 Publisher = game.Publisher,
                 Title = game.Title
@@ -94,10 +95,11 @@ namespace ExchangeService.Controllers.Logic
                 return false;
 
             existingGame.Description = updatedGame.Description;
-            existingGame.GenreId = games.GetGenreByName(updatedGame.GenreName).GenreId;
+            existingGame.GenreId = updatedGame.GenreName != null ? games.GetGenreByName(updatedGame.GenreName).GenreId : 0;
             existingGame.ImageUrl = updatedGame.ImageUrl;
             existingGame.MaxPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item2;
-            existingGame.MinAgeRequired = games.GetPlayerCounts(updatedGame.PlayerCount).Item1;
+            existingGame.MinPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item1;
+            existingGame.MinAgeRequired = Int32.Parse(updatedGame.MinAgeRequired);
             existingGame.PublishDate = updatedGame.PublishDate;
             existingGame.Publisher = updatedGame.Publisher;
             existingGame.Title = updatedGame.Title;

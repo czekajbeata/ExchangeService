@@ -12,6 +12,6 @@ namespace ExchangeService.Shared.Resources
         public DateTime? PublishDate { get; set; }
         public string GenreName { get; set; }
         public string PlayerCount { get; set; }
-        public int? MinAgeRequired { get; set; }
+        public string MinAgeRequired { get; set; }
     }
 }
