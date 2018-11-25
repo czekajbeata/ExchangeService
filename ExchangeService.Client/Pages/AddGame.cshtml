@@ -3,16 +3,15 @@
 @inject HttpClient Http
 
 <h1>Add game for exchange</h1>
-
-<input type="text" bind="@gameTitle" />
-<button onclick=@(async () => await PrintWebApiResponse())>Search</button>
+<input type="text" bind="@GameTitle"/>
 
 @if (gameWasSearched)
 {
-    @if (response != null)
+    @if (response != null && response.Length > 0)
     {
         <p>Select game from existing or add a new one:</p>
-        <select bind="@selectedId">
+        <select bind="@SelectedId">
+            <option selected disabled>...</option>
             @foreach (var game in response)
             {
                 <option value="@game.Id">@game.Name</option>
@@ -20,17 +19,13 @@
         </select>
     }
     <button onclick=@(() => AddNewGame())>Add new game</button>
-
-    @if(selectedId != null)
-    {
-        <p>@selectedId</p>
-        @GetGameDetails();    // get that async somewhere
-    }
     
-    // here we have either existing game or empty gamdto
-    //input editable or not values
-    // sset up proper buttons
-} 
+    @if (gameDetails != null)
+    {
+        <p>@gameDetails.Title</p>
+    }
+
+}
 
 
 
@@ -41,14 +36,40 @@
     private string gameTitle { get; set; }
     DropDownItem[] response;
     bool gameWasSearched = false;
+
+    public string GameTitle
+    {
+        get => gameTitle;
+        set
+        {
+            gameTitle = value;
+            FillAutoComplete().ConfigureAwait(false);
+            StateHasChanged();
+        }
+    }
+
     string selectedId = null;
+
+    public string SelectedId
+    {
+        get => selectedId;
+        set
+        {
+            selectedId = value;
+            GetGameDetails().ConfigureAwait(false);
+        }
+    }
+
+
     GameDto gameDetails = null;
     bool editableDetails = true;
 
-    private async Task PrintWebApiResponse()
+    private async Task FillAutoComplete()
     {
-        response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameTitle);
+        response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
+        SelectedId = null;
         gameWasSearched = true;
+        StateHasChanged();
     }
 
     private void AddNewGame()
@@ -58,7 +79,8 @@
 
     private async Task GetGameDetails()
     {
-        gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get" + selectedId);
+        gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
         editableDetails = false;
+        StateHasChanged();
     }
 }
