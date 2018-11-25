@@ -11,7 +11,7 @@
     {
         <p>Select game from existing or add a new one:</p>
         <select bind="@SelectedId">
-            <option selected disabled>...</option>
+            <option selected >...</option>
             @foreach (var game in response)
             {
                 <option value="@game.Id">@game.Name</option>
@@ -22,7 +22,32 @@
     
     @if (gameDetails != null)
     {
-        <p>@gameDetails.Title</p>
+    <table>
+        <tr>
+            <td> Game title: </td>
+            <td> <input type="text" bind="@gameDetails.Title " /></td>
+        </tr>
+        <tr>
+            <td> Description: </td>
+            <td> <input type="text" bind="@gameDetails.Description" /> </td>
+        </tr>
+        <tr>
+            <td> Publisher: </td>
+            <td> <input type="text" bind="@gameDetails.Publisher" /> </td>
+        </tr>
+        <tr>
+            <td> Genre: </td>
+            <td> <input type="text" bind="@gameDetails.GenreName" /> </td>
+        </tr>
+        <tr>
+            <td> Player count: </td>
+            <td> <input type="text" bind="@gameDetails.PlayerCount" /> </td>
+        </tr>
+        <tr>
+            <td> Age required: </td>
+            <td> <input type="number" bind="@gameDetails.MinAgeRequired" /> </td>
+        </tr>
+    </table>
     }
 
 }
