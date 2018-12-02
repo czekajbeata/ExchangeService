@@ -49,19 +49,21 @@
             </tr>
         </table>
 
-        @*@if (gameDoesntExist)
-        {
-            <button onclick=@(() => AddNewGame())>Add new game</button>
-        }*@
-        @*else
-            {
-                <button>Update game</button>
-            }*@
 
-        @*@if (gameSaved)
+        @if (gameDoesntExist)
+        {
+
+            <button onclick=@(async () => await AddGameToDB())>Add game</button>
+        }
+        else
+        {
+            <button onclick=@(async () => await UpdateGame())>Update game</button>
+        }
+
+        @if (gameSaved)
             {
                 <p>@gameDet</p>
-            }*@
+            }
     }
 
 }
@@ -115,6 +117,7 @@
         gameDetails = new GameDto();
         SelectedId = string.Empty;
         GameTitle = string.Empty;
+        gameSaved = false;
         gameDoesntExist = true;
     }
 
@@ -123,20 +126,21 @@
         gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
         gameDoesntExist = false;
         GameTitle = string.Empty;
+        gameSaved = false;
         StateHasChanged();
     }
 
-    //private void AddGame()
-    //{
-    //    gameSaved = true;
-    //    gameDet = "Added";
-    //    //await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
-    //}
+    private async Task AddGameToDB()
+    {
+        gameSaved = true;
+        gameDet = "Added";
+        await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    }
 
-    //private void UpdateGame()
-    //{
-    //    gameSaved = true;
-    //    gameDet = "Updated";
-    //    //await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
-    //}
+    private async Task UpdateGame()
+    {
+        gameSaved = true;
+        gameDet = "Updated";
+        await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    }
 }

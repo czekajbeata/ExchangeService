@@ -39,15 +39,15 @@ namespace ExchangeService.Controllers.Logic
         {
             Game newGame = new Game()
             {
-                Description = game.Description,
+                Description = game.Description != null? game.Description : null,
                 GenreId =  game.GenreName != null ? games.GetGenreByName(game.GenreName).GenreId : (int?)null,
-                ImageUrl = game.ImageUrl,
+                ImageUrl = game.ImageUrl != null ? game.ImageUrl : null,
                 MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
                 MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
-                MinAgeRequired = Int32.Parse(game.MinAgeRequired),
-                PublishDate = game.PublishDate,
-                Publisher = game.Publisher,
-                Title = game.Title
+                MinAgeRequired = game.MinAgeRequired != null ? Int32.Parse(game.MinAgeRequired) : (int?)null,
+                PublishDate = game.PublishDate != null ? game.PublishDate : null,
+                Publisher = game.Publisher != null ? game.Publisher : null,
+                Title = game.Title != null ? game.Title : null
             };
             games.AddGame(newGame);
             unitOfWork.CompleteWork();
