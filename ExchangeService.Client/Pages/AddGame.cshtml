@@ -3,7 +3,7 @@
 @inject HttpClient Http
 
 <h1>Add game for exchange</h1>
-<input type="text" bind="@GameTitle"/>
+<input type="text" bind="@GameTitle" />
 
 @if (gameWasSearched)
 {
@@ -19,44 +19,49 @@
         </select>
     }
     <button onclick=@(() => AddNewGame())>Add new game</button>
-    
+
     @if (gameDetails != null)
     {
-    <table>
-        <tr>
-            <td> Game title: </td>
-            <td> <input type="text" bind="@gameDetails.Title " /></td>
-        </tr>
-        <tr>
-            <td> Description: </td>
-            <td> <input type="text" bind="@gameDetails.Description" /> </td>
-        </tr>
-        <tr>
-            <td> Publisher: </td>
-            <td> <input type="text" bind="@gameDetails.Publisher" /> </td>
-        </tr>
-        <tr>
-            <td> Genre: </td>
-            <td> <input type="text" bind="@gameDetails.GenreName" /> </td>
-        </tr>
-        <tr>
-            <td> Player count: </td>
-            <td> <input type="text" bind="@gameDetails.PlayerCount" /> </td>
-        </tr>
-        <tr>
-            <td> Age required: </td>
-            <td> <input type="number" bind="@gameDetails.MinAgeRequired" /> </td>
-        </tr>
-    </table>
+        <table>
+            <tr>
+                <td> Game title: </td>
+                <td> <input type="text" bind="@gameDetails.Title " /></td>
+            </tr>
+            <tr>
+                <td> Description: </td>
+                <td> <input type="text" bind="@gameDetails.Description" /> </td>
+            </tr>
+            <tr>
+                <td> Publisher: </td>
+                <td> <input type="text" bind="@gameDetails.Publisher" /> </td>
+            </tr>
+            <tr>
+                <td> Genre: </td>
+                <td> <input type="text" bind="@gameDetails.GenreName" /> </td>
+            </tr>
+            <tr>
+                <td> Player count: </td>
+                <td> <input type="text" bind="@gameDetails.PlayerCount" /> </td>
+            </tr>
+            <tr>
+                <td> Age required: </td>
+                <td> <input type="number" bind="@gameDetails.MinAgeRequired" /> </td>
+            </tr>
+        </table>
 
-    @if(gameDoesntExist)
-    {
-        <button>Add game</button>
-    }
-    else
-    {
-        <button>Update game</button>
-    }
+        @*@if (gameDoesntExist)
+        {
+            <button onclick=@(() => AddNewGame())>Add new game</button>
+        }*@
+        @*else
+            {
+                <button>Update game</button>
+            }*@
+
+        @*@if (gameSaved)
+            {
+                <p>@gameDet</p>
+            }*@
     }
 
 }
@@ -70,6 +75,8 @@
     bool gameWasSearched = false;
     bool gameDoesntExist = true;
     GameDto gameDetails = null;
+    bool gameSaved = false;
+    string gameDet;
 
     string gameTitle = null;
     public string GameTitle
@@ -90,10 +97,9 @@
         set
         {
             selectedId = value;
-            if(!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
         }
     }
-
 
     private async Task FillAutoComplete()
     {
@@ -119,4 +125,18 @@
         GameTitle = string.Empty;
         StateHasChanged();
     }
+
+    //private void AddGame()
+    //{
+    //    gameSaved = true;
+    //    gameDet = "Added";
+    //    //await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    //}
+
+    //private void UpdateGame()
+    //{
+    //    gameSaved = true;
+    //    gameDet = "Updated";
+    //    //await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    //}
 }
