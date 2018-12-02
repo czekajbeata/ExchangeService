@@ -49,21 +49,30 @@
             </tr>
         </table>
 
+        <button onclick=@(async () => await SaveGameDetails())>Save details</button>
 
-        @if (gameDoesntExist)
+        @if (newUserGame != null)
         {
 
-            <button onclick=@(async () => await AddGameToDB())>Add game</button>
+            @*<table>
+                <tr>
+                    <td> State: </td>
+                    <td> <input type="text" bind="@newUserGame.State " /></td>
+                </tr>
+                <tr>
+                    <td> Is Complete: </td>
+                    <td> <input type="checkbox" bind="@newUserGame.IsComplete" /> </td>
+                </tr>
+                <tr>
+                    <td> Shipment: </td>
+                    <td> <input type="text" bind="@newUserGame.Shipment" /> </td>
+                </tr>
+                <tr>
+                    <td> Description: </td>
+                    <td> <input type="text" bind="@newUserGame.UserGameDescription" /> </td>
+                </tr>
+            </table>*@
         }
-        else
-        {
-            <button onclick=@(async () => await UpdateGame())>Update game</button>
-        }
-
-        @if (gameSaved)
-            {
-                <p>@gameDet</p>
-            }
     }
 
 }
@@ -77,8 +86,9 @@
     bool gameWasSearched = false;
     bool gameDoesntExist = true;
     GameDto gameDetails = null;
+    UserGameDto newUserGame = null;
     bool gameSaved = false;
-    string gameDet;
+    string gameID;
 
     string gameTitle = null;
     public string GameTitle
@@ -109,6 +119,7 @@
         SelectedId = null;
         gameWasSearched = true;
         gameDetails = null;
+        newUserGame = null;
         StateHasChanged();
     }
 
@@ -119,6 +130,7 @@
         GameTitle = string.Empty;
         gameSaved = false;
         gameDoesntExist = true;
+        newUserGame = null;
     }
 
     private async Task GetGameDetails()
@@ -127,20 +139,36 @@
         gameDoesntExist = false;
         GameTitle = string.Empty;
         gameSaved = false;
+        newUserGame = null;
+        gameID = gameDetails.GameId.ToString();
         StateHasChanged();
+    }
+
+    private async Task SaveGameDetails()
+    {
+        if (gameDoesntExist)
+            await AddGameToDB();
+        else
+            await UpdateGame();
+
+        newUserGame = new UserGameDto()
+        {
+            GameId = Int32.Parse(gameID)
+        };
     }
 
     private async Task AddGameToDB()
     {
         gameSaved = true;
-        gameDet = "Added";
         await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
+        var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
+        gameID = games[0].Id.ToString();
     }
+
 
     private async Task UpdateGame()
     {
         gameSaved = true;
-        gameDet = "Updated";
         await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
     }
 }
