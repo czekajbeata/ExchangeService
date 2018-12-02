@@ -53,8 +53,7 @@
 
         @if (newUserGame != null)
         {
-
-            @*<table>
+            <table>
                 <tr>
                     <td> State: </td>
                     <td> <input type="text" bind="@newUserGame.State " /></td>
@@ -71,7 +70,9 @@
                     <td> Description: </td>
                     <td> <input type="text" bind="@newUserGame.UserGameDescription" /> </td>
                 </tr>
-            </table>*@
+            </table>
+
+            <button onclick=@(async () => await AddUserGameToDB())>Add game for exchange</button>
         }
     }
 
@@ -170,5 +171,10 @@
     {
         gameSaved = true;
         await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    }
+
+    private async Task AddUserGameToDB()
+    {
+        await Http.PostJsonAsync("http://localhost:5000/api/users/games/", newUserGame);
     }
 }
