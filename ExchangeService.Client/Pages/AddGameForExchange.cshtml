@@ -74,6 +74,11 @@
 
             <button onclick=@(async () => await AddUserGameToDB())>Add game for exchange</button>
         }
+
+        @if (success)
+        {
+            <p>Game was added for exchange</p>
+        }
     }
 
 }
@@ -83,98 +88,101 @@
 
 
 @functions {
-    DropDownItem[] response;
-    bool gameWasSearched = false;
-    bool gameDoesntExist = true;
-    GameDto gameDetails = null;
-    UserGameDto newUserGame = null;
-    bool gameSaved = false;
-    string gameID;
+DropDownItem[] response;
+bool gameWasSearched = false;
+bool gameDoesntExist = true;
+GameDto gameDetails = null;
+UserGameDto newUserGame = null;
+bool gameSaved = false;
+bool success = false;
+string gameID;
 
-    string gameTitle = null;
-    public string GameTitle
+string gameTitle = null;
+public string GameTitle
+{
+    get => gameTitle;
+    set
     {
-        get => gameTitle;
-        set
-        {
-            gameTitle = value;
-            if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
-            StateHasChanged();
-        }
-    }
-
-    string selectedId = null;
-    public string SelectedId
-    {
-        get => selectedId;
-        set
-        {
-            selectedId = value;
-            if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
-        }
-    }
-
-    private async Task FillAutoComplete()
-    {
-        response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
-        SelectedId = null;
-        gameWasSearched = true;
-        gameDetails = null;
-        newUserGame = null;
+        gameTitle = value;
+        if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
         StateHasChanged();
     }
+}
 
-    private void AddNewGame()
+string selectedId = null;
+public string SelectedId
+{
+    get => selectedId;
+    set
     {
-        gameDetails = new GameDto();
-        SelectedId = string.Empty;
-        GameTitle = string.Empty;
-        gameSaved = false;
-        gameDoesntExist = true;
-        newUserGame = null;
+        selectedId = value;
+        if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
     }
+}
 
-    private async Task GetGameDetails()
+private async Task FillAutoComplete()
+{
+    response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
+    SelectedId = null;
+    gameWasSearched = true;
+    gameDetails = null;
+    newUserGame = null;
+    success = false;
+    StateHasChanged();
+}
+
+private void AddNewGame()
+{
+    gameDetails = new GameDto();
+    SelectedId = string.Empty;
+    GameTitle = string.Empty;
+    gameSaved = false;
+    gameDoesntExist = true;
+    newUserGame = null;
+}
+
+private async Task GetGameDetails()
+{
+    gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
+    gameDoesntExist = false;
+    GameTitle = string.Empty;
+    gameSaved = false;
+    newUserGame = null;
+    gameID = gameDetails.GameId.ToString();
+    StateHasChanged();
+}
+
+private async Task SaveGameDetails()
+{
+    if (gameDoesntExist)
+        await AddGameToDB();
+    else
+        await UpdateGameInDB();
+
+    newUserGame = new UserGameDto()
     {
-        gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
-        gameDoesntExist = false;
-        GameTitle = string.Empty;
-        gameSaved = false;
-        newUserGame = null;
-        gameID = gameDetails.GameId.ToString();
-        StateHasChanged();
-    }
+        GameId = Int32.Parse(gameID)
+    };
+}
 
-    private async Task SaveGameDetails()
-    {
-        if (gameDoesntExist)
-            await AddGameToDB();
-        else
-            await UpdateGame();
-
-        newUserGame = new UserGameDto()
-        {
-            GameId = Int32.Parse(gameID)
-        };
-    }
-
-    private async Task AddGameToDB()
-    {
-        gameSaved = true;
-        await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
-        var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
-        gameID = games[0].Id.ToString();
-    }
+private async Task AddGameToDB()
+{
+    gameSaved = true;
+    await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
+    gameID = games[0].Id.ToString();
+}
 
 
-    private async Task UpdateGame()
-    {
-        gameSaved = true;
-        await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
-    }
+private async Task UpdateGameInDB()
+{
+    gameSaved = true;
+    await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
+}
 
-    private async Task AddUserGameToDB()
-    {
-        await Http.PostJsonAsync("http://localhost:5000/api/users/games/", newUserGame);
-    }
+private async Task AddUserGameToDB()
+{
+    await Http.PostJsonAsync("http://localhost:5000/api/users/games/", newUserGame);
+    success = true;
+}
 }

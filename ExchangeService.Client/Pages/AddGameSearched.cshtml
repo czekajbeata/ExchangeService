@@ -7,53 +7,55 @@
 
 @if (gameWasSearched)
 {
-@if (response != null && response.Length > 0)
+    @if (response != null && response.Length > 0)
     {
-<p>Select game from existing or add a new one:</p>
-<select bind="@SelectedId">
-    <option selected>...</option>
-    @foreach (var game in response)
+        <p>Select game from existing or add a new one:</p>
+        <select bind="@SelectedId">
+            <option selected>...</option>
+            @foreach (var game in response)
             {
-    <option value="@game.Id">@game.Name</option>
+                <option value="@game.Id">@game.Name</option>
             }
-</select>
+        </select>
     }
-<button onclick=@(() => AddNewGame())>Add new game</button>
+    <button onclick=@(() => AddNewGame())>Add new game</button>
 
-@if (gameDetails != null)
+    @if (gameDetails != null)
     {
-<table>
-    <tr>
-        <td> Game title: </td>
-        <td> <input type="text" bind="@gameDetails.Title " /></td>
-    </tr>
-    <tr>
-        <td> Description: </td>
-        <td> <input type="text" bind="@gameDetails.Description" /> </td>
-    </tr>
-    <tr>
-        <td> Publisher: </td>
-        <td> <input type="text" bind="@gameDetails.Publisher" /> </td>
-    </tr>
-    <tr>
-        <td> Genre: </td>
-        <td> <input type="text" bind="@gameDetails.GenreName" /> </td>
-    </tr>
-    <tr>
-        <td> Player count: </td>
-        <td> <input type="text" bind="@gameDetails.PlayerCount" /> </td>
-    </tr>
-    <tr>
-        <td> Age required: </td>
-        <td> <input type="number" bind="@gameDetails.MinAgeRequired" /> </td>
-    </tr>
-</table>
+        <table>
+            <tr>
+                <td> Game title: </td>
+                <td> <input type="text" bind="@gameDetails.Title " /></td>
+            </tr>
+            <tr>
+                <td> Description: </td>
+                <td> <input type="text" bind="@gameDetails.Description" /> </td>
+            </tr>
+            <tr>
+                <td> Publisher: </td>
+                <td> <input type="text" bind="@gameDetails.Publisher" /> </td>
+            </tr>
+            <tr>
+                <td> Genre: </td>
+                <td> <input type="text" bind="@gameDetails.GenreName" /> </td>
+            </tr>
+            <tr>
+                <td> Player count: </td>
+                <td> <input type="text" bind="@gameDetails.PlayerCount" /> </td>
+            </tr>
+            <tr>
+                <td> Age required: </td>
+                <td> <input type="number" bind="@gameDetails.MinAgeRequired" /> </td>
+            </tr>
+        </table>
 
-<button onclick=@(async () => await AddToSearched())>Save details</button>
+        <button onclick=@(async () => await AddToSearched())>Add game search</button>
 
-
+        @if (success)
+        {
+            <p>Game search was added</p>
+        }
     }
-
 }
 
 
@@ -61,88 +63,95 @@
 
 
 @functions {
-    DropDownItem[] response;
-    bool gameWasSearched = false;
-    bool gameDoesntExist = true;
-    GameDto gameDetails = null;
-    string gameID;
+DropDownItem[] response;
+bool gameWasSearched = false;
+bool gameDoesntExist = true;
+GameDto gameDetails = null;
+string gameID;
+bool success = false;
 
-    string gameTitle = null;
-    public string GameTitle
+string gameTitle = null;
+public string GameTitle
+{
+    get => gameTitle;
+    set
     {
-        get => gameTitle;
-        set
-        {
-            gameTitle = value;
-            if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
-            StateHasChanged();
-        }
-    }
-
-    string selectedId = null;
-    public string SelectedId
-    {
-        get => selectedId;
-        set
-        {
-            selectedId = value;
-            if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
-        }
-    }
-
-    private async Task FillAutoComplete()
-    {
-        response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
-        SelectedId = null;
-        gameWasSearched = true;
-        gameDetails = null;
+        gameTitle = value;
+        if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
         StateHasChanged();
     }
+}
 
-    private void AddNewGame()
+string selectedId = null;
+public string SelectedId
+{
+    get => selectedId;
+    set
     {
-        gameDetails = new GameDto();
-        SelectedId = string.Empty;
-        GameTitle = string.Empty;
-        gameDoesntExist = true;
+        selectedId = value;
+        if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
     }
+}
 
-    private async Task GetGameDetails()
+private async Task FillAutoComplete()
+{
+    response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
+    SelectedId = null;
+    gameWasSearched = true;
+    gameDetails = null;
+    success = false;
+    StateHasChanged();
+}
+
+private void AddNewGame()
+{
+    gameDetails = new GameDto();
+    SelectedId = string.Empty;
+    GameTitle = string.Empty;
+    gameDoesntExist = true;
+    success = false;
+}
+
+private async Task GetGameDetails()
+{
+    gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
+    gameDoesntExist = false;
+    GameTitle = string.Empty;
+    gameID = gameDetails.GameId.ToString();
+    success = false;
+    StateHasChanged();
+}
+
+private async Task AddToSearched()
+{
+    if (gameDoesntExist)
+        await AddGameToDB();
+    else
+        await UpdateGameInDB();
+    await AddSearch();
+}
+
+private async Task AddGameToDB()
+{
+    await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
+    gameID = games[0].Id.ToString();
+}
+
+
+private async Task UpdateGameInDB()
+{
+    await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
+}
+
+private async Task AddSearch()
+{
+    UserSearchGameDto newUserSearch = new UserSearchGameDto()
     {
-        gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
-        gameDoesntExist = false;
-        GameTitle = string.Empty;
-        gameID = gameDetails.GameId.ToString();
-        StateHasChanged();
-    }
-
-    private async Task AddToSearched()
-    {
-        if (gameDoesntExist)
-            await AddGameToDB();
-        else
-            await UpdateGame();
-        AddSearch();
-    }
-
-    private async Task AddGameToDB()
-    {
-        await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
-        var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
-        gameID = games[0].Id.ToString();
-    }
-
-
-    private async Task UpdateGame()
-    {
-        await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
-    }
-
-    private async Task AddSearch() {
-        UserSearchGameDto newUserSearch = new UserSearchGameDto() {
-            GameId = Int32.Parse(gameID)
-        };
-        await Http.PostJsonAsync("http://localhost:5000/api/users/searches/", newUserSearch);
-    }
+        GameId = Int32.Parse(gameID)
+    };
+    await Http.PostJsonAsync("http://localhost:5000/api/users/searches/", newUserSearch);
+    success = true;
+}
 
 }
