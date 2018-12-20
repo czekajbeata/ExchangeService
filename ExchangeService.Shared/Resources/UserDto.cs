@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ExchangeService.Shared.Resources
 {
-    class UserDto
+    public class UserDto
     {
         public int UserId { get; set; }        
         public string NameAndSurname { get; set; }

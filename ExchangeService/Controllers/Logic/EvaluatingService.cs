@@ -114,5 +114,33 @@ namespace ExchangeService.Controllers.Logic
 
             return userMatches;
         }
+
+        public bool AddUserProfile(UserDto user, string innerUserId)
+        {
+            User newUser = new User()
+            {
+                InnerUserId = innerUserId,
+                Delivery = user.Delivery,
+                Pickup = user.Pickup,
+                PickUpLocation = user.PickUpLocation,
+                NameAndSurname = user.NameAndSurname
+            };
+            userProfiles.AddUserProfile(newUser);
+            unitOfWork.CompleteWork();
+            return newUser.UserId != 0;
+        }
+
+        public UserDto GetUserProfile(int userId)
+        {
+            var user = userProfiles.GetUserProfile(userId);
+            return new UserDto()
+            {
+                UserId = user.UserId,
+                Delivery = user.Delivery,
+                Pickup = user.Pickup,
+                PickUpLocation = user.PickUpLocation,
+                NameAndSurname = user.NameAndSurname
+            };
+        }
     }
 }

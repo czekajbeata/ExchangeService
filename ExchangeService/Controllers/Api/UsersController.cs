@@ -32,6 +32,14 @@ namespace ExchangeService.Controllers.Api
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
+        [HttpPost("api/users/profile")]
+        public IActionResult GetUserProfile([FromBody] UserDto user)
+        {
+            string innerUserID = "1"; //only valid thing to receive from session
+            var result = evaluatingService.AddUserProfile(user, innerUserID);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
         [HttpGet("api/users/comments")]
         public IEnumerable<CommentDto> GetComments()
         {
@@ -51,6 +59,13 @@ namespace ExchangeService.Controllers.Api
         {
             int userId = 1; //TODO dodać wyciąganie z sesji
             return evaluatingService.GetMatches(userId);
+        }
+
+        [HttpGet("api/users/profile")]
+        public UserDto GetUserProfile()
+        {
+            int userId = 1; 
+            return evaluatingService.GetUserProfile(userId);
         }
     }
 }
