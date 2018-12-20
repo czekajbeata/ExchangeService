@@ -1,0 +1,52 @@
+﻿@using ExchangeService.Shared.Resources;
+@page "/profile"
+@inject HttpClient Http
+
+<h1>User profile</h1>
+
+@if (profileOwner == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <img src="@profileOwner.ImageUrl" width="150" height="150">
+    <h5>@profileOwner.NameAndSurname</h5>
+    <h6>! @profileOwner.PickUpLocation</h6>
+
+    @if (profileOwner.Pickup && !profileOwner.Delivery)
+    {
+        <p>Pickup only</p>
+    }
+    else if (profileOwner.Delivery && !profileOwner.Pickup)
+    {
+        <p>Delivery only</p>
+    }
+    <p>Exchanges made: TODO</p>
+    <p>Reviews: @comments.Count()</p>
+
+
+}
+
+
+@functions {
+        UserDto profileOwner;
+        CommentDto[] comments = new CommentDto[] { };
+        bool isMyProfile = false;
+
+    protected override async Task OnInitAsync()
+    {
+        //should have profile owners id here
+        int profileOwnersId = 2;
+        profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + profileOwnersId);
+
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
+        if(result.Count() > 0) comments = result.ToArray();
+
+        int currentUserId = 1; // api call?
+        if (currentUserId == profileOwner.UserId)
+            isMyProfile = true;
+    }
+
+
+}

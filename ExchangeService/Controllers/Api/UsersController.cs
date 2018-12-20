@@ -33,25 +33,23 @@ namespace ExchangeService.Controllers.Api
         }
 
         [HttpPost("api/users/profile")]
-        public IActionResult GetUserProfile([FromBody] UserDto user)
+        public IActionResult AddUserProfile([FromBody] UserDto user)
         {
             string innerUserID = "1"; //only valid thing to receive from session
             var result = evaluatingService.AddUserProfile(user, innerUserID);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
-        [HttpGet("api/users/comments")]
-        public IEnumerable<CommentDto> GetComments()
+        [HttpGet("api/users/comments/{id?}")]
+        public IEnumerable<CommentDto> GetComments(int id)
         {
-            int userId = 2; //TODO dodać wyciąganie z sesji
-            return evaluatingService.GetComments(userId);
+            return evaluatingService.GetComments(id);
         }
 
-        [HttpGet("api/users/marks")]
-        public double GetAvgMark()
+        [HttpGet("api/users/marks/{id?}")]
+        public double GetAvgMark(int id)
         {
-            int userId = 2; //TODO dodać wyciąganie z sesji
-            return evaluatingService.GetAvgMark(userId);
+            return evaluatingService.GetAvgMark(id);
         }
 
         [HttpGet("api/users/matches")]
@@ -61,11 +59,10 @@ namespace ExchangeService.Controllers.Api
             return evaluatingService.GetMatches(userId);
         }
 
-        [HttpGet("api/users/profile")]
-        public UserDto GetUserProfile()
+        [HttpGet("api/users/{id?}")]
+        public UserDto GetUserProfile(int id)
         {
-            int userId = 1; 
-            return evaluatingService.GetUserProfile(userId);
+            return evaluatingService.GetUserProfile(id);
         }
     }
 }
