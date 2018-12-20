@@ -12,5 +12,7 @@ namespace ExchangeService.Shared.Resources
         public string PickUpLocation { get; set; }
         public bool Delivery { get; set; }
         public string ImageUrl { get; set; }
+        public string ContactEmail { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }
