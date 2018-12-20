@@ -123,7 +123,8 @@ namespace ExchangeService.Controllers.Logic
                 Delivery = user.Delivery,
                 Pickup = user.Pickup,
                 PickUpLocation = user.PickUpLocation,
-                NameAndSurname = user.NameAndSurname
+                NameAndSurname = user.NameAndSurname,
+                ImageUrl = user.ImageUrl
             };
             userProfiles.AddUserProfile(newUser);
             unitOfWork.CompleteWork();
@@ -139,7 +140,8 @@ namespace ExchangeService.Controllers.Logic
                 Delivery = user.Delivery,
                 Pickup = user.Pickup,
                 PickUpLocation = user.PickUpLocation,
-                NameAndSurname = user.NameAndSurname
+                NameAndSurname = user.NameAndSurname,
+                ImageUrl = user.ImageUrl
             };
         }
     }

@@ -11,5 +11,6 @@ namespace ExchangeService.Shared.Resources
         public bool Pickup { get; set; }
         public string PickUpLocation { get; set; }
         public bool Delivery { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

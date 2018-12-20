@@ -20,6 +20,7 @@ namespace ExchangeService.Core.Entities
         public string PickUpLocation { get; set; }
         [Required]
         public bool Delivery { get; set; }
+        public string ImageUrl { get; set; }
 
     }
 }
