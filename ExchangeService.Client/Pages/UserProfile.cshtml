@@ -32,43 +32,52 @@ else
         <p>Ikonkatelefonu: @profileOwner.PhoneNumber</p>
         <p>Ikonkamaila: @profileOwner.ContactEmail</p>
     }
-    <button>Offer a deal</button>
+    @if (!isMyProfile)
+    {
+        <button onclick=@(() => OfferDeal())>Offer a deal</button>
+    }
 
 }
 
 
 @functions {
-    UserDto profileOwner;
-    CommentDto[] comments = new CommentDto[] { };
-    bool isMyProfile = false;
-    bool contactDetailsVisible = false;
-    string contactDetailsButton = "Show contact details";
+UserDto profileOwner;
+CommentDto[] comments = new CommentDto[] { };
+bool isMyProfile = false;
+bool contactDetailsVisible = false;
+string contactDetailsButton = "Show contact details";
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    //should have profile owners id here
+    int profileOwnersId = 1;
+    profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + profileOwnersId);
+
+    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
+    if (result.Count() > 0) comments = result.ToArray();
+
+    int currentUserId = 1; // api call?
+    if (currentUserId == profileOwner.UserId)
+        isMyProfile = true;
+}
+
+private void ToogleContactDetails()
+{
+    if (contactDetailsVisible)
     {
-        //should have profile owners id here
-        int profileOwnersId = 2;
-        profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + profileOwnersId);
-
-        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
-        if (result.Count() > 0) comments = result.ToArray();
-
-        int currentUserId = 1; // api call?
-        if (currentUserId == profileOwner.UserId)
-            isMyProfile = true;
+        contactDetailsVisible = false;
+        contactDetailsButton = "Show contact details";
     }
-    private void ToogleContactDetails()
+    else
     {
-        if(contactDetailsVisible)
-        {
-            contactDetailsVisible = false;
-            contactDetailsButton = "Show contact details";
-        }
-        else
-        {
-            contactDetailsVisible = true;
-            contactDetailsButton = "Hide contact details";
-        }
+        contactDetailsVisible = true;
+        contactDetailsButton = "Hide contact details";
     }
+}
+
+private void OfferDeal()
+{
+    // redirect to exchange page with both user ids
+}
 
 }
