@@ -20,12 +20,12 @@ namespace ExchangeService.Controllers.Logic
             this.games = games;
         }
         
-        public bool AddComment(CommentDto comment, int leavingUserId, int receivingUserId)
+        public bool AddComment(CommentDto comment, int receivingUserId)
         {
             Comment newComment = new Comment()
             {
                 ReceivingUserId = receivingUserId,
-                LeavingUserId = leavingUserId,
+                LeavingUserId = comment.LeavingUserId,
                 CommentDate = DateTime.Today,
                 Mark = comment.Mark,
                 Text = comment.Text
@@ -43,6 +43,7 @@ namespace ExchangeService.Controllers.Logic
             {
                 commentDtos.Add(new CommentDto()
                 {
+                    LeavingUserId = comment.LeavingUserId,
                     CommentDate = comment.CommentDate,
                     Mark = comment.Mark,
                     Text = comment.Text

@@ -22,13 +22,11 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/comments")]
         public IActionResult AddComment([FromBody] CommentDto comment)
         {
-            // if (!ModelState.IsValid)
-             //   return BadRequest();
-
             int currentUserId = 1; //TODO dodać wyciąganie z sesji
+            comment.LeavingUserId = currentUserId;
             int receivingUserId = 2;
 
-            var result = evaluatingService.AddComment(comment, currentUserId, receivingUserId);
+            var result = evaluatingService.AddComment(comment, receivingUserId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 

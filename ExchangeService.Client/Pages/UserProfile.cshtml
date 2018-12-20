@@ -24,7 +24,7 @@ else
     }
     <p>Exchanges made: TODO</p>
     <p>Reviews: @comments.Count()</p>
-
+    <p>STARS @userMark</p>
 
     <button onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
     @if (contactDetailsVisible)
@@ -37,47 +37,78 @@ else
         <button onclick=@(() => OfferDeal())>Offer a deal</button>
     }
 
+    <h5>Games for exchange</h5>
+
+    <h5>Game searches</h5>
+
+    <table>
+        <thead>Rewiews</thead>
+        
+        @for(int i = 0; i < comments.Count(); i++)
+        {
+        <tr>
+            <td>@comentators[i].NameAndSurname</td>
+            <td><img src="@comentators[i].ImageUrl" width="50" height="50" /></td>
+            <td>@comments[i].CommentDate</td>
+            <td>@comments[i].Mark</td>
+            <td>@comments[i].Text</td>
+        </tr>
+        }
+    </table>
 }
 
 
 @functions {
-UserDto profileOwner;
-CommentDto[] comments = new CommentDto[] { };
-bool isMyProfile = false;
-bool contactDetailsVisible = false;
-string contactDetailsButton = "Show contact details";
+    UserDto profileOwner;
+    CommentDto[] comments = new CommentDto[] { };
+    List<UserDto> comentators = new List<UserDto>() { };
+    double userMark;
+    bool isMyProfile = false;
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
 
-protected override async Task OnInitAsync()
-{
-    //should have profile owners id here
-    int profileOwnersId = 1;
-    profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + profileOwnersId);
-
-    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
-    if (result.Count() > 0) comments = result.ToArray();
-
-    int currentUserId = 1; // api call?
-    if (currentUserId == profileOwner.UserId)
-        isMyProfile = true;
-}
-
-private void ToogleContactDetails()
-{
-    if (contactDetailsVisible)
+    protected override async Task OnInitAsync()
     {
-        contactDetailsVisible = false;
-        contactDetailsButton = "Show contact details";
-    }
-    else
-    {
-        contactDetailsVisible = true;
-        contactDetailsButton = "Hide contact details";
-    }
-}
+        //should have profile owners id here
+        int profileOwnersId = 2;
+        profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + profileOwnersId);
 
-private void OfferDeal()
-{
-    // redirect to exchange page with both user ids
-}
+        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + profileOwnersId);
+
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
+        if (result.Count() > 0) await FillComents(result.ToArray());
+
+        int currentUserId = 1; // api call?
+        if (currentUserId == profileOwner.UserId)
+            isMyProfile = true;
+    }
+
+    private async Task FillComents(CommentDto[] dbComments)
+    {
+        comments = dbComments;
+        foreach(var comment in comments)
+        {
+            comentators.Add(await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + comment.LeavingUserId));
+        }
+    }
+
+    private void ToogleContactDetails()
+    {
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
+    }
+
+    private void OfferDeal()
+    {
+        // redirect to exchange page with both user ids
+    }
 
 }
