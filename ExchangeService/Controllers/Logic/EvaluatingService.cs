@@ -124,7 +124,10 @@ namespace ExchangeService.Controllers.Logic
                 Pickup = user.Pickup,
                 PickUpLocation = user.PickUpLocation,
                 NameAndSurname = user.NameAndSurname,
-                ImageUrl = user.ImageUrl
+                ImageUrl = user.ImageUrl,
+                PhoneNumber = user.PhoneNumber != null ? user.PhoneNumber : "not given",
+                ContactEmail = user.ContactEmail != null ? user.ContactEmail : "not given"
+
             };
             userProfiles.AddUserProfile(newUser);
             unitOfWork.CompleteWork();
@@ -141,7 +144,9 @@ namespace ExchangeService.Controllers.Logic
                 Pickup = user.Pickup,
                 PickUpLocation = user.PickUpLocation,
                 NameAndSurname = user.NameAndSurname,
-                ImageUrl = user.ImageUrl
+                ImageUrl = user.ImageUrl,
+                PhoneNumber = user.PhoneNumber,
+                ContactEmail = user.ContactEmail
             };
         }
     }

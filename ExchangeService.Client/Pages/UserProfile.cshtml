@@ -26,13 +26,23 @@ else
     <p>Reviews: @comments.Count()</p>
 
 
+    <button onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
+    @if (contactDetailsVisible)
+    {
+        <p>Ikonkatelefonu: @profileOwner.PhoneNumber</p>
+        <p>Ikonkamaila: @profileOwner.ContactEmail</p>
+    }
+    <button>Offer a deal</button>
+
 }
 
 
 @functions {
-        UserDto profileOwner;
-        CommentDto[] comments = new CommentDto[] { };
-        bool isMyProfile = false;
+    UserDto profileOwner;
+    CommentDto[] comments = new CommentDto[] { };
+    bool isMyProfile = false;
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
 
     protected override async Task OnInitAsync()
     {
@@ -41,12 +51,24 @@ else
         profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + profileOwnersId);
 
         var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
-        if(result.Count() > 0) comments = result.ToArray();
+        if (result.Count() > 0) comments = result.ToArray();
 
         int currentUserId = 1; // api call?
         if (currentUserId == profileOwner.UserId)
             isMyProfile = true;
     }
-
+    private void ToogleContactDetails()
+    {
+        if(contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
+    }
 
 }
