@@ -72,5 +72,16 @@ namespace ExchangeService.Data.Persistance
         {
             return context.UserSearchGames.Where(g => g.GameId == gameId);
         }
+
+        public User AddUserProfile(User newUser)
+        {
+            var result = context.UserProfiles.Add(newUser);
+            return result.Entity;
+        }
+
+        public User GetUserProfile(int userId)
+        {
+            return context.UserProfiles.SingleOrDefault(u => u.UserId == userId);
+        }
     }
 }

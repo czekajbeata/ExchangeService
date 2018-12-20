@@ -15,5 +15,7 @@ namespace ExchangeService.Core
         double GetAvgMark(int userId);
         IEnumerable<UserGame> GetUserGamesByGame(int gameId);
         IEnumerable<UserSearchGame> GetUserSearchesByGame(int gameId);
+        User AddUserProfile(User newUser);
+        User GetUserProfile(int userId);
     }
 }
