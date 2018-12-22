@@ -11,7 +11,7 @@
 else
 {
 <img src="@profileOwner.ImageUrl" width="150" height="150">
-<h5>@profileOwner.NameAndSurname</h5>
+<h5>@profileOwner.Name @profileOwner.Surname</h5>
 <h6>! @profileOwner.PickUpLocation</h6>
 
 @if (profileOwner.Pickup && !profileOwner.Delivery)
@@ -43,7 +43,7 @@ else
     @for(int i = 0; i < comments.Count(); i++)
         {
     <tr>
-        <td>@comentators[i].NameAndSurname</td>
+        <td>@comentators[i].Name @comentators[i].Surname</td>
         <td><img src="@comentators[i].ImageUrl" width="50" height="50" /></td>
         <td>@comments[i].CommentDate</td>
         <td>@comments[i].Mark</td>
@@ -66,9 +66,9 @@ else
     {
         profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
 
-        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + profileOwnersId);
+        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + profileOwner.UserId);
 
-        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwner.UserId);
         if (result.Count() > 0) await FillComents(result.ToArray());
 
     }

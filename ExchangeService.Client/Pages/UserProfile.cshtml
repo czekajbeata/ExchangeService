@@ -11,7 +11,7 @@
 else
 {
     <img src="@profileOwner.ImageUrl" width="150" height="150">
-    <h5>@profileOwner.NameAndSurname</h5>
+    <h5>@profileOwner.Name @profileOwner.Surname</h5>
     <h6>! @profileOwner.PickUpLocation</h6>
 
     @if (profileOwner.Pickup && !profileOwner.Delivery)
@@ -47,7 +47,7 @@ else
         @for(int i = 0; i < comments.Count(); i++)
         {
         <tr>
-            <td>@comentators[i].NameAndSurname</td>
+            <td>@comentators[i].Name @comentators[i].Surname</td>
             <td><img src="@comentators[i].ImageUrl" width="50" height="50" /></td>
             <td>@comments[i].CommentDate</td>
             <td>@comments[i].Mark</td>

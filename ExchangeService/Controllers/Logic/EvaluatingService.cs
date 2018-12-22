@@ -129,7 +129,8 @@ namespace ExchangeService.Controllers.Logic
                 Delivery = user.Delivery,
                 Pickup = user.Pickup,
                 PickUpLocation = user.PickUpLocation,
-                NameAndSurname = user.NameAndSurname,
+                Name = user.Name,
+                Surname = user.Surname,
                 ImageUrl = user.ImageUrl,
                 PhoneNumber = user.PhoneNumber != null ? user.PhoneNumber : "not given",
                 ContactEmail = user.ContactEmail != null ? user.ContactEmail : "not given"
@@ -149,7 +150,8 @@ namespace ExchangeService.Controllers.Logic
                 Delivery = user.Delivery,
                 Pickup = user.Pickup,
                 PickUpLocation = user.PickUpLocation,
-                NameAndSurname = user.NameAndSurname,
+                Name = user.Name,
+                Surname = user.Surname,
                 ImageUrl = user.ImageUrl,
                 PhoneNumber = user.PhoneNumber,
                 ContactEmail = user.ContactEmail

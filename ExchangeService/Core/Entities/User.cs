@@ -13,8 +13,10 @@ namespace ExchangeService.Core.Entities
         [StringLength(512)]
         public string InnerUserId { get; set; }
         [Required]
-        [StringLength(264)]
-        public string NameAndSurname { get; set; }
+        [StringLength(128)]
+        public string Name { get; set; }
+        [StringLength(128)]
+        public string Surname { get; set; }
         [Required]
         public bool Pickup { get; set; }
         public string PickUpLocation { get; set; }
