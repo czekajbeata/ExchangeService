@@ -40,28 +40,21 @@ namespace ExchangeService.Controllers.Api
             return NotFound();
         }
 
-        [HttpGet("api/users/searches")]
-        public IEnumerable<UserSearchGameView> GetUserGameSearches()
+        [HttpGet("api/users/searches/{id}")]
+        public IEnumerable<UserSearchGameView> GetUserGameSearches(int id)
         {
-            int userId = 1; //TODO dodać wyciąganie z sesji
-
-            return shelvesService.GetUserSearchGames(userId);
+            return shelvesService.GetUserSearchGames(id);
         }
 
-        [HttpGet("api/users/games")]
-        public IEnumerable<UserGameView> GetUserGames()
+        [HttpGet("api/users/games/{id}")]
+        public IEnumerable<UserGameView> GetUserGames(int id)
         {
-            int userId = 1; //TODO dodać wyciąganie z sesji
-
-            return shelvesService.GetUserGames(userId);
+            return shelvesService.GetUserGames(id);
         }
 
         [HttpPost("api/users/games")]
         public IActionResult AddUserGame([FromBody] UserGameDto userGameDto)
         {
-           // if (!ModelState.IsValid)
-            //    return BadRequest();
-
             int userId = 1; //TODO dodać wyciąganie z sesji
 
             var result = shelvesService.AddUserGame(userGameDto, userId);
@@ -71,9 +64,6 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/searches")]
         public IActionResult AddUserSearchGame([FromBody] UserSearchGameDto userGameDto)
         {
-          //  if (!ModelState.IsValid)
-            //    return BadRequest();
-
             int userId = 1; //TODO dodać wyciąganie z sesji
 
             var result = shelvesService.AddUserSearchGame(userGameDto, userId);
@@ -83,9 +73,6 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/games")]
         public IActionResult AddGame([FromBody] GameDto gameDto)
         {
-          //  if (!ModelState.IsValid)
-             //   return BadRequest();
-
             var result = shelvesService.AddGame(gameDto);
             return result ? (IActionResult)Ok() : BadRequest();
         }
@@ -93,9 +80,6 @@ namespace ExchangeService.Controllers.Api
         [HttpPut("api/games")]
         public IActionResult UpdateGame([FromBody] GameDto gameDto)
         {
-           // if (!ModelState.IsValid)
-            //    return BadRequest();
-
             var result = shelvesService.UpdateGame(gameDto);
             return result ? (IActionResult)Ok() : BadRequest();
         }
@@ -103,9 +87,6 @@ namespace ExchangeService.Controllers.Api
         [HttpPut("api/users/games")]
         public IActionResult UpdateUserGame([FromBody] UserGameDto userGameDto)
         {
-           // if (!ModelState.IsValid)
-             //   return BadRequest();
-
             int userId = 1; //TODO dodać wyciąganie z sesji
 
             var result = shelvesService.UpdateUserGame(userGameDto, userId);
