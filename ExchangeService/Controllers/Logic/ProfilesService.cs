@@ -7,13 +7,13 @@ using System.Linq;
 
 namespace ExchangeService.Controllers.Logic
 {
-    public class EvaluatingService
+    public class ProfilesService
     {
         private readonly IUserProfiles userProfiles;
         private readonly IUnitOfWork unitOfWork;
         private readonly IGames games;
 
-        public EvaluatingService(IUserProfiles userProfiles, IUnitOfWork unitOfWork, IGames games)
+        public ProfilesService(IUserProfiles userProfiles, IUnitOfWork unitOfWork, IGames games)
         {
             this.userProfiles = userProfiles;
             this.unitOfWork = unitOfWork;

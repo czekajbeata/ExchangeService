@@ -12,9 +12,9 @@ namespace ExchangeService.Controllers.Api
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly EvaluatingService evaluatingService;
+        private readonly ProfilesService evaluatingService;
 
-        public UsersController(EvaluatingService evaluatingService)
+        public UsersController(ProfilesService evaluatingService)
         {
             this.evaluatingService = evaluatingService;
         }

@@ -2,23 +2,23 @@
 @page "/myprofile"
 @inject HttpClient Http
 
-<h1>User profile</h1>
+<h1>My profile</h1>
 
-@if (profileOwner == null)
+@if (myProfile == null)
 {
 <p><em>Loading...</em></p>
 }
 else
 {
-<img src="@profileOwner.ImageUrl" width="150" height="150">
-<h5>@profileOwner.Name @profileOwner.Surname</h5>
-<h6>! @profileOwner.PickUpLocation</h6>
+<img src="@myProfile.ImageUrl" width="150" height="150">
+<h5>@myProfile.Name @myProfile.Surname</h5>
+<h6>! @myProfile.PickUpLocation</h6>
 
-@if (profileOwner.Pickup && !profileOwner.Delivery)
+@if (myProfile.Pickup && !myProfile.Delivery)
     {
 <p>Pickup only</p>
     }
-    else if (profileOwner.Delivery && !profileOwner.Pickup)
+    else if (myProfile.Delivery && !myProfile.Pickup)
     {
 <p>Delivery only</p>
     }
@@ -29,8 +29,8 @@ else
 <button onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
 @if (contactDetailsVisible)
     {
-<p>Ikonkatelefonu: @profileOwner.PhoneNumber</p>
-<p>Ikonkamaila: @profileOwner.ContactEmail</p>
+<p>Ikonkatelefonu:</p>  <input bind="@myProfile.PhoneNumber" />
+<p>Ikonkamaila:</p>  <input bind="@myProfile.ContactEmail" />
     }
 
 <h5>Games for exchange</h5>
@@ -55,7 +55,7 @@ else
 
 
 @functions {
-    UserDto profileOwner;
+    UserDto myProfile;
     CommentDto[] comments = new CommentDto[] { };
     List<UserDto> comentators = new List<UserDto>() { };
     double userMark;
@@ -64,11 +64,11 @@ else
 
     protected override async Task OnInitAsync()
     {
-        profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
+        myProfile = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
 
-        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + profileOwner.UserId);
+        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + myProfile.UserId);
 
-        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwner.UserId);
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
         if (result.Count() > 0) await FillComents(result.ToArray());
 
     }
