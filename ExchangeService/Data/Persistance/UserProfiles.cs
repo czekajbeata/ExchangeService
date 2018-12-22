@@ -83,5 +83,10 @@ namespace ExchangeService.Data.Persistance
         {
             return context.UserProfiles.SingleOrDefault(u => u.UserId == userId);
         }
+
+        public int GetNormalizedId(string innerId)
+        {
+            return context.UserProfiles.SingleOrDefault(u => u.InnerUserId == innerId).UserId;
+        }
     }
 }

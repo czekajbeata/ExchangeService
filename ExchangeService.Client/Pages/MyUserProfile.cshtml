@@ -1,0 +1,99 @@
+﻿@using ExchangeService.Shared.Resources;
+@page "/myprofile"
+@inject HttpClient Http
+
+<h1>User profile</h1>
+
+@if (profileOwner == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<img src="@profileOwner.ImageUrl" width="150" height="150">
+<h5>@profileOwner.NameAndSurname</h5>
+<h6>! @profileOwner.PickUpLocation</h6>
+
+@if (profileOwner.Pickup && !profileOwner.Delivery)
+    {
+<p>Pickup only</p>
+    }
+    else if (profileOwner.Delivery && !profileOwner.Pickup)
+    {
+<p>Delivery only</p>
+    }
+<p>Exchanges made: TODO</p>
+<p>Reviews: @comments.Count()</p>
+<p>STARS @userMark</p>
+
+<button onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
+@if (contactDetailsVisible)
+    {
+<p>Ikonkatelefonu: @profileOwner.PhoneNumber</p>
+<p>Ikonkamaila: @profileOwner.ContactEmail</p>
+    }
+
+<h5>Games for exchange</h5>
+
+<h5>Game searches</h5>
+
+<table>
+    <thead>Rewiews</thead>
+
+    @for(int i = 0; i < comments.Count(); i++)
+        {
+    <tr>
+        <td>@comentators[i].NameAndSurname</td>
+        <td><img src="@comentators[i].ImageUrl" width="50" height="50" /></td>
+        <td>@comments[i].CommentDate</td>
+        <td>@comments[i].Mark</td>
+        <td>@comments[i].Text</td>
+    </tr>
+        }
+</table>
+}
+
+
+@functions {
+    UserDto profileOwner;
+    CommentDto[] comments = new CommentDto[] { };
+    List<UserDto> comentators = new List<UserDto>() { };
+    double userMark;
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
+
+    protected override async Task OnInitAsync()
+    {
+        profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
+
+        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + profileOwnersId);
+
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
+        if (result.Count() > 0) await FillComents(result.ToArray());
+
+    }
+
+    private async Task FillComents(CommentDto[] dbComments)
+    {
+        comments = dbComments;
+        foreach(var comment in comments)
+        {
+            comentators.Add(await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + comment.LeavingUserId));
+        }
+    }
+
+    private void ToogleContactDetails()
+    {
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
+    }
+
+}

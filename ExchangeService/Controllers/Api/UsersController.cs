@@ -62,5 +62,13 @@ namespace ExchangeService.Controllers.Api
         {
             return evaluatingService.GetUserProfile(id);
         }
+
+        [HttpGet("api/users/myprofile")]
+        public UserDto GetMyUserProfile()
+        {
+            string myInnerId = "1"; //TODO dodać wyciąganie z sesji
+            var normalizedId = evaluatingService.ToNormalizedId(myInnerId);
+            return evaluatingService.GetUserProfile(normalizedId);
+        }
     }
 }

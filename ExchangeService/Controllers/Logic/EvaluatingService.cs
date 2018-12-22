@@ -116,6 +116,11 @@ namespace ExchangeService.Controllers.Logic
             return userMatches;
         }
 
+        public int ToNormalizedId(string innerId)
+        {
+            return userProfiles.GetNormalizedId(innerId);
+        }
+
         public bool AddUserProfile(UserDto user, string innerUserId)
         {
             User newUser = new User()

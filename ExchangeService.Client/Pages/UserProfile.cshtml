@@ -68,7 +68,7 @@ else
     string contactDetailsButton = "Show contact details";
 
     protected override async Task OnInitAsync()
-    {
+    {        
         //should have profile owners id here
         int profileOwnersId = 2;
         profileOwner = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + profileOwnersId);
@@ -78,9 +78,9 @@ else
         var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
         if (result.Count() > 0) await FillComents(result.ToArray());
 
-        int currentUserId = 1; // api call?
-        if (currentUserId == profileOwner.UserId)
-            isMyProfile = true;
+        //int currentUserId = 1; // api call?
+        //if (currentUserId == profileOwner.UserId)
+        //    isMyProfile = true;
     }
 
     private async Task FillComents(CommentDto[] dbComments)
