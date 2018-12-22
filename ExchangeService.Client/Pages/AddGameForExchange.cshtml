@@ -93,7 +93,6 @@ bool gameWasSearched = false;
 bool gameDoesntExist = true;
 GameDto gameDetails = null;
 UserGameDto newUserGame = null;
-bool gameSaved = false;
 bool success = false;
 string gameID;
 
@@ -136,7 +135,6 @@ private void AddNewGame()
     gameDetails = new GameDto();
     SelectedId = string.Empty;
     GameTitle = string.Empty;
-    gameSaved = false;
     gameDoesntExist = true;
     newUserGame = null;
 }
@@ -146,7 +144,6 @@ private async Task GetGameDetails()
     gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
     gameDoesntExist = false;
     GameTitle = string.Empty;
-    gameSaved = false;
     newUserGame = null;
     gameID = gameDetails.GameId.ToString();
     StateHasChanged();
@@ -167,7 +164,6 @@ private async Task SaveGameDetails()
 
 private async Task AddGameToDB()
 {
-    gameSaved = true;
     await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
     var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
     gameID = games[0].Id.ToString();
@@ -176,7 +172,6 @@ private async Task AddGameToDB()
 
 private async Task UpdateGameInDB()
 {
-    gameSaved = true;
     await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
 }
 
