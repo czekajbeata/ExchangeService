@@ -53,8 +53,9 @@ namespace ExchangeService.Controllers.Api
         [HttpGet("api/users/matches")]
         public IEnumerable<MatchView> GetMatches()
         {
-            int userId = 1; //TODO dodać wyciąganie z sesji
-            return evaluatingService.GetMatches(userId);
+            string myInnerId = "1"; //TODO dodać wyciąganie z sesji
+            var normalizedId = evaluatingService.ToNormalizedId(myInnerId);
+            return evaluatingService.GetMatches(normalizedId);
         }
 
         [HttpGet("api/users/{id?}")]
@@ -69,6 +70,14 @@ namespace ExchangeService.Controllers.Api
             string myInnerId = "1"; //TODO dodać wyciąganie z sesji
             var normalizedId = evaluatingService.ToNormalizedId(myInnerId);
             return evaluatingService.GetUserProfile(normalizedId);
+        }
+
+        [HttpGet("api/users/myexchanges")]
+        public IEnumerable<ExchangeDto> GetMyExchanges()
+        {
+            string myInnerId = "1"; //TODO dodać wyciąganie z sesji
+            var normalizedId = evaluatingService.ToNormalizedId(myInnerId);
+            return evaluatingService.GetUserExchanges(normalizedId);
         }
     }
 }

@@ -88,5 +88,10 @@ namespace ExchangeService.Data.Persistance
         {
             return context.UserProfiles.SingleOrDefault(u => u.InnerUserId == innerId).UserId;
         }
+
+        public IEnumerable<Exchange> GetUserExchanges(int userId)
+        {
+            return context.Exchanges.Where(e => e.OfferingUserId  == userId || e.OtherUserId == userId);
+        }
     }
 }

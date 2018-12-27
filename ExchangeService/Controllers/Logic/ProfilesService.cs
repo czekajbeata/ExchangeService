@@ -116,6 +116,37 @@ namespace ExchangeService.Controllers.Logic
             return userMatches;
         }
 
+        public IEnumerable<ExchangeDto> GetUserExchanges(int userId)
+        {
+            var myExchanges = userProfiles.GetUserExchanges(userId);
+            List<ExchangeDto> exchanges = new List<ExchangeDto>();
+            foreach (var exchange in myExchanges)
+            {
+                var newExchangeDto = new ExchangeDto()
+                {
+                    ExchangeId = exchange.ExchangeId,
+                    Pickup = exchange.Pickup,
+                    PickUpLocation = exchange.PickUpLocation,
+                    Delivery = exchange.Delivery,
+                    State = exchange.State
+                };
+                if (exchange.OfferingUserId == userId)
+                {
+                    newExchangeDto.OtherUserId = exchange.OtherUserId;
+                    newExchangeDto.MyGamesIds = exchange.FirstUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+                    newExchangeDto.OtherUserGamesIds = exchange.OtherUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+                }
+                else
+                {
+                    newExchangeDto.OtherUserId = exchange.OfferingUserId;
+                    newExchangeDto.MyGamesIds = exchange.OtherUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+                    newExchangeDto.OtherUserGamesIds = exchange.FirstUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+                }
+                exchanges.Add(newExchangeDto);
+            }
+            return exchanges;
+        }
+
         public int ToNormalizedId(string innerId)
         {
             return userProfiles.GetNormalizedId(innerId);

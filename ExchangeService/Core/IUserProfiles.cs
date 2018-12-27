@@ -18,5 +18,6 @@ namespace ExchangeService.Core
         User AddUserProfile(User newUser);
         User GetUserProfile(int userId);
         int GetNormalizedId(string innerId);
+        IEnumerable<Exchange> GetUserExchanges(int userId);
     }
 }
