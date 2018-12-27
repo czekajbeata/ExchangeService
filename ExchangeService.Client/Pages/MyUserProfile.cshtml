@@ -37,7 +37,7 @@ else
         <thead>
             <tr>
                 <th>Games for exchange</th>
-                <th><button>Add game for exchange</button></th>
+                <th><a href="/addexchangegame">Add game for exchange</a></th>
             </tr>
         </thead>
         @for (int i = 0; i < userGames.Count(); i++)
@@ -53,7 +53,7 @@ else
         <thead>
             <tr>
                 <th>Game searches</th>
-                <th><button>Add game search</button></th>
+                <th><a href="/addsearchgame">Add game search</a></th>
             </tr>
         </thead>
 
@@ -89,7 +89,7 @@ else
     }
     else
     {
-        <p>This user has no reviews</p>
+        <p>You have no reviews</p>
     }
 
 }
