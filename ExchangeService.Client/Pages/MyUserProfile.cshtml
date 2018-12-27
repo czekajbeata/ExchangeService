@@ -6,111 +6,138 @@
 
 @if (myProfile == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
-<img src="@myProfile.ImageUrl" width="150" height="150">
-<h5>@myProfile.Name @myProfile.Surname</h5>
-<h6>! @myProfile.PickUpLocation</h6>
+    <img src="@myProfile.ImageUrl" width="150" height="150">
+    <h5>@myProfile.Name @myProfile.Surname</h5>
+    <h6>! @myProfile.PickUpLocation</h6>
 
-@if (myProfile.Pickup && !myProfile.Delivery)
+    @if (myProfile.Pickup && !myProfile.Delivery)
     {
-<p>Pickup only</p>
+        <p>Pickup only</p>
     }
     else if (myProfile.Delivery && !myProfile.Pickup)
     {
-<p>Delivery only</p>
+        <p>Delivery only</p>
     }
-<p>Exchanges made: TODO</p>
-<p>Reviews: @comments.Count()</p>
-<p>STARS @userMark</p>
+    <p>Exchanges made: TODO</p>
+    <p>Reviews: @comments.Count()</p>
+    <p>STARS @userMark</p>
 
-<button onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
-@if (contactDetailsVisible)
+    <button onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
+    @if (contactDetailsVisible)
     {
-<p>Ikonkatelefonu:</p>  <input bind="@myProfile.PhoneNumber" />
-<p>Ikonkamaila:</p>  <input bind="@myProfile.ContactEmail" />
+        <p>Ikonkatelefonu:</p> <input bind="@myProfile.PhoneNumber" />
+        <p>Ikonkamaila:</p> <input bind="@myProfile.ContactEmail" />
     }
 
-<table>
-    <thead>Games for exchange</thead>
-
-    @for(int i = 0; i < userGames.Count(); i++)
+    <table>
+        <thead>
+            <tr>
+                <th>Games for exchange</th>
+                <th><button>Add game for exchange</button></th>
+            </tr>
+        </thead>
+        @for (int i = 0; i < userGames.Count(); i++)
         {
-    <tr>
-        <td><img src="@userGames[i].ImageUrl" width="100" height="100" /></td>
-        <td>@userGames[i].Title</td>
-    </tr>
+            <tr>
+                <td><img src="@userGames[i].ImageUrl" width="100" height="100" /></td>
+                <td>@userGames[i].Title</td>
+            </tr>
         }
-</table>
+    </table>
 
-<h5>Game searches</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>Game searches</th>
+                <th><button>Add game search</button></th>
+            </tr>
+        </thead>
 
-<table>
-    <thead>Rewiews</thead>
-
-    @for(int i = 0; i < comments.Count(); i++)
+        @for (int i = 0; i < userSearchGames.Count(); i++)
         {
-    <tr>
-        <td>@comentators[i].Name @comentators[i].Surname</td>
-        <td><img src="@comentators[i].ImageUrl" width="50" height="50" /></td>
-        <td>@comments[i].CommentDate</td>
-        <td>@comments[i].Mark</td>
-        <td>@comments[i].Text</td>
-    </tr>
+            <tr>
+                <td><img src="@userSearchGames[i].ImageUrl" width="100" height="100" /></td>
+                <td>@userSearchGames[i].Title</td>
+            </tr>
         }
-</table>
+    </table>
+
+    @if (comments.Count() > 0)
+    {
+        <table>
+            <thead>Rewiews</thead>
+
+            @for (int i = 0; i < comments.Count(); i++)
+            {
+                <tr>
+                    <td>@comentators[i].Name @comentators[i].Surname</td>
+                    <td><img src="@comentators[i].ImageUrl" width="50" height="50" /></td>
+                    <td>@comments[i].CommentDate</td>
+                    <td>@comments[i].Mark</td>
+                    <td>@comments[i].Text</td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>This user has no reviews</p>
+    }
+
 }
 
 
 @functions {
-    UserDto myProfile;
-    CommentDto[] comments = new CommentDto[] { };
-    List<UserDto> comentators = new List<UserDto>() { };
-UserGameView[] userGames = new UserGameView[] {};
-UserSearchGameView[] userSearchGames = new UserSearchGameView[] {};
-    double userMark;
-    bool contactDetailsVisible = false;
-    string contactDetailsButton = "Show contact details";
+UserDto myProfile;
+CommentDto[] comments = new CommentDto[] { };
+List<UserDto> comentators = new List<UserDto>() { };
+UserGameView[] userGames = new UserGameView[] { };
+UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
+double userMark;
+bool contactDetailsVisible = false;
+string contactDetailsButton = "Show contact details";
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    myProfile = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
+
+    userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + myProfile.UserId);
+
+    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
+    if (result.Count() > 0) await FillComents(result.ToArray());
+
+
+    var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+    userGames = toExchange.ToArray();
+    var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
+    userSearchGames = forSearch.ToArray();
+}
+
+private async Task FillComents(CommentDto[] dbComments)
+{
+    comments = dbComments;
+    foreach (var comment in comments)
     {
-        myProfile = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
-
-        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + myProfile.UserId);
-
-        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
-        if (result.Count() > 0) await FillComents(result.ToArray());
-
-
-var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-userGames = toExchange.ToArray();
-        var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
-userSearchGames = forSearch.ToArray();
+        comentators.Add(await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + comment.LeavingUserId));
     }
+}
 
-    private async Task FillComents(CommentDto[] dbComments)
+private void ToogleContactDetails()
+{
+    if (contactDetailsVisible)
     {
-        comments = dbComments;
-        foreach(var comment in comments)
-        {
-            comentators.Add(await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + comment.LeavingUserId));
-        }
+        contactDetailsVisible = false;
+        contactDetailsButton = "Show contact details";
     }
-
-    private void ToogleContactDetails()
+    else
     {
-        if (contactDetailsVisible)
-        {
-            contactDetailsVisible = false;
-            contactDetailsButton = "Show contact details";
-        }
-        else
-        {
-            contactDetailsVisible = true;
-            contactDetailsButton = "Hide contact details";
-        }
+        contactDetailsVisible = true;
+        contactDetailsButton = "Hide contact details";
     }
+}
 
 }
