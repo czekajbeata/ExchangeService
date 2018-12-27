@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ExchangeService.Shared.Resources
 {
-    public class UserDto
+    public class UserView
     {
         public int UserId { get; set; }        
         public string Name { get; set; }
@@ -13,6 +13,9 @@ namespace ExchangeService.Shared.Resources
         public string PickUpLocation { get; set; }
         public bool Delivery { get; set; }
         public string ImageUrl { get; set; }
+        public double AvgMark { get; set; }
+        public int ReviewsCount { get; set; }
+        public int ExchangesCount { get; set; }
         public string ContactEmail { get; set; }
         public string PhoneNumber { get; set; }
     }

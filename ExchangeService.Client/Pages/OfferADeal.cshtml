@@ -21,21 +21,13 @@ else
     [Parameter]
     string UserId { get; set; }
 
-    UserDto myProfile;
-    UserDto otherUser;
-
-    double myMark;
-    double otherMark;
+    UserView myProfile;
+    UserView otherUser;
 
     protected override async Task OnInitAsync()
     {
-        myProfile = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
+        myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
         int otherUserId = Int32.Parse(UserId);
-        otherUser = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + otherUserId);
-
-        myMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + myProfile.UserId);
-        if (!(myMark > 0)) myMark = 0;
-        otherMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + otherUser.UserId);
-        if (!(otherMark > 0)) otherMark = 0;
+        otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
     }
 }

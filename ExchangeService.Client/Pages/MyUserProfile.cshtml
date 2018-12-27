@@ -22,9 +22,9 @@ else
     {
         <p>Delivery only</p>
     }
-    <p>Exchanges made: TODO</p>
-    <p>Reviews: @comments.Count()</p>
-    <p>STARS @userMark</p>
+    <p>Exchanges made: @myProfile.ExchangesCount</p>
+    <p>Reviews: @myProfile.ReviewsCount</p>
+    <p>STARS @myProfile.AvgMark</p>
 
     <button onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
     @if (contactDetailsVisible)
@@ -96,21 +96,17 @@ else
 
 
 @functions {
-    UserDto myProfile;
+    UserView myProfile;
     CommentDto[] comments = new CommentDto[] { };
-    List<UserDto> comentators = new List<UserDto>() { };
+    List<UserView> comentators = new List<UserView>() { };
     UserGameView[] userGames = new UserGameView[] { };
     UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
-    double userMark;
     bool contactDetailsVisible = false;
     string contactDetailsButton = "Show contact details";
 
     protected override async Task OnInitAsync()
     {
-        myProfile = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
-
-        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + myProfile.UserId);
-        if (!(userMark > 0)) userMark = 0;
+        myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
 
         var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
         if (result.Count() > 0) await FillComents(result.ToArray());
@@ -126,7 +122,7 @@ else
         comments = dbComments;
         foreach (var comment in comments)
         {
-            comentators.Add(await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + comment.LeavingUserId));
+            comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
         }
     }
 

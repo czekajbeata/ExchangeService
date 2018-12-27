@@ -31,7 +31,7 @@ namespace ExchangeService.Controllers.Api
         }
 
         [HttpPost("api/users/profile")]
-        public IActionResult AddUserProfile([FromBody] UserDto user)
+        public IActionResult AddUserProfile([FromBody] UserView user)
         {
             string innerUserID = "1"; //only valid thing to receive from session
             var result = evaluatingService.AddUserProfile(user, innerUserID);
@@ -44,12 +44,6 @@ namespace ExchangeService.Controllers.Api
             return evaluatingService.GetComments(id);
         }
 
-        [HttpGet("api/users/marks/{id?}")]
-        public double GetAvgMark(int id)
-        {
-            return evaluatingService.GetAvgMark(id);
-        }
-
         [HttpGet("api/users/matches")]
         public IEnumerable<MatchView> GetMatches()
         {
@@ -59,13 +53,13 @@ namespace ExchangeService.Controllers.Api
         }
 
         [HttpGet("api/users/{id?}")]
-        public UserDto GetUserProfile(int id)
+        public UserView GetUserProfile(int id)
         {
             return evaluatingService.GetUserProfile(id);
         }
 
         [HttpGet("api/users/myprofile")]
-        public UserDto GetMyUserProfile()
+        public UserView GetMyUserProfile()
         {
             string myInnerId = "1"; //TODO dodać wyciąganie z sesji
             var normalizedId = evaluatingService.ToNormalizedId(myInnerId);

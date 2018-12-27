@@ -50,7 +50,7 @@ else
 
 @functions {
     ExchangeDto[] myExchanges;
-    UserDto[] otherUsers;
+    UserView[] otherUsers;
     string[] otherUsersGames;
     string[] myGames;
 
@@ -66,10 +66,10 @@ else
     private async Task FillOtherUsers()
     {
         int count = myExchanges.Count();
-        otherUsers = new UserDto[count];
+        otherUsers = new UserView[count];
         for(int i = 0; i < count; i++)
         {
-            otherUsers[i] = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + myExchanges[i].OtherUserId);
+            otherUsers[i] = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + myExchanges[i].OtherUserId);
         }
     }
 

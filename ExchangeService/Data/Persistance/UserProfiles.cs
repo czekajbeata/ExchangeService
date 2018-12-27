@@ -32,7 +32,7 @@ namespace ExchangeService.Data.Persistance
             return result.Entity;
         }
 
-        public IEnumerable<Comment> GetAllComments(int userId)
+        public IEnumerable<Comment> GetComments(int userId)
         {
             return context.Comments.Where(c => c.ReceivingUserId == userId);
         }
@@ -45,17 +45,6 @@ namespace ExchangeService.Data.Persistance
         public IEnumerable<UserGame> GetUserGames(int userId)
         {
             return context.UserGames.Where(g => g.UserId == userId);
-        }
-
-        public double GetAvgMark(int userId)
-        {
-            var marks = context.Comments.Where(c => c.ReceivingUserId == userId).Select(o => o.Mark).ToArray();
-            double sum = 0;
-            foreach(var mark in marks)
-            {
-                sum += mark;
-            }
-            return sum / marks.Count();
         }
 
         public IEnumerable<UserSearchGame> GetUserSearchGames(int userId)

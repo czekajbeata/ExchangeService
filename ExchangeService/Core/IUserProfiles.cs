@@ -11,8 +11,7 @@ namespace ExchangeService.Core
         UserSearchGame AddSearchGame(UserSearchGame game);
         IEnumerable<UserSearchGame> GetUserSearchGames(int userId);
         Comment AddComment(Comment comment);
-        IEnumerable<Comment> GetAllComments(int userId);
-        double GetAvgMark(int userId);
+        IEnumerable<Comment> GetComments(int userId);
         IEnumerable<UserGame> GetUserGamesByGame(int gameId);
         IEnumerable<UserSearchGame> GetUserSearchesByGame(int gameId);
         User AddUserProfile(User newUser);

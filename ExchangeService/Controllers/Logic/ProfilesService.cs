@@ -37,7 +37,7 @@ namespace ExchangeService.Controllers.Logic
 
         public IEnumerable<CommentDto> GetComments(int userId)
         {
-            var userComments = userProfiles.GetAllComments(userId);
+            var userComments = userProfiles.GetComments(userId);
             List<CommentDto> commentDtos = new List<CommentDto>();
             foreach (var comment in userComments)
             {
@@ -50,11 +50,6 @@ namespace ExchangeService.Controllers.Logic
                 });
             }
             return commentDtos;
-        }
-
-        public double GetAvgMark(int userId)
-        {
-            return userProfiles.GetAvgMark(userId);
         }
 
         public IEnumerable<MatchView> GetMatches(int userId)
@@ -152,7 +147,7 @@ namespace ExchangeService.Controllers.Logic
             return userProfiles.GetNormalizedId(innerId);
         }
 
-        public bool AddUserProfile(UserDto user, string innerUserId)
+        public bool AddUserProfile(UserView user, string innerUserId)
         {
             User newUser = new User()
             {
@@ -172,10 +167,14 @@ namespace ExchangeService.Controllers.Logic
             return newUser.UserId != 0;
         }
 
-        public UserDto GetUserProfile(int userId)
+        public UserView GetUserProfile(int userId)
         {
             var user = userProfiles.GetUserProfile(userId);
-            return new UserDto()
+            var exchanges = userProfiles.GetUserExchanges(userId);
+            var comments = userProfiles.GetComments(userId);
+            var avgMark = comments.Select(c => c.Mark).Sum() / comments.Count();
+            if (!(avgMark > 0)) avgMark = 0;
+            return new UserView()
             {
                 UserId = user.UserId,
                 Delivery = user.Delivery,
@@ -185,7 +184,10 @@ namespace ExchangeService.Controllers.Logic
                 Surname = user.Surname,
                 ImageUrl = user.ImageUrl,
                 PhoneNumber = user.PhoneNumber,
-                ContactEmail = user.ContactEmail
+                ContactEmail = user.ContactEmail,
+                AvgMark = avgMark,
+                ExchangesCount = exchanges.Count(),
+                ReviewsCount = comments.Count()
             };
         }
     }
