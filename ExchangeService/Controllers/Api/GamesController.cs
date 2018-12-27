@@ -35,7 +35,7 @@ namespace ExchangeService.Controllers.Api
             var game = shelvesService.GetGameDetails(id);
 
             if (game != null)
-                return Ok(game);
+                return Ok(game);          
 
             return NotFound();
         }

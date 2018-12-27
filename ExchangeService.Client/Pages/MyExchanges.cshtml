@@ -2,48 +2,114 @@
 @page "/myexchanges"
 @inject HttpClient Http
 
-<h1>My exchanges</h1>
-
 @if (myExchanges == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
-@if (comments.Count() > 0)
+    @if (myExchanges.Count() > 0)
     {
-<table>
-    <thead>
-        <tr>
-            <th>Rewiews</th>
-        </tr>
-    </thead>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>You're getting</th>
+                    <th>You're giving</th>
+                    <th>Shippment</th>
+                    <th>Exchange state</th>
+                </tr>
+            </thead>
 
-    @for (int i = 0; i < comments.Count(); i++)
+            @for (int i = 0; i < myExchanges.Count(); i++)
             {
-    <tr>
-        <td>@comments[i].CommentDate</td>
-        <td>@comments[i].Mark</td>
-        <td>@comments[i].Text</td>
-    </tr>
+            <tr>
+                <td>@otherUsers[i].Name @otherUsers[i].Surname</td>
+                <td>@otherUsersGames[i]</td>
+                <td>@myGames[i]</td>
+
+                @if(myExchanges[i].Pickup)
+                {
+                    <td>Pickup(myExchanges[i].PickUpLocation)</td>
+                }
+                else
+                {
+                    <td>Delivery</td>
+                }
+                <td>@myExchanges[i].State</td>
+            </tr>
             }
-</table>
+        </table>
     }
     else
     {
-<p>You have no reviews</p>
+        <p>You have no exchanges</p>
     }
-
 }
 
 
 @functions {
-    ExchangeDto myExchanges;
-    CommentDto[] comments = new CommentDto[] { };
-
+    ExchangeDto[] myExchanges;
+    UserDto[] otherUsers;
+    string[] otherUsersGames;
+    string[] myGames;
 
     protected override async Task OnInitAsync()
     {
+        var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeDto>>("http://localhost:5000/api/users/myexchanges");
+        myExchanges = exchanges.ToArray();
+        await FillOtherUsers();
+        await FillOtherUsersGames();
+        await FillMyGames();
+    }
 
+    private async Task FillOtherUsers()
+    {
+        int count = myExchanges.Count();
+        otherUsers = new UserDto[count];
+        for(int i = 0; i < count; i++)
+        {
+            otherUsers[i] = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + myExchanges[i].OtherUserId);
+        }
+    }
+
+    private async Task FillOtherUsersGames()
+    {
+        int count = myExchanges.Count();
+        otherUsersGames = new string[count];
+        for(int i = 0; i < count; i++)
+        {
+            var gameId = myExchanges[i].OtherUserGamesIds[0];
+            var gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
+            otherUsersGames[i] = gameDto.Title;
+
+            for(int j = 1; j < myExchanges[i].OtherUserGamesIds.Count(); j++)
+            {
+                gameId = myExchanges[i].OtherUserGamesIds[j];
+                gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
+                otherUsersGames[i] += ", ";
+                otherUsersGames[i] += gameDto.Title;
+            }
+        }
+    }
+
+    private async Task FillMyGames()
+    {
+        int count = myExchanges.Count();
+        myGames = new string[count];
+        for(int i = 0; i < count; i++)
+        {
+            var gameId = myExchanges[i].MyGamesIds[0];
+            var gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
+            myGames[i] = gameDto.Title;
+
+            for(int j = 1; j < myExchanges[i].MyGamesIds.Count(); j++)
+            {
+                gameId = myExchanges[i].MyGamesIds[j];
+                gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
+                myGames[i] += ", ";
+                myGames[i] += gameDto.Title;
+            }
+        }
     }
 }
