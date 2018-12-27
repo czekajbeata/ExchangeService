@@ -10,7 +10,59 @@
 }
 else
 {
-
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <img src="@myProfile.ImageUrl" width="150" height="150">
+                <h5>@myProfile.Name @myProfile.Surname</h5>
+                <h6>! @myProfile.PickUpLocation</h6>
+                @if (myProfile.Pickup && !myProfile.Delivery)
+                {
+                    <p>Pickup only</p>
+                }
+                else if (myProfile.Delivery && !myProfile.Pickup)
+                {
+                    <p>Delivery only</p>
+                }
+                <p>Exchanges made: @myProfile.ExchangesCount</p>
+                <p>Reviews: @myProfile.ReviewsCount</p>
+                <p>STARS @myProfile.AvgMark</p>
+            </td>
+            <td>
+                @foreach(var game in myGames)
+                {
+                    <input type="checkbox" name="game.Title" value="game.GameId">@game.Title <br />
+                }
+            </td>
+            <td>
+               |
+            </td>
+            <td>
+                @foreach(var game in otherGames)
+                {
+                <input type="checkbox" name="game.Title" value="game.GameId">@game.Title  <br />
+                }
+            </td>
+            <td>
+                <img src="@otherUser.ImageUrl" width="150" height="150">
+                <h5>@otherUser.Name @otherUser.Surname</h5>
+                <h6>! @otherUser.PickUpLocation</h6>
+                @if (otherUser.Pickup && !otherUser.Delivery)
+                {
+                <p>Pickup only</p>
+                }
+                else if (otherUser.Delivery && !otherUser.Pickup)
+                {
+                <p>Delivery only</p>
+                }
+                <p>Exchanges made: @otherUser.ExchangesCount</p>
+                <p>Reviews: @otherUser.ReviewsCount</p>
+                <p>STARS @otherUser.AvgMark</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
 }
 
 
@@ -23,11 +75,19 @@ else
 
     UserView myProfile;
     UserView otherUser;
+    UserGameView[] myGames;
+    UserGameView[] otherGames;
 
     protected override async Task OnInitAsync()
     {
         myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
         int otherUserId = Int32.Parse(UserId);
         otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
+
+        var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+        myGames = mine.ToArray();
+
+        var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
+        otherGames = other.ToArray();
     }
 }
