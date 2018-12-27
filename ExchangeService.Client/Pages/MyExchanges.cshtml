@@ -1,0 +1,49 @@
+﻿@using ExchangeService.Shared.Resources;
+@page "/myexchanges"
+@inject HttpClient Http
+
+<h1>My exchanges</h1>
+
+@if (myExchanges == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+@if (comments.Count() > 0)
+    {
+<table>
+    <thead>
+        <tr>
+            <th>Rewiews</th>
+        </tr>
+    </thead>
+
+    @for (int i = 0; i < comments.Count(); i++)
+            {
+    <tr>
+        <td>@comments[i].CommentDate</td>
+        <td>@comments[i].Mark</td>
+        <td>@comments[i].Text</td>
+    </tr>
+            }
+</table>
+    }
+    else
+    {
+<p>You have no reviews</p>
+    }
+
+}
+
+
+@functions {
+    ExchangeDto myExchanges;
+    CommentDto[] comments = new CommentDto[] { };
+
+
+    protected override async Task OnInitAsync()
+    {
+
+    }
+}

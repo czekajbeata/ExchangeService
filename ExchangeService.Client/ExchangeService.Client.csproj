@@ -18,4 +18,10 @@
     <ProjectReference Include="..\ExchangeService.Shared\ExchangeService.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Pages\MyExchanges.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>
