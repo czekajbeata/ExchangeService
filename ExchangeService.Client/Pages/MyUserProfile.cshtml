@@ -92,52 +92,53 @@ else
 
 
 @functions {
-UserDto myProfile;
-CommentDto[] comments = new CommentDto[] { };
-List<UserDto> comentators = new List<UserDto>() { };
-UserGameView[] userGames = new UserGameView[] { };
-UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
-double userMark;
-bool contactDetailsVisible = false;
-string contactDetailsButton = "Show contact details";
+    UserDto myProfile;
+    CommentDto[] comments = new CommentDto[] { };
+    List<UserDto> comentators = new List<UserDto>() { };
+    UserGameView[] userGames = new UserGameView[] { };
+    UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
+    double userMark;
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
 
-protected override async Task OnInitAsync()
-{
-    myProfile = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
-
-    userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + myProfile.UserId);
-
-    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
-    if (result.Count() > 0) await FillComents(result.ToArray());
-
-
-    var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-    userGames = toExchange.ToArray();
-    var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
-    userSearchGames = forSearch.ToArray();
-}
-
-private async Task FillComents(CommentDto[] dbComments)
-{
-    comments = dbComments;
-    foreach (var comment in comments)
+    protected override async Task OnInitAsync()
     {
-        comentators.Add(await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + comment.LeavingUserId));
-    }
-}
+        myProfile = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
 
-private void ToogleContactDetails()
-{
-    if (contactDetailsVisible)
-    {
-        contactDetailsVisible = false;
-        contactDetailsButton = "Show contact details";
+        userMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + myProfile.UserId);
+        if (!(userMark > 0)) userMark = 0;
+
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
+        if (result.Count() > 0) await FillComents(result.ToArray());
+
+
+        var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+        userGames = toExchange.ToArray();
+        var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
+        userSearchGames = forSearch.ToArray();
     }
-    else
+
+    private async Task FillComents(CommentDto[] dbComments)
     {
-        contactDetailsVisible = true;
-        contactDetailsButton = "Hide contact details";
+        comments = dbComments;
+        foreach (var comment in comments)
+        {
+            comentators.Add(await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + comment.LeavingUserId));
+        }
     }
-}
+
+    private void ToogleContactDetails()
+    {
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
+    }
 
 }
