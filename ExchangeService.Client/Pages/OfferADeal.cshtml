@@ -1,0 +1,41 @@
+﻿@using ExchangeService.Shared.Resources;
+@page "/offerdeal/{UserId}"
+@inject HttpClient Http
+
+<h5>Offer an exchange</h5>
+
+@if (myProfile == null || otherUser == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+
+}
+
+
+
+
+
+@functions {
+    [Parameter]
+    string UserId { get; set; }
+
+    UserDto myProfile;
+    UserDto otherUser;
+
+    double myMark;
+    double otherMark;
+
+    protected override async Task OnInitAsync()
+    {
+        myProfile = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/myprofile");
+        int otherUserId = Int32.Parse(UserId);
+        otherUser = await Http.GetJsonAsync<UserDto>("http://localhost:5000/api/users/" + otherUserId);
+
+        myMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + myProfile.UserId);
+        if (!(myMark > 0)) myMark = 0;
+        otherMark = await Http.GetJsonAsync<double>("http://localhost:5000/api/users/marks/" + otherUser.UserId);
+        if (!(otherMark > 0)) otherMark = 0;
+    }
+}

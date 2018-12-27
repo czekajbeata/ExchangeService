@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Pages\OfferADeal.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\MyExchanges.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
