@@ -15,7 +15,7 @@ namespace ExchangeService.Shared.Resources
         public string GenreName { get; set; }
         public string PlayerCount { get; set; }
         public string MinAgeRequired { get; set; }
-        public State State { get; set; }
+        public GameState State { get; set; }
         public bool IsComplete { get; set; }
         public Shipment Shipment { get; set; }
     }

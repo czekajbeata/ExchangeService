@@ -9,7 +9,7 @@ namespace ExchangeService.Core.Entities
         public int GameId { get; set; }
         public Game Game { get; set; }
         public string UserGameDescription { get; set; }
-        public State State { get; set; }
+        public GameState State { get; set; }
         public bool IsComplete { get; set; }
         public Shipment Shipment { get; set; }
     }

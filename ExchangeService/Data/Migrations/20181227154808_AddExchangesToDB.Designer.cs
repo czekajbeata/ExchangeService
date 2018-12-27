@@ -4,14 +4,16 @@ using ExchangeService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ExchangeService.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181227154808_AddExchangesToDB")]
+    partial class AddExchangesToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,23 +50,9 @@ namespace ExchangeService.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("Delivery");
-
-                    b.Property<string>("FirstUsersGames")
-                        .IsRequired();
-
                     b.Property<int>("OfferingUserId");
 
                     b.Property<int>("OtherUserId");
-
-                    b.Property<string>("OtherUsersGames")
-                        .IsRequired();
-
-                    b.Property<string>("PickUpLocation");
-
-                    b.Property<bool>("Pickup");
-
-                    b.Property<int>("State");
 
                     b.HasKey("ExchangeId");
 

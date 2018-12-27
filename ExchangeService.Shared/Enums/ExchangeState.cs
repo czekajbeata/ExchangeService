@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 
 namespace ExchangeService.Shared.Enums
 {
-    public enum State
+    public enum ExchangeState
     {
-        Perfect,
-        VeryGood,
-        Good,
-        Decent,
-        Poor
+        Waiting,
+        InProgress,
+        Finalized,
+        Canceled
     }
 }
 
