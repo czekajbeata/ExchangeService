@@ -45,6 +45,7 @@ namespace ExchangeService
             services.AddTransient<DropDownService>();
             services.AddTransient<ShelvesService>();
             services.AddTransient<ProfilesService>();
+            services.AddTransient<UserDataService>();
             services.AddTransient<IGames, Games>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IUserProfiles, UserProfiles>();

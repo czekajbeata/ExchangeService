@@ -38,7 +38,24 @@ namespace ExchangeService.Controllers.Logic
 
         public bool AddExchange(ExchangeDto exchange, int normalizedId)
         {
-            throw new NotImplementedException();
+            string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
+            string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
+
+            Exchange newExchange = new Exchange()
+            {
+                OfferingUserId = normalizedId,
+                OtherUserId = exchange.OtherUserId,
+                OfferingUsersGames = offering,
+                OtherUsersGames = others,
+                Pickup = exchange.Shipment == Shipment.Pickup ? true : false,
+                Delivery = exchange.Shipment == Shipment.Delivery ? true : false,
+                State = exchange.State,
+                OfferingUserContactInfo = exchange.OfferingUserContactInfo,
+                OtherUserContactInfo = exchange.OtherUserContactInfo
+            };
+            userProfiles.AddExchange(newExchange);
+            unitOfWork.CompleteWork();
+            return newExchange.ExchangeId != 0;
         }
 
         public IEnumerable<CommentDto> GetComments(int userId)
@@ -134,14 +151,14 @@ namespace ExchangeService.Controllers.Logic
                 if (exchange.OfferingUserId == userId)
                 {
                     newExchangeDto.OtherUserId = exchange.OtherUserId;
-                    newExchangeDto.MyGamesIds = exchange.OfferingUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
-                    newExchangeDto.OtherUserGamesIds = exchange.OtherUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+                    newExchangeDto.MyGamesIds = exchange.OfferingUsersGames.Split(',').ToArray();
+                    newExchangeDto.OtherUserGamesIds = exchange.OtherUsersGames.Split(',').ToArray();
                 }
                 else
                 {
                     newExchangeDto.OtherUserId = exchange.OfferingUserId;
-                    newExchangeDto.MyGamesIds = exchange.OtherUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
-                    newExchangeDto.OtherUserGamesIds = exchange.OfferingUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+                    newExchangeDto.MyGamesIds = exchange.OtherUsersGames.Split(',').ToArray();
+                    newExchangeDto.OtherUserGamesIds = exchange.OfferingUsersGames.Split(',').ToArray();
                 }
                 exchanges.Add(newExchangeDto);
             }

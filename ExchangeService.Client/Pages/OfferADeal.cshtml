@@ -45,7 +45,7 @@ else
                     <td>
                         @for (int i = 0; i < otherGames.Count(); i++)
                         {
-                            <input type="checkbox" value="@areSelectedOtherGames[i]" onchange="@(() => areSelectedOtherGames[0] = !areSelectedOtherGames[0])" />@otherGames[i].Title <br />
+                            <input type="checkbox" value="@areSelectedOtherGames[i]" onchange="@(() => areSelectedOtherGames[1] = !areSelectedOtherGames[1])" />@otherGames[i].Title <br />
                         }
                     </td>
                     <td>
@@ -133,14 +133,14 @@ else
                                         Games you give away:
                                         @foreach (var gameId in exchange.MyGamesIds)
                                         {
-                                            <p>@myGames.SingleOrDefault(g => g.GameId == gameId).Title</p>
+                                            <p>@myGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
                                         }
                                     </td>
                                     <td>
                                         Games you get:
                                         @foreach (var gameId in exchange.OtherUserGamesIds)
                                         {
-                                            <p>@otherGames.SingleOrDefault(g => g.GameId == gameId).Title</p>
+                                            <p>@otherGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
                                         }
                                     </td>
                                 </tr>
@@ -185,7 +185,12 @@ else
         </table>
 
         <button onclick=@(() => MoveToPrevious())>Previous</button>
-        <button onclick=@(() => OfferAnExchange())>Offer an exchange</button>
+        <button onclick=@(async () => await OfferAnExchange())>Offer an exchange</button>
+    }
+
+    @if (visiblePageNumber == 5)
+    {
+        <h5>5. Exchange was registered</h5>
     }
 }
 
@@ -236,9 +241,15 @@ else
         visiblePageNumber--;
     }
 
-    private void OfferAnExchange()
+    private async Task OfferAnExchange()
     {
-        // TO DO
+        string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
+        string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
+
+        Console.WriteLine(offering);
+        Console.WriteLine(others);
+        await Http.PostJsonAsync("http://localhost:5000/api/users/exchanges", exchange);
+        MoveToNext();
     }
 
     private void ShowSummary()
@@ -250,16 +261,16 @@ else
 
     private void SetUpGames()
     {
-        var myGamesIndexes = new List<int>();
+        var myGamesIndexes = new List<string>();
         for (int i = 0; i < myGames.Count(); i++)
         {
-            if (areSelectedMyGames[i]) myGamesIndexes.Add(myGames[i].GameId);
+            if (areSelectedMyGames[i] == true) myGamesIndexes.Add(myGames[i].GameId.ToString());
         }
         exchange.MyGamesIds = myGamesIndexes.ToArray();
-        var otherGamesIndexes = new List<int>();
+        var otherGamesIndexes = new List<string>();
         for (int i = 0; i < otherGames.Count(); i++)
         {
-            if (areSelectedOtherGames[i]) otherGamesIndexes.Add(otherGames[i].GameId);
+            if (areSelectedOtherGames[i] == true) otherGamesIndexes.Add(otherGames[i].GameId.ToString());
         }
         exchange.OtherUserGamesIds = otherGamesIndexes.ToArray();
     }

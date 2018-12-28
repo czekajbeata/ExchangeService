@@ -7,8 +7,8 @@ namespace ExchangeService.Shared.Resources
     {
         public int ExchangeId { get; set; }
         public int OtherUserId { get; set; }
-        public int[] MyGamesIds { get; set; }
-        public int[] OtherUserGamesIds { get; set; }
+        public string[] MyGamesIds { get; set; }
+        public string[] OtherUserGamesIds { get; set; }
         public Shipment Shipment { get; set; }
         public string OfferingUserContactInfo { get; set; }
         public string OtherUserContactInfo { get; set; }

@@ -82,5 +82,11 @@ namespace ExchangeService.Data.Persistance
         {
             return context.Exchanges.Where(e => e.OfferingUserId  == userId || e.OtherUserId == userId);
         }
+
+        public Exchange AddExchange(Exchange exchange)
+        {
+            var result = context.Exchanges.Add(exchange);
+            return result.Entity;
+        }
     }
 }
