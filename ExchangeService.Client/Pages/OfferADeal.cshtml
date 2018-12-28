@@ -37,8 +37,6 @@ else
                         {
                             <input type="checkbox" value="@areSelectedMyGames[i]" onchange="@(() => areSelectedMyGames[0] = !areSelectedMyGames[0])" />@myGames[i].Title <br />
                         }
-
-                        <input type="checkbox" bind="@isPickup" />pickup <br />
                     </td>
                     <td>
                         |
@@ -90,16 +88,110 @@ else
 
     @if (visiblePageNumber == 3)
     {
-        <p>third page</p>
+        @if (isDelivery)
+        {
+            <h5>3. Provide address for package delivery</h5>
+        }
+        else
+        {
+            <h5>3. Provide contact details to discuss the pickup</h5>
+        }
+        <input type="text" bind="@firstUserContactInfo" />
         <button onclick=@(() => MoveToPrevious())>Previous</button>
-        <button onclick=@(() => MoveToNext())>Next</button>
+        <button onclick=@(() => ShowSummary())>Show summary</button>
     }
 
     @if (visiblePageNumber == 4)
     {
-        <p>podsumowanie</p>
+        <h5>Exchange summary</h5>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <img src="@myProfile.ImageUrl" width="150" height="150">
+                        <h5>@myProfile.Name @myProfile.Surname</h5>
+                        <h6>! @myProfile.PickUpLocation</h6>
+                        @if (myProfile.Pickup && !myProfile.Delivery)
+                        {
+                            <p>Pickup only</p>
+                        }
+                        else if (myProfile.Delivery && !myProfile.Pickup)
+                        {
+                            <p>Delivery only</p>
+                        }
+                        <p>Exchanges made: @myProfile.ExchangesCount</p>
+                        <p>Reviews: @myProfile.ReviewsCount</p>
+                        <p>STARS @myProfile.AvgMark</p>
+                    </td>
+                    <td>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @*Games you give away:
+                                        @foreach (var gameId in exchange.MyGamesIds)
+                                        {
+                                            <p>@myGames.SingleOrDefault(g => g.GameId == gameId).Title</p>
+                                        }*@
+                                    </td>
+                                    <td>
+                                        @*Games you get:
+                                        @foreach (var gameId in exchange.OtherUserGamesIds)
+                                        {
+                                            <p>@otherGames.SingleOrDefault(g => g.GameId == gameId).Title</p>
+                                        }*@
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Type of exchange:
+                                        @if (exchange.Pickup)
+                                        {
+                                            <p>PickUp</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Delivery</p>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (exchange.Pickup)
+                                        {
+                                            <p>Your contact details:</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Your delivery adress:</p>
+                                        }
+                                        <p>@firstUserContactInfo</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <img src="@otherUser.ImageUrl" width="150" height="150">
+                        <h5>@otherUser.Name @otherUser.Surname</h5>
+                        <h6>! @otherUser.PickUpLocation</h6>
+                        @if (otherUser.Pickup && !otherUser.Delivery)
+                        {
+                            <p>Pickup only</p>
+                        }
+                        else if (otherUser.Delivery && !otherUser.Pickup)
+                        {
+                            <p>Delivery only</p>
+                        }
+                        <p>Exchanges made: @otherUser.ExchangesCount</p>
+                        <p>Reviews: @otherUser.ReviewsCount</p>
+                        <p>STARS @otherUser.AvgMark</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
         <button onclick=@(() => MoveToPrevious())>Previous</button>
-        <button onclick=@(() => MoveToNext())>Next</button>
+        <button onclick=@(() => OfferAnExchange())>Offer an exchange</button>
     }
 }
 
@@ -125,6 +217,8 @@ bool[] areSelectedOtherGames;
 
 bool isPickup;
 bool isDelivery;
+
+string firstUserContactInfo;
 
 protected override async Task OnInitAsync()
 {
@@ -153,8 +247,25 @@ private void MoveToPrevious()
     visiblePageNumber--;
 }
 
+private void OfferAnExchange()
+{
+    // TO DO
+}
+
+private void ShowSummary()
+{
+    MoveToNext();
+    SetUpGames();
+    SetUpShippment();
+    // set up contact
+}
+
 private void SetUpGames()
 {
+        // tu sie psuje 
+
+
+
     var myGamesIndexes = new List<int>();
     for (int i = 0; i < myGames.Count(); i++)
     {
@@ -181,11 +292,6 @@ private void SetUpShippment()
     }
 
     // pickuplocation to contact details in dto and db
-}
-
-void HandleMyPropertyChange(UIChangeEventArgs evt)
-{
-    areSelectedMyGames[0] = !areSelectedMyGames[0];
 }
 
 }
