@@ -50,8 +50,8 @@ namespace ExchangeService.Controllers.Logic
                 Pickup = exchange.Shipment == Shipment.Pickup ? true : false,
                 Delivery = exchange.Shipment == Shipment.Delivery ? true : false,
                 State = exchange.State,
-                OfferingUserContactInfo = exchange.OfferingUserContactInfo,
-                OtherUserContactInfo = exchange.OtherUserContactInfo
+                OfferingUserContactInfo = exchange.OfferingUserContactInfo ?? string.Empty,
+                OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty
             };
             userProfiles.AddExchange(newExchange);
             unitOfWork.CompleteWork();
