@@ -27,15 +27,7 @@ else
                 <td>@otherUsers[i].Name @otherUsers[i].Surname</td>
                 <td>@otherUsersGames[i]</td>
                 <td>@myGames[i]</td>
-
-                @if(myExchanges[i].Pickup)
-                {
-                    <td>Pickup</td>
-                }
-                else
-                {
-                    <td>Delivery</td>
-                }
+                <td>@myExchanges[i].Shipment</td>
                 <td>@myExchanges[i].State</td>
             </tr>
             }

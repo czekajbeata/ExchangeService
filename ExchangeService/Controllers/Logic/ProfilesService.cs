@@ -4,6 +4,7 @@ using ExchangeService.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExchangeService.Shared.Enums;
 
 namespace ExchangeService.Controllers.Logic
 {
@@ -120,10 +121,9 @@ namespace ExchangeService.Controllers.Logic
                 var newExchangeDto = new ExchangeDto()
                 {
                     ExchangeId = exchange.ExchangeId,
-                    Pickup = exchange.Pickup,
+                    Shipment = exchange.Pickup? Shipment.Pickup : Shipment.Delivery,
                     OfferingUserContactInfo = exchange.OfferingUserContactInfo,
                     OtherUserContactInfo = exchange.OtherUserContactInfo,
-                    Delivery = exchange.Delivery,
                     State = exchange.State
                 };
                 if (exchange.OfferingUserId == userId)
