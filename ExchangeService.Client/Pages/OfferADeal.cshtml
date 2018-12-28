@@ -129,18 +129,22 @@ else
                             <tbody>
                                 <tr>
                                     <td>
-                                        @*Games you give away:
+                                        @foreach(var game in areSelectedMyGames)
+                                        {
+                                            <p>@game</p>
+                                        }
+                                        Games you give away:
                                         @foreach (var gameId in exchange.MyGamesIds)
                                         {
                                             <p>@myGames.SingleOrDefault(g => g.GameId == gameId).Title</p>
-                                        }*@
+                                        }
                                     </td>
                                     <td>
-                                        @*Games you get:
+                                        Games you get:
                                         @foreach (var gameId in exchange.OtherUserGamesIds)
                                         {
                                             <p>@otherGames.SingleOrDefault(g => g.GameId == gameId).Title</p>
-                                        }*@
+                                        }
                                     </td>
                                 </tr>
                                 <tr>
@@ -201,98 +205,96 @@ else
 
 
 @functions {
-[Parameter]
-string UserId { get; set; }
+    [Parameter]
+    string UserId { get; set; }
 
-ExchangeDto exchange;
+    ExchangeDto exchange;
 
-UserView myProfile;
-UserView otherUser;
-UserGameView[] myGames;
-UserGameView[] otherGames;
-int visiblePageNumber = 1;
+    UserView myProfile;
+    UserView otherUser;
+    UserGameView[] myGames;
+    UserGameView[] otherGames;
+    int visiblePageNumber = 1;
 
-bool[] areSelectedMyGames;
-bool[] areSelectedOtherGames;
+    bool[] areSelectedMyGames;
+    bool[] areSelectedOtherGames;
 
-bool isPickup;
-bool isDelivery;
+    bool isPickup;
+    bool isDelivery;
 
-string firstUserContactInfo;
+    string firstUserContactInfo;
 
-protected override async Task OnInitAsync()
-{
-    myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
-    int otherUserId = Int32.Parse(UserId);
-    otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
-
-    var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-    myGames = mine.ToArray();
-
-    var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
-    otherGames = other.ToArray();
-
-    areSelectedMyGames = new bool[myGames.Count()];
-    areSelectedOtherGames = new bool[otherGames.Count()];
-    exchange = new ExchangeDto();
-}
-
-private void MoveToNext()
-{
-    visiblePageNumber++;
-}
-
-private void MoveToPrevious()
-{
-    visiblePageNumber--;
-}
-
-private void OfferAnExchange()
-{
-    // TO DO
-}
-
-private void ShowSummary()
-{
-    MoveToNext();
-    SetUpGames();
-    SetUpShippment();
-    // set up contact
-}
-
-private void SetUpGames()
-{
-        // tu sie psuje 
-
-
-
-    var myGamesIndexes = new List<int>();
-    for (int i = 0; i < myGames.Count(); i++)
+    protected override async Task OnInitAsync()
     {
-        if (areSelectedMyGames[i]) myGamesIndexes.Add(myGames[i].GameId);
-    }
-    var otherGamesIndexes = new List<int>();
-    for (int i = 0; i < otherGames.Count(); i++)
-    {
-        if (areSelectedOtherGames[i]) otherGamesIndexes.Add(otherGames[i].GameId);
-    }
-}
+        myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
+        int otherUserId = Int32.Parse(UserId);
+        otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
 
-private void SetUpShippment()
-{
-    if (isPickup)
-    {
-        exchange.Pickup = true;
-        exchange.Delivery = false;
-    }
-    else
-    {
-        exchange.Pickup = false;
-        exchange.Delivery = true;
+        var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+        myGames = mine.ToArray();
+
+        var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
+        otherGames = other.ToArray();
+
+        areSelectedMyGames = new bool[myGames.Count()];
+        areSelectedOtherGames = new bool[otherGames.Count()];
+        exchange = new ExchangeDto();
     }
 
-    // pickuplocation to contact details in dto and db
-}
+    private void MoveToNext()
+    {
+        visiblePageNumber++;
+    }
+
+    private void MoveToPrevious()
+    {
+        visiblePageNumber--;
+    }
+
+    private void OfferAnExchange()
+    {
+        // TO DO
+    }
+
+    private void ShowSummary()
+    {
+        MoveToNext();
+        SetUpGames();
+        SetUpShippment();
+        // set up contact
+    }
+
+    private void SetUpGames()
+    {
+        var myGamesIndexes = new List<int>();
+        for (int i = 0; i < myGames.Count(); i++)
+        {
+            if (areSelectedMyGames[i]) myGamesIndexes.Add(myGames[i].GameId);
+        }
+        exchange.MyGamesIds = myGamesIndexes.ToArray();
+        var otherGamesIndexes = new List<int>();
+        for (int i = 0; i < otherGames.Count(); i++)
+        {
+            if (areSelectedOtherGames[i]) otherGamesIndexes.Add(otherGames[i].GameId);
+        }
+        exchange.OtherUserGamesIds = otherGamesIndexes.ToArray();
+    }
+
+    private void SetUpShippment()
+    {
+        if (isPickup)
+        {
+            exchange.Pickup = true;
+            exchange.Delivery = false;
+        }
+        else
+        {
+            exchange.Pickup = false;
+            exchange.Delivery = true;
+        }
+
+        // pickuplocation to contact details in dto and db
+    }
 
 }
 
