@@ -76,8 +76,8 @@ else
     {
         <h5>2. Choose shippment type</h5>
         <form action="">
-            <input type="radio" name="shipping" onchange="@(() => { isPickup = true; isDelivery = false; })" /> PickUp <br>
-            <input type="radio" name="shipping" onchange="@(() => { isDelivery = true; isPickup = false; })" /> Delivery <br>
+            <input type="radio" name="shipping" onchange="@(() => { isPickup = true; isDelivery = false; })" checked="@isPickup" /> PickUp <br>
+            <input type="radio" name="shipping" onchange="@(() => { isDelivery = true; isPickup = false; })" checked="@isDelivery"/> Delivery <br>
         </form>
         <button onclick=@(() => MoveToPrevious())>Previous</button>
         @if (isDelivery || isPickup)
@@ -103,7 +103,7 @@ else
 
     @if (visiblePageNumber == 4)
     {
-        <h5>Exchange summary</h5>
+        <h5>4. Exchange summary</h5>
 
         <table>
             <tbody>
@@ -129,10 +129,6 @@ else
                             <tbody>
                                 <tr>
                                     <td>
-                                        @foreach(var game in areSelectedMyGames)
-                                        {
-                                            <p>@game</p>
-                                        }
                                         Games you give away:
                                         @foreach (var gameId in exchange.MyGamesIds)
                                         {
