@@ -6,88 +6,108 @@
 
 @if (myProfile == null || otherUser == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
-@if(visiblePageNumber == 1)
-{
-<table>
-    <tbody>
-        <tr>
-            <td>
-                <img src="@myProfile.ImageUrl" width="150" height="150">
-                <h5>@myProfile.Name @myProfile.Surname</h5>
-                <h6>! @myProfile.PickUpLocation</h6>
-                @if (myProfile.Pickup && !myProfile.Delivery)
-                {
-                <p>Pickup only</p>
-                }
-                else if (myProfile.Delivery && !myProfile.Pickup)
-                {
-                <p>Delivery only</p>
-                }
-                <p>Exchanges made: @myProfile.ExchangesCount</p>
-                <p>Reviews: @myProfile.ReviewsCount</p>
-                <p>STARS @myProfile.AvgMark</p>
-            </td>
-            <td>
-                @foreach(var game in myGames)
-                {
-                <input type="checkbox" name="game.Title" value="game.GameId">@game.Title  <br />
-                }
-            </td>
-            <td>
-                |
-            </td>
-            <td>
-                @foreach(var game in otherGames)
-                {
-                <input type="checkbox" name="game.Title" value="game.GameId">@game.Title  <br />
-                }
-            </td>
-            <td>
-                <img src="@otherUser.ImageUrl" width="150" height="150">
-                <h5>@otherUser.Name @otherUser.Surname</h5>
-                <h6>! @otherUser.PickUpLocation</h6>
-                @if (otherUser.Pickup && !otherUser.Delivery)
-                {
-                <p>Pickup only</p>
-                }
-                else if (otherUser.Delivery && !otherUser.Pickup)
-                {
-                <p>Delivery only</p>
-                }
-                <p>Exchanges made: @otherUser.ExchangesCount</p>
-                <p>Reviews: @otherUser.ReviewsCount</p>
-                <p>STARS @otherUser.AvgMark</p>
-            </td>
-        </tr>
-    </tbody>
-</table>
-<button onclick=@(() => MoveToNext())>Next</button>
-}
+    @if (visiblePageNumber == 1)
+    {
+        <h5>1. Select games</h5>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <img src="@myProfile.ImageUrl" width="150" height="150">
+                        <h5>@myProfile.Name @myProfile.Surname</h5>
+                        <h6>! @myProfile.PickUpLocation</h6>
+                        @if (myProfile.Pickup && !myProfile.Delivery)
+                        {
+                            <p>Pickup only</p>
+                        }
+                        else if (myProfile.Delivery && !myProfile.Pickup)
+                        {
+                            <p>Delivery only</p>
+                        }
+                        <p>Exchanges made: @myProfile.ExchangesCount</p>
+                        <p>Reviews: @myProfile.ReviewsCount</p>
+                        <p>STARS @myProfile.AvgMark</p>
+                    </td>
+                    <td>
+                        @for (int i = 0; i < myGames.Count(); i++)
+                        {
+                            <input type="checkbox" name="@areSelectedMyGames[i]" onchange=@HandleMyPropertyChange/>@myGames[i].Title <br />
+                        }
 
-@if(visiblePageNumber == 2)
-{
-<p>second page</p>
-<button onclick=@(() => MoveToPrevious())>Previous</button>
-<button onclick=@(() => MoveToNext())>Next</button>
-}
+                        <input type="checkbox" bind="@isPickup" />pickup <br />
+                    </td>
+                    <td>
+                        |
+                    </td>
+                    <td>
+                        @for (int i = 0; i < otherGames.Count(); i++)
+                        {
+                            <input type="checkbox" bind="@areSelectedOtherGames[i]" />@otherGames[i].Title <br />
+                        }
+                    </td>
+                    <td>
+                        <img src="@otherUser.ImageUrl" width="150" height="150">
+                        <h5>@otherUser.Name @otherUser.Surname</h5>
+                        <h6>! @otherUser.PickUpLocation</h6>
+                        @if (otherUser.Pickup && !otherUser.Delivery)
+                        {
+                            <p>Pickup only</p>
+                        }
+                        else if (otherUser.Delivery && !otherUser.Pickup)
+                        {
+                            <p>Delivery only</p>
+                        }
+                        <p>Exchanges made: @otherUser.ExchangesCount</p>
+                        <p>Reviews: @otherUser.ReviewsCount</p>
+                        <p>STARS @otherUser.AvgMark</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        @foreach(var game in areSelectedMyGames)
+        {
+            <p>@game</p>
+        }
+        <p>@isPickup</p>
+        @if (areSelectedMyGames.Contains(true) && areSelectedOtherGames.Contains(true))
+        {
+            <button onclick=@(() => MoveToNext())>Next</button>
+        }
+    }
 
-@if(visiblePageNumber == 3)
-{
-<p>third page</p>
-<button onclick=@(() => MoveToPrevious())>Previous</button>
-<button onclick=@(() => MoveToNext())>Next</button>
-}
+    @if (visiblePageNumber == 2)
+    {
+        <h5>2. Choose shippment type</h5>
 
-@if(visiblePageNumber == 4)
-{
-<p>fourth page</p>
-<button onclick=@(() => MoveToPrevious())>Previous</button>
-<button onclick=@(() => MoveToNext())>Next</button>
-}
+        <form action="">
+            <input type="radio" name="shipping" bind="@isPickup" /> PickUp <br>
+            <input type="radio" name="shipping" bind="@isDelivery" /> Delivery <br>
+        </form>
+
+        <button onclick=@(() => MoveToPrevious())>Previous</button>
+        @if (isDelivery || isPickup)
+        {
+            <button onclick=@(() => MoveToNext())>Next</button>
+        }
+    }
+
+    @if (visiblePageNumber == 3)
+    {
+        <p>third page</p>
+        <button onclick=@(() => MoveToPrevious())>Previous</button>
+        <button onclick=@(() => MoveToNext())>Next</button>
+    }
+
+    @if (visiblePageNumber == 4)
+    {
+        <p>podsumowanie</p>
+        <button onclick=@(() => MoveToPrevious())>Previous</button>
+        <button onclick=@(() => MoveToNext())>Next</button>
+    }
 }
 
 
@@ -99,11 +119,21 @@ else
     [Parameter]
     string UserId { get; set; }
 
+    ExchangeDto exchange;
+
     UserView myProfile;
     UserView otherUser;
     UserGameView[] myGames;
     UserGameView[] otherGames;
     int visiblePageNumber = 1;
+
+    bool[] areSelectedMyGames;
+    bool[] areSelectedOtherGames;
+
+    bool isPickup;
+    bool isDelivery;
+
+
 
     protected override async Task OnInitAsync()
     {
@@ -116,6 +146,10 @@ else
 
         var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
         otherGames = other.ToArray();
+
+        areSelectedMyGames = new bool[myGames.Count()];
+        areSelectedOtherGames = new bool[otherGames.Count()];
+        exchange = new ExchangeDto();
     }
 
     private void MoveToNext()
@@ -126,6 +160,41 @@ else
     private void MoveToPrevious()
     {
         visiblePageNumber--;
+    }
+
+    private void SetUpGames()
+    {
+        var myGamesIndexes = new List<int>();
+        for (int i = 0; i < myGames.Count(); i++)
+        {
+            if (areSelectedMyGames[i]) myGamesIndexes.Add(myGames[i].GameId);
+        }
+        var otherGamesIndexes = new List<int>();
+        for (int i = 0; i < otherGames.Count(); i++)
+        {
+            if (areSelectedOtherGames[i]) otherGamesIndexes.Add(otherGames[i].GameId);
+        }
+    }
+
+    private void SetUpShippment()
+    {
+        if (isPickup)
+        {
+            exchange.Pickup = true;
+            exchange.Delivery = false;
+        }
+        else
+        {
+            exchange.Pickup = false;
+            exchange.Delivery = true;
+        }
+
+        // pickuplocation to contact details in dto and db
+    }
+
+    void HandleMyPropertyChange(UIChangeEventArgs evt)
+    {
+        areSelectedMyGames[0] = !areSelectedMyGames[0];
     }
 }
 
