@@ -195,11 +195,6 @@ else
     }
 }
 
-
-
-
-
-
 @functions {
     [Parameter]
     string UserId { get; set; }
@@ -257,7 +252,6 @@ else
         MoveToNext();
         SetUpGames();
         SetUpShippment();
-        // set up contact
     }
 
     private void SetUpGames()
@@ -288,8 +282,7 @@ else
             exchange.Pickup = false;
             exchange.Delivery = true;
         }
-
-        // pickuplocation to contact details in dto and db
+        exchange.OfferingUserContactInfo = firstUserContactInfo;
     }
 
 }

@@ -121,21 +121,22 @@ namespace ExchangeService.Controllers.Logic
                 {
                     ExchangeId = exchange.ExchangeId,
                     Pickup = exchange.Pickup,
-                    PickUpLocation = exchange.PickUpLocation,
+                    OfferingUserContactInfo = exchange.OfferingUserContactInfo,
+                    OtherUserContactInfo = exchange.OtherUserContactInfo,
                     Delivery = exchange.Delivery,
                     State = exchange.State
                 };
                 if (exchange.OfferingUserId == userId)
                 {
                     newExchangeDto.OtherUserId = exchange.OtherUserId;
-                    newExchangeDto.MyGamesIds = exchange.FirstUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+                    newExchangeDto.MyGamesIds = exchange.OfferingUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
                     newExchangeDto.OtherUserGamesIds = exchange.OtherUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
                 }
                 else
                 {
                     newExchangeDto.OtherUserId = exchange.OfferingUserId;
                     newExchangeDto.MyGamesIds = exchange.OtherUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
-                    newExchangeDto.OtherUserGamesIds = exchange.FirstUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+                    newExchangeDto.OtherUserGamesIds = exchange.OfferingUsersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
                 }
                 exchanges.Add(newExchangeDto);
             }

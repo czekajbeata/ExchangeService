@@ -12,12 +12,15 @@ namespace ExchangeService.Core.Entities
         [Required]
         public int OtherUserId { get; set; }
         [Required]
-        public string FirstUsersGames { get; set; }
+        public string OfferingUsersGames { get; set; }
         [Required]
         public string OtherUsersGames { get; set; }
         [Required]
         public bool Pickup { get; set; }
-        public string PickUpLocation { get; set; }
+        [Required]
+        public string OfferingUserContactInfo { get; set; }
+        [Required]
+        public string OtherUserContactInfo { get; set; }
         [Required]
         public bool Delivery { get; set; }
         [Required]
