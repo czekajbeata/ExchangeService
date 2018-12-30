@@ -33,8 +33,8 @@ namespace ExchangeService.Controllers.Api
             return token;
         }
 
-        [HttpPost("api/token/registration")]
-        public async Task<IActionResult> Registration([FromBody] TokenViewModel tokenvm)
+        [HttpPost("api/token/register")]
+        public async Task<IActionResult> Register([FromBody] TokenViewModel tokenvm)
         {
             if(!ModelState.IsValid)
             {

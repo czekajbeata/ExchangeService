@@ -22,7 +22,7 @@
     <Content Update="Pages\FillProfile.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Pages\Registration.cshtml">
+    <Content Update="Pages\Register.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Pages\OfferADeal.cshtml">

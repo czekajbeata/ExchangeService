@@ -1,6 +1,6 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
-@page "/registration"
+@page "/register"
 @inject HttpClient Http
 @inject TokenService tokenService
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
@@ -31,7 +31,7 @@
             Email = Email,
             Password = Password
         };
-        await Http.PostJsonAsync("http://localhost:5000/api/token/registration", tokenvm);
+        await Http.PostJsonAsync("http://localhost:5000/api/token/register", tokenvm);
         var response = await Http.PostJsonAsync<string>("http://localhost:5000/api/token/login", tokenvm);
         await tokenService.SaveAccessToken(response);
 
