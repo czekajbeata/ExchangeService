@@ -18,6 +18,10 @@ using ExchangeService.Data.Persistance;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Reflection;
+using ExchangeService.Core.Entities;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace ExchangeService
 {
@@ -72,6 +76,19 @@ namespace ExchangeService
             })
             .AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async ctx =>
+                    {                        
+                        var login = ctx.Principal.Claims.First().Value;
+                        var db = ctx.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
+                        var user = db.Users.FirstOrDefault(a => a.Email == login);
+                        if (user == null)
+                            return;
+
+                        (ctx.Principal.Identity as ClaimsIdentity).AddClaim(new Claim("Id", user.Id));
+                    }
+                };
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
