@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeService.Controllers.Api
 {
-   // [Authorize]
+    [Authorize]
     [ApiController]
     public class GamesController : ControllerBase
     {

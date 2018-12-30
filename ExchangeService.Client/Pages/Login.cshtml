@@ -1,6 +1,8 @@
 ﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
 @page "/login"
 @inject HttpClient Http
+@inject TokenService tokenService
 
 <div class="container">
     <h1>Log in </h1>
@@ -21,15 +23,19 @@
     public string Password { get; set; } = "";
     public string Token { get; set; } = "";
 
-
-private async Task SubmitForm()
+    private async Task SubmitForm()
     {
         var tokenvm = new TokenViewModel
         {
             Email = Email,
             Password = Password
         };
-        var response = await Http.PostJsonAsync<object>("http://localhost:5000/api/token/login", tokenvm);
-        Console.WriteLine(response);
-}
+        var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
+        await tokenService.SaveAccessToken(response.Token);
+    }
+
+    private class TokenResponse
+    {
+        public string Token;
+    }
 }
