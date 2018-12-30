@@ -1,9 +1,10 @@
 ﻿@using ExchangeService.Shared.Resources;
-@page "/login"
+@page "/registration"
 @inject HttpClient Http
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <div class="container">
-    <h1>Log in </h1>
+    <h1>Register</h1>
     <div class="form-group">
         <label for="email">Email</label>
         <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
@@ -19,7 +20,6 @@
 @functions{
     public string Email { get; set; } = "";
     public string Password { get; set; } = "";
-    public string Token { get; set; } = "";
 
 
 private async Task SubmitForm()
@@ -29,7 +29,8 @@ private async Task SubmitForm()
             Email = Email,
             Password = Password
         };
-        var response = await Http.PostJsonAsync<object>("http://localhost:5000/api/token/login", tokenvm);
-        Console.WriteLine(response);
+        await Http.PostJsonAsync("http://localhost:5000/api/token/registration", tokenvm);
+
+        UriHelper.NavigateTo("/login");
 }
 }

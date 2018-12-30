@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Data\Migrations\20181020194536_AddUserSearchesTable.cs" />
     <Compile Remove="Data\Migrations\20181020194536_AddUserSearchesTable.Designer.cs" />
+    <Compile Remove="Data\Migrations\20181230165212_baseForTokens.cs" />
+    <Compile Remove="Data\Migrations\20181230165212_baseForTokens.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
