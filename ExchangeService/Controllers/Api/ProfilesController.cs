@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExchangeService.Controllers.Api
 {
     [ApiController]
-    [Authorize]
     public class ProfilesController : ControllerBase
     {
         private readonly ProfilesService profilesService;
@@ -43,6 +42,7 @@ namespace ExchangeService.Controllers.Api
             return profilesService.GetUserProfile(id);
         }
 
+        [Authorize]
         [HttpGet("api/users/myprofile")]
         public UserView GetMyUserProfile()
         {

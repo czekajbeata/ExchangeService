@@ -54,6 +54,7 @@ namespace ExchangeService.Controllers.Api
             return shelvesService.GetUserGames(id);
         }
 
+        [Authorize]
         [HttpPost("api/users/games")]
         public IActionResult AddUserGame([FromBody] UserGameDto userGameDto)
         {
@@ -63,6 +64,7 @@ namespace ExchangeService.Controllers.Api
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
+        [Authorize]
         [HttpPost("api/users/searches")]
         public IActionResult AddUserSearchGame([FromBody] UserSearchGameDto userGameDto)
         {
@@ -72,6 +74,7 @@ namespace ExchangeService.Controllers.Api
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
+        [Authorize]
         [HttpPost("api/games")]
         public IActionResult AddGame([FromBody] GameDto gameDto)
         {
@@ -79,6 +82,7 @@ namespace ExchangeService.Controllers.Api
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
+        [Authorize]
         [HttpPut("api/games")]
         public IActionResult UpdateGame([FromBody] GameDto gameDto)
         {
@@ -86,6 +90,7 @@ namespace ExchangeService.Controllers.Api
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
+        [Authorize]
         [HttpPut("api/users/games")]
         public IActionResult UpdateUserGame([FromBody] UserGameDto userGameDto)
         {

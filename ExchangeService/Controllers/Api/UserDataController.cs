@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ExchangeService.Controllers.Logic;
 using ExchangeService.Shared.Resources;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ namespace ExchangeService.Controllers.Api
             this.profilesService = profilesService;
         }
 
+        [Authorize]
         [HttpPost("api/users/comments")]
         public IActionResult AddComment([FromBody] CommentDto comment)
         {
@@ -32,6 +34,7 @@ namespace ExchangeService.Controllers.Api
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
+        [Authorize]
         [HttpPost("api/users/exchanges")]
         public IActionResult AddExchange([FromBody] ExchangeDto exchange)
         {
@@ -47,6 +50,7 @@ namespace ExchangeService.Controllers.Api
             return userDataService.GetComments(id);
         }
 
+        [Authorize]
         [HttpGet("api/users/mymatches")]
         public IEnumerable<MatchView> GetMatches()
         {
@@ -55,6 +59,7 @@ namespace ExchangeService.Controllers.Api
             return userDataService.GetMatches(normalizedId);
         }
 
+        [Authorize]
         [HttpGet("api/users/myexchanges")]
         public IEnumerable<ExchangeDto> GetMyExchanges()
         {

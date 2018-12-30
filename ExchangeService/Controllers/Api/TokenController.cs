@@ -12,7 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ExchangeService.Controllers.Api
 {
-    //[Authorize]
     [ApiController]
     public class TokenController : ControllerBase
     {
