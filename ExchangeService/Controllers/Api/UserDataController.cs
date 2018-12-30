@@ -26,8 +26,9 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/comments")]
         public IActionResult AddComment([FromBody] CommentDto comment)
         {
-            int currentUserId = 1; //TODO dodać wyciąganie z sesji
-            comment.LeavingUserId = currentUserId;
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
+            comment.LeavingUserId = normalizedId;
             int receivingUserId = 2;
 
             var result = userDataService.AddComment(comment, receivingUserId);
@@ -38,8 +39,8 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/exchanges")]
         public IActionResult AddExchange([FromBody] ExchangeDto exchange)
         {
-            string myInnerId = "1"; //TODO dodać wyciąganie z sesji
-            var normalizedId = profilesService.ToNormalizedId(myInnerId);
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
             var result = userDataService.AddExchange(exchange, normalizedId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
@@ -52,10 +53,10 @@ namespace ExchangeService.Controllers.Api
 
         [Authorize]
         [HttpGet("api/users/mymatches")]
-        public IEnumerable<MatchView> GetMatches()
+        public IEnumerable<MatchView> GetMyMatches()
         {
-            string myInnerId = "1"; //TODO dodać wyciąganie z sesji
-            var normalizedId = profilesService.ToNormalizedId(myInnerId);
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
             return userDataService.GetMatches(normalizedId);
         }
 
@@ -63,8 +64,8 @@ namespace ExchangeService.Controllers.Api
         [HttpGet("api/users/myexchanges")]
         public IEnumerable<ExchangeDto> GetMyExchanges()
         {
-            string myInnerId = "1"; //TODO dodać wyciąganie z sesji
-            var normalizedId = profilesService.ToNormalizedId(myInnerId);
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
             return userDataService.GetUserExchanges(normalizedId);
         }
 

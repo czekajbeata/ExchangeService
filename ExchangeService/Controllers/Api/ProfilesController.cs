@@ -18,9 +18,7 @@ namespace ExchangeService.Controllers.Api
     {
         private readonly ProfilesService profilesService;
         private readonly UserManager<IdentityUser> userManager;
-
-        private Task<IdentityUser> GetCurrentUserAsync() => userManager.GetUserAsync(HttpContext.User);
-
+        
         public ProfilesController(ProfilesService profilesService, UserManager<IdentityUser> userManager)
         {
             this.profilesService = profilesService;
@@ -28,11 +26,10 @@ namespace ExchangeService.Controllers.Api
         }
 
         [HttpPost("api/users/profile")]
-        public async Task<IActionResult> AddUserProfileAsync([FromBody] UserView user)
+        public IActionResult AddUserProfile([FromBody] UserView user)
         {
-            var currentUser = await GetCurrentUserAsync();
-            string innerUserID = currentUser.Id;
-            var result = profilesService.AddUserProfile(user, innerUserID);
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var result = profilesService.AddUserProfile(user, id);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
