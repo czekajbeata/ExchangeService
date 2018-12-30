@@ -1,6 +1,6 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
-@page "/login"
+@page "/fillprofile"
 @inject HttpClient Http
 @inject TokenService tokenService
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
@@ -31,13 +31,8 @@
             Email = Email,
             Password = Password
         };
-        var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
-        await tokenService.SaveAccessToken(response.Token);
-        UriHelper.NavigateTo("/myprofile");
-    }
+ 
+// fill gamer data
 
-    private class TokenResponse
-    {
-        public string Token;
     }
 }

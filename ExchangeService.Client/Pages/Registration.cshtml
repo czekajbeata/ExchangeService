@@ -1,10 +1,12 @@
 ﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
 @page "/registration"
 @inject HttpClient Http
+@inject TokenService tokenService
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <div class="container">
-    <h1>Register</h1>
+    <h1>Fill profile data</h1>
     <div class="form-group">
         <label for="email">Email</label>
         <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
@@ -22,7 +24,7 @@
     public string Password { get; set; } = "";
 
 
-private async Task SubmitForm()
+    private async Task SubmitForm()
     {
         var tokenvm = new TokenViewModel
         {
@@ -30,7 +32,9 @@ private async Task SubmitForm()
             Password = Password
         };
         await Http.PostJsonAsync("http://localhost:5000/api/token/registration", tokenvm);
+        var response = await Http.PostJsonAsync<string>("http://localhost:5000/api/token/login", tokenvm);
+        await tokenService.SaveAccessToken(response);
 
-        UriHelper.NavigateTo("/login");
-}
+        UriHelper.NavigateTo("/fillprofile");
+    }
 }
