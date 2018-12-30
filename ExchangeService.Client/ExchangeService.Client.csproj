@@ -22,6 +22,12 @@
     <Content Update="Pages\FillProfile.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Informations\Logout - Success.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Logout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Register.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

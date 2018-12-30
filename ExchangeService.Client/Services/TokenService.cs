@@ -16,5 +16,9 @@ namespace ExchangeService.Client.Services
         {
             return JSRuntime.Current.InvokeAsync<string>("wasmHelper.getAccessToken");
         }
+        public Task RemoveAccessToken()
+        {
+            return JSRuntime.Current.InvokeAsync<string>("wasmHelper.removeAccessToken");
+        }
     }
 }
