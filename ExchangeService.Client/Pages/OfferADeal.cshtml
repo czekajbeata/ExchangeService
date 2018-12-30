@@ -1,7 +1,9 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Shared.Enums;
+@using ExchangeService.Client.Services;
 @page "/offerdeal/{UserId}"
 @inject HttpClient Http
+@inject TokenService tokenService
 
 <h5>Offer an exchange</h5>
 
@@ -216,6 +218,9 @@ else
 
     protected override async Task OnInitAsync()
     {
+        var token = await tokenService.GetAccessToken();
+        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+
         myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
         int otherUserId = Int32.Parse(UserId);
         otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);

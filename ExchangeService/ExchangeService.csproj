@@ -8,10 +8,13 @@
   <ItemGroup>
     <Compile Remove="Data\Migrations\20181020194536_AddUserSearchesTable.cs" />
     <Compile Remove="Data\Migrations\20181020194536_AddUserSearchesTable.Designer.cs" />
+    <Compile Remove="Data\Migrations\20181230165212_baseForTokens.cs" />
+    <Compile Remove="Data\Migrations\20181230165212_baseForTokens.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.3" PrivateAssets="All" />
   </ItemGroup>
 

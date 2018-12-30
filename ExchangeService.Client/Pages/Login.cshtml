@@ -1,0 +1,43 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@page "/login"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+<div class="container">
+    <h1>Log in </h1>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" placeholder="Password" class="form-control" bind="@Password" />
+    </div>
+
+    <button onclick="@SubmitForm">Submit</button>
+</div>
+
+@functions{
+    public string Email { get; set; } = "";
+    public string Password { get; set; } = "";
+    public string Token { get; set; } = "";
+
+    private async Task SubmitForm()
+    {
+        var tokenvm = new TokenViewModel
+        {
+            Email = Email,
+            Password = Password
+        };
+        var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
+        await tokenService.SaveAccessToken(response.Token);
+        UriHelper.NavigateTo("/myprofile");
+    }
+
+    private class TokenResponse
+    {
+        public string Token;
+    }
+}

@@ -1,3 +1,4 @@
+using ExchangeService.Client.Services;
 using Microsoft.AspNetCore.Blazor.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,6 +8,7 @@ namespace ExchangeService.Client
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<TokenService>();
         }
 
         public void Configure(IBlazorApplicationBuilder app)
