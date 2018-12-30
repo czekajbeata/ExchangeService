@@ -1,6 +1,8 @@
 ﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
 @page "/myexchanges"
 @inject HttpClient Http
+@inject TokenService tokenService
 
 @if (myExchanges == null)
 {
@@ -23,13 +25,13 @@ else
 
             @for (int i = 0; i < myExchanges.Count(); i++)
             {
-            <tr>
-                <td>@otherUsers[i].Name @otherUsers[i].Surname</td>
-                <td>@otherUsersGames[i]</td>
-                <td>@myGames[i]</td>
-                <td>@myExchanges[i].Shipment</td>
-                <td>@myExchanges[i].State</td>
-            </tr>
+                <tr>
+                    <td>@otherUsers[i].Name @otherUsers[i].Surname</td>
+                    <td>@otherUsersGames[i]</td>
+                    <td>@myGames[i]</td>
+                    <td>@myExchanges[i].Shipment</td>
+                    <td>@myExchanges[i].State</td>
+                </tr>
             }
         </table>
     }
@@ -41,67 +43,70 @@ else
 
 
 @functions {
-    ExchangeDto[] myExchanges;
-    UserView[] otherUsers;
-    string[] otherUsersGames;
-    string[] myGames;
+ExchangeDto[] myExchanges;
+UserView[] otherUsers;
+string[] otherUsersGames;
+string[] myGames;
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    var token = await tokenService.GetAccessToken();
+    Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+
+    var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeDto>>("http://localhost:5000/api/users/myexchanges");
+    myExchanges = exchanges.ToArray();
+    await FillOtherUsers();
+    await FillOtherUsersGames();
+    await FillMyGames();
+}
+
+private async Task FillOtherUsers()
+{
+    int count = myExchanges.Count();
+    otherUsers = new UserView[count];
+    for (int i = 0; i < count; i++)
     {
-        var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeDto>>("http://localhost:5000/api/users/myexchanges");
-        myExchanges = exchanges.ToArray();
-        await FillOtherUsers();
-        await FillOtherUsersGames();
-        await FillMyGames();
+        otherUsers[i] = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + myExchanges[i].OtherUserId);
     }
+}
 
-    private async Task FillOtherUsers()
+private async Task FillOtherUsersGames()
+{
+    int count = myExchanges.Count();
+    otherUsersGames = new string[count];
+    for (int i = 0; i < count; i++)
     {
-        int count = myExchanges.Count();
-        otherUsers = new UserView[count];
-        for(int i = 0; i < count; i++)
+        var gameId = myExchanges[i].OtherUserGamesIds[0];
+        var gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
+        otherUsersGames[i] = gameDto.Title;
+
+        for (int j = 1; j < myExchanges[i].OtherUserGamesIds.Count(); j++)
         {
-            otherUsers[i] = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + myExchanges[i].OtherUserId);
+            gameId = myExchanges[i].OtherUserGamesIds[j];
+            gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
+            otherUsersGames[i] += ", ";
+            otherUsersGames[i] += gameDto.Title;
         }
     }
+}
 
-    private async Task FillOtherUsersGames()
+private async Task FillMyGames()
+{
+    int count = myExchanges.Count();
+    myGames = new string[count];
+    for (int i = 0; i < count; i++)
     {
-        int count = myExchanges.Count();
-        otherUsersGames = new string[count];
-        for(int i = 0; i < count; i++)
-        {
-            var gameId = myExchanges[i].OtherUserGamesIds[0];
-            var gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
-            otherUsersGames[i] = gameDto.Title;
+        var gameId = myExchanges[i].MyGamesIds[0];
+        var gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
+        myGames[i] = gameDto.Title;
 
-            for(int j = 1; j < myExchanges[i].OtherUserGamesIds.Count(); j++)
-            {
-                gameId = myExchanges[i].OtherUserGamesIds[j];
-                gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
-                otherUsersGames[i] += ", ";
-                otherUsersGames[i] += gameDto.Title;
-            }
+        for (int j = 1; j < myExchanges[i].MyGamesIds.Count(); j++)
+        {
+            gameId = myExchanges[i].MyGamesIds[j];
+            gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
+            myGames[i] += ", ";
+            myGames[i] += gameDto.Title;
         }
     }
-
-    private async Task FillMyGames()
-    {
-        int count = myExchanges.Count();
-        myGames = new string[count];
-        for(int i = 0; i < count; i++)
-        {
-            var gameId = myExchanges[i].MyGamesIds[0];
-            var gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
-            myGames[i] = gameDto.Title;
-
-            for(int j = 1; j < myExchanges[i].MyGamesIds.Count(); j++)
-            {
-                gameId = myExchanges[i].MyGamesIds[j];
-                gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
-                myGames[i] += ", ";
-                myGames[i] += gameDto.Title;
-            }
-        }
-    }
+}
 }

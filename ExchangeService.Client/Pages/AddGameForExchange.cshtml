@@ -1,6 +1,8 @@
 ﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
 @page "/addexchangegame"
 @inject HttpClient Http
+@inject TokenService tokenService
 
 <h1>Add game for exchange</h1>
 <input type="text" bind="@GameTitle" />
@@ -83,10 +85,6 @@
 
 }
 
-
-
-
-
 @functions {
 DropDownItem[] response;
 bool gameWasSearched = false;
@@ -117,6 +115,12 @@ public string SelectedId
         selectedId = value;
         if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
     }
+}
+
+protected override async Task OnInitAsync()
+{
+    var token = await tokenService.GetAccessToken();
+    Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
 }
 
 private async Task FillAutoComplete()
@@ -168,7 +172,6 @@ private async Task AddGameToDB()
     var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
     gameID = games[0].Id.ToString();
 }
-
 
 private async Task UpdateGameInDB()
 {
