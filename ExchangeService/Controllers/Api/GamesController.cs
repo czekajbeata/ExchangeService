@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using ExchangeService.Controllers.Logic;
 using ExchangeService.Shared.Resources;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeService.Controllers.Api
 {
+   // [Authorize]
     [ApiController]
     public class GamesController : ControllerBase
     {
