@@ -13,11 +13,9 @@
     private async Task LogOut()
     {
         await tokenService.RemoveAccessToken();
-if(await tokenService.GetAccessToken() == null)
-{
-
-        UriHelper.NavigateTo("/logoutsuccess");
-}
-
+        if(await tokenService.GetAccessToken() == null)
+        {
+            UriHelper.NavigateTo("/logoutsuccess");
+        }
     }
 }
