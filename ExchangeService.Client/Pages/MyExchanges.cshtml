@@ -12,27 +12,28 @@ else
 {
     @if (myExchanges.Count() > 0)
     {
-        <table>
+        <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Username</th>
-                    <th>You're getting</th>
-                    <th>You're giving</th>
-                    <th>Shippment</th>
-                    <th>Exchange state</th>
+                    <th scope="col">Other user</th>
+                    <th scope="col">You're getting</th>
+                    <th scope="col">You're giving</th>
+                    <th scope="col">Shippment</th>
+                    <th scope="col">Exchange state</th>
                 </tr>
             </thead>
-
-            @for (int i = 0; i < myExchanges.Count(); i++)
-            {
-                <tr>
-                    <td>@otherUsers[i].Name @otherUsers[i].Surname</td>
-                    <td>@otherUsersGames[i]</td>
-                    <td>@myGames[i]</td>
-                    <td>@myExchanges[i].Shipment</td>
-                    <td>@myExchanges[i].State</td>
-                </tr>
-            }
+            <tbody>
+                @for (int i = 0; i < myExchanges.Count(); i++)
+                {
+                    <tr>
+                        <td>@otherUsers[i].Name @otherUsers[i].Surname</td>
+                        <td>@otherUsersGames[i]</td>
+                        <td>@myGames[i]</td>
+                        <td>@myExchanges[i].Shipment</td>
+                        <td>@myExchanges[i].State</td>
+                    </tr>
+                }
+            </tbody>
         </table>
     }
     else
