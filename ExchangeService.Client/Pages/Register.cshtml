@@ -6,7 +6,7 @@
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <div class="container">
-    <h1>Fill profile data</h1>
+    <h1>Register</h1>
     <div class="form-group">
         <label for="email">Email</label>
         <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
@@ -23,7 +23,6 @@
     public string Email { get; set; } = "";
     public string Password { get; set; } = "";
 
-
     private async Task SubmitForm()
     {
         var tokenvm = new TokenViewModel
@@ -32,9 +31,16 @@
             Password = Password
         };
         await Http.PostJsonAsync("http://localhost:5000/api/token/register", tokenvm);
-        var response = await Http.PostJsonAsync<string>("http://localhost:5000/api/token/login", tokenvm);
-        await tokenService.SaveAccessToken(response);
+        var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
+        await tokenService.SaveAccessToken(response.Token);
+        if (!string.IsNullOrEmpty(await tokenService.GetAccessToken()))
+        {
+            UriHelper.NavigateTo("/fillprofile");
+        }
+    }
 
-        UriHelper.NavigateTo("/fillprofile");
+    private class TokenResponse
+    {
+        public string Token;
     }
 }

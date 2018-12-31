@@ -110,7 +110,7 @@ protected override async Task OnInitAsync()
 {
     var token = await tokenService.GetAccessToken();
     Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
-
+        Console.WriteLine(token);
     myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
 
     var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);

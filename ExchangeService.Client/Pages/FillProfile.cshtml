@@ -9,31 +9,73 @@
     <h2>Thank you for registering!</h2>
     <h3>Plese provide additional details before you get started:</h3>
     <div class="form-group">
-        <label for="email">Email</label>
-        <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
+        <label for="picture">Profile picture url</label>
+        <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@PictureUrl" />
     </div>
     <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" name="password" placeholder="Password" class="form-control" bind="@Password" />
+        <label for="name">Name</label>
+        <input type="text" name="name" placeholder="Name" class="form-control" bind="@Name" />
     </div>
-
+    <div class="form-group">
+        <label for="surname">Surname</label>
+        <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@Surname" />
+    </div>
+    <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" name="location" placeholder="Location" class="form-control" bind="@Location" />
+    </div>
+    <div class="form-group">
+        <label for="delivery">Accepting delivery</label>
+        <input type="checkbox" name="delivery" placeholder="false" class="form-control" bind="@Delivery" />
+    </div>
+    <div class="form-group">
+        <label for="pickup">Accepting pickup</label>
+        <input type="checkbox" name="pickup" placeholder="false" class="form-control" bind="@PickUp" />
+    </div>
+    <div class="form-group">
+        <label for="email">Contact email</label>
+        <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@ContactEmail" />
+    </div>
+    <div class="form-group">
+        <label for="number">Phone number</label>
+        <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@PhoneNumber" />
+    </div>
     <button onclick="@SubmitForm">Submit</button>
 </div>
 
 @functions{
-    public string Email { get; set; } = "";
-    public string Password { get; set; } = "";
-    public string Token { get; set; } = "";
+    public bool PickUp { get; set; }
+    public bool Delivery { get; set; }
+    public string Location { get; set; }
+    public string PictureUrl { get; set; }
+    public string ContactEmail { get; set; }
+    public string PhoneNumber { get; set; }
+    public string Name { get; set; }
+    public string Surname { get; set; }
+
+    protected override async Task OnInitAsync()
+    {
+        var token = await tokenService.GetAccessToken();
+        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+    }
 
     private async Task SubmitForm()
     {
-        var tokenvm = new TokenViewModel
+        UserView userView = new UserView()
         {
-            Email = Email,
-            Password = Password
+            Delivery = Delivery,
+            Pickup = PickUp,
+            PickUpLocation = Location,
+            Name = Name,
+            Surname = Surname,
+            ImageUrl = PictureUrl,
+            PhoneNumber = PhoneNumber,
+            ContactEmail = ContactEmail
         };
- 
-// fill gamer data
-
+        await Http.PostJsonAsync("http://localhost:5000/api/users/profile", userView);
+        if(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile") != null)
+        {
+            UriHelper.NavigateTo("/myprofile");
+        }
     }
 }

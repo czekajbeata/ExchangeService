@@ -33,12 +33,12 @@ namespace ExchangeService.Controllers.Logic
                 InnerUserId = innerUserId,
                 Delivery = user.Delivery,
                 Pickup = user.Pickup,
-                PickUpLocation = user.PickUpLocation,
+                PickUpLocation = user.PickUpLocation ?? String.Empty,
                 Name = user.Name,
-                Surname = user.Surname,
-                ImageUrl = user.ImageUrl,
-                PhoneNumber = user.PhoneNumber != null ? user.PhoneNumber : "not given",
-                ContactEmail = user.ContactEmail != null ? user.ContactEmail : "not given"
+                Surname = user.Surname ?? String.Empty,
+                ImageUrl = user.ImageUrl ?? String.Empty,
+                PhoneNumber = user.PhoneNumber ?? "not given",
+                ContactEmail = user.ContactEmail ?? "not given"
 
             };
             userProfiles.AddUserProfile(newUser);

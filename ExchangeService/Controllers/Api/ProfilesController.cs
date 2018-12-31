@@ -44,7 +44,7 @@ namespace ExchangeService.Controllers.Api
             return profilesService.GetUserProfile(id);
         }
 
-        [Authorize]
+       // [Authorize]
         [HttpGet("api/users/myprofile")]
         public UserView GetMyUserProfile()
         {
