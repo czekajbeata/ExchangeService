@@ -5,81 +5,122 @@
 @inject TokenService tokenService
 
 <h1>Add game for exchange</h1>
-<input type="text" bind="@GameTitle" />
+
+<div class="form-group row">
+    <label for="gameTitle" class="col-sm-6 col-form-label">Game title:</label>
+    <div class="col-sm-6">
+        <input type="text" class="form-control" id="gameTitle" placeholder="Title" bind="@GameTitle" />
+    </div>
+</div>
+
 
 @if (gameWasSearched)
 {
     @if (response != null && response.Length > 0)
     {
-        <p>Select game from existing or add a new one:</p>
-        <select bind="@SelectedId">
-            <option selected>...</option>
-            @foreach (var game in response)
-            {
-                <option value="@game.Id">@game.Name</option>
-            }
-        </select>
+        <div class="form-group row">
+            <label for="gameId" class="col-sm-6 col-form-label">Select game from existing or add a new one:</label>
+            <div class="col-sm-3">
+                <select bind="@SelectedId" class="form-control">
+                    <option selected>Choose...</option>
+                    @foreach (var game in response)
+                    {
+                        <option value="@game.Id">@game.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-light" onclick=@(() => AddNewGame())>Add new game</button>
+            </div>
+        </div>
     }
-    <button onclick=@(() => AddNewGame())>Add new game</button>
+    else
+    {
+        <div class="form-group row">
+            <label for="gameId" class="col-sm-6 col-form-label">Game with provided title wasn't found. </label>
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-light" onclick=@(() => AddNewGame())>Add new game</button>
+            </div>
+        </div>
+    }
+
 
     @if (gameDetails != null)
     {
-        <table>
-            <tr>
-                <td> Game title: </td>
-                <td> <input type="text" bind="@gameDetails.Title " /></td>
-            </tr>
-            <tr>
-                <td> Description: </td>
-                <td> <input type="text" bind="@gameDetails.Description" /> </td>
-            </tr>
-            <tr>
-                <td> Publisher: </td>
-                <td> <input type="text" bind="@gameDetails.Publisher" /> </td>
-            </tr>
-            <tr>
-                <td> Genre: </td>
-                <td> <input type="text" bind="@gameDetails.GenreName" /> </td>
-            </tr>
-            <tr>
-                <td> Player count: </td>
-                <td> <input type="text" bind="@gameDetails.PlayerCount" /> </td>
-            </tr>
-            <tr>
-                <td> Age required: </td>
-                <td> <input type="number" bind="@gameDetails.MinAgeRequired" /> </td>
-            </tr>
-        </table>
+        <div class="form-group row">
+            <label for="gameTitle" class="col-sm-6 col-form-label">Game title: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="gameTitle" placeholder="Title" bind="@gameDetails.Title" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="description" class="col-sm-6 col-form-label">Description: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="description" placeholder="Description" bind="@gameDetails.Description" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="publisher" class="col-sm-6 col-form-label">Publisher: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="publisher" placeholder="Publisher" bind="@gameDetails.Publisher" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="genre" class="col-sm-6 col-form-label">Genre: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="genre" placeholder="Genre" bind="@gameDetails.GenreName" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="playerCount" class="col-sm-6 col-form-label">Player count: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="playerCount" placeholder="Min-max" bind="@gameDetails.PlayerCount" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="ageRequired" class="col-sm-6 col-form-label"> Age required: </label>
+            <div class="col-sm-6">
+                <input type="number" class="form-control" id="ageRequired" placeholder="Age required" bind="@gameDetails.MinAgeRequired" />
+            </div>
+        </div>
 
-        <button onclick=@(async () => await SaveGameDetails())>Save details</button>
+        <button type="button" class="btn btn-primary" onclick=@(async () => await SaveGameDetails())>Save details</button>
 
         @if (newUserGame != null)
         {
-            <table>
-                <tr>
-                    <td> State: </td>
-                    <td> <input type="text" bind="@newUserGame.State " /></td>
-                </tr>
-                <tr>
-                    <td> Is Complete: </td>
-                    <td> <input type="checkbox" bind="@newUserGame.IsComplete" /> </td>
-                </tr>
-                <tr>
-                    <td> Shipment: </td>
-                    <td> <input type="text" bind="@newUserGame.Shipment" /> </td>
-                </tr>
-                <tr>
-                    <td> Description: </td>
-                    <td> <input type="text" bind="@newUserGame.UserGameDescription" /> </td>
-                </tr>
-            </table>
+            <div class="form-group row">
+                <label for="shipment" class="col-sm-6 col-form-label"> Shipment type: </label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="shipment" placeholder="Shipment" bind="@newUserGame.Shipment" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="isComplete" class="col-sm-6 col-form-label"> Is your game complete: </label>
+                <div class="col-sm-6">
+                    <input type="checkbox" class="form-control" id="isComplete" placeholder="false" bind="@newUserGame.IsComplete" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="gameState" class="col-sm-6 col-form-label"> Game state: </label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="gameState" placeholder="Game state" bind="@newUserGame.State" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="stateDescription" class="col-sm-6 col-form-label"> State description: </label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="stateDescription" placeholder="Description of game state" bind="@newUserGame.UserGameDescription" />
+                </div>
+            </div>
 
-            <button onclick=@(async () => await AddUserGameToDB())>Add game for exchange</button>
+            <button type="button" class="btn btn-primary" onclick=@(async () => await AddUserGameToDB())>Add game for exchange</button>
         }
 
         @if (success)
         {
             <p>Game was added for exchange</p>
+            // add confirm page
+            // with button to go back to profile
         }
     }
 
