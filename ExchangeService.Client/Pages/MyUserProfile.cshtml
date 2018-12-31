@@ -95,7 +95,7 @@ else
                     </div>
                 </div>
                 <div class="col-sm-3">
-                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => AddForSearch())">Add game for exchange</button>
+                    <a role="button" class="btn btn-primary btn-block" href="/addexchangegame">Add game for exchange</a>
                 </div>
             </div>
             <div class="row">
@@ -117,7 +117,7 @@ else
                     </div>
                 </div>
                 <div class="col-sm-3">
-                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => AddForExchange())">Add game search</button>
+                    <a role="button" class="btn btn-primary btn-block" href="/addsearchgame">Add game search</a>
                 </div>
             </div>
             <div class="row">
@@ -233,15 +233,4 @@ else
             contactDetailsButton = "Hide contact details";
         }
     }
-
-    private void AddForExchange()
-    {
-        UriHelper.NavigateTo("/addsearchgame");
-    }
-
-    private void AddForSearch()
-    {
-        UriHelper.NavigateTo("/addexchangegame");
-    }
-
 }
