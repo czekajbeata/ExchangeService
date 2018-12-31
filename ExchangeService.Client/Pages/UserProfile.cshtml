@@ -163,7 +163,7 @@ else
                                 <td>@comments[i].CommentDate.ToShortDateString()</td>
                                 <td>
                                     <div class="form-group row">
-                                        @comments[i].Mark
+                                        Mark: @comments[i].Mark
                                     </div>
                                     <div class="form-group row">
                                         @comments[i].Text
@@ -247,7 +247,7 @@ else
 
     private void OfferDeal()
     {
-        // redirect to exchange page with both user ids
+        UriHelper.NavigateTo($"/offerdeal/{profileOwner.UserId}");
     }
 
 }
