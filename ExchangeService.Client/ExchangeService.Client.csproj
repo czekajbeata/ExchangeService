@@ -23,6 +23,12 @@
     <Content Update="Pages\FillProfile.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Informations\GameExchangeAdded - Success.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Informations\GameSearchAdded - Success.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Informations\Logout - Success.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
