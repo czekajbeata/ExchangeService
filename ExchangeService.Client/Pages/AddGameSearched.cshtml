@@ -5,161 +5,192 @@
 @inject TokenService tokenService
 
 <h1>Add game search</h1>
-<input type="text" bind="@GameTitle" />
+
+<div class="form-group row">
+    <label for="gameTitle" class="col-sm-6 col-form-label">Game title:</label>
+    <div class="col-sm-6">
+        <input type="text" class="form-control" id="gameTitle" placeholder="Title" bind="@GameTitle" />
+    </div>
+</div>
 
 @if (gameWasSearched)
 {
     @if (response != null && response.Length > 0)
     {
-        <p>Select game from existing or add a new one:</p>
-        <select bind="@SelectedId">
-            <option selected>...</option>
-            @foreach (var game in response)
-            {
-                <option value="@game.Id">@game.Name</option>
-            }
-        </select>
+        <div class="form-group row">
+            <label for="gameId" class="col-sm-6 col-form-label">Select game from existing or add a new one:</label>
+            <div class="col-sm-3">
+                <select bind="@SelectedId" class="form-control">
+                    <option selected>Choose...</option>
+                    @foreach (var game in response)
+                    {
+                        <option value="@game.Id">@game.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-light" onclick=@(() => AddNewGame())>Add new game</button>
+            </div>
+        </div>
     }
-    <button onclick=@(() => AddNewGame())>Add new game</button>
+    else
+    {
+        <div class="form-group row">
+            <label for="gameId" class="col-sm-6 col-form-label">Game with provided title wasn't found. </label>           
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-light" onclick=@(() => AddNewGame())>Add new game</button>
+            </div>
+        </div>
+    }
+
 
     @if (gameDetails != null)
     {
-        <table>
-            <tr>
-                <td> Game title: </td>
-                <td> <input type="text" bind="@gameDetails.Title " /></td>
-            </tr>
-            <tr>
-                <td> Description: </td>
-                <td> <input type="text" bind="@gameDetails.Description" /> </td>
-            </tr>
-            <tr>
-                <td> Publisher: </td>
-                <td> <input type="text" bind="@gameDetails.Publisher" /> </td>
-            </tr>
-            <tr>
-                <td> Genre: </td>
-                <td> <input type="text" bind="@gameDetails.GenreName" /> </td>
-            </tr>
-            <tr>
-                <td> Player count: </td>
-                <td> <input type="text" bind="@gameDetails.PlayerCount" /> </td>
-            </tr>
-            <tr>
-                <td> Age required: </td>
-                <td> <input type="number" bind="@gameDetails.MinAgeRequired" /> </td>
-            </tr>
-        </table>
+        <div class="form-group row">
+            <label for="gameTitle" class="col-sm-6 col-form-label">Game title: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="gameTitle" placeholder="Title" bind="@gameDetails.Title" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="description" class="col-sm-6 col-form-label">Description: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="description" placeholder="Description" bind="@gameDetails.Description" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="publisher" class="col-sm-6 col-form-label">Publisher: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="publisher" placeholder="Publisher" bind="@gameDetails.Publisher" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="genre" class="col-sm-6 col-form-label">Genre: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="genre" placeholder="Genre" bind="@gameDetails.GenreName" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="playerCount" class="col-sm-6 col-form-label">Player count: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="playerCount" placeholder="Min-max" bind="@gameDetails.PlayerCount" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="ageRequired" class="col-sm-6 col-form-label"> Age required: </label>
+            <div class="col-sm-6">
+                <input type="number" class="form-control" id="ageRequired" placeholder="Age required" bind="@gameDetails.MinAgeRequired" />
+            </div>
+        </div>
 
-        <button onclick=@(async () => await AddToSearched())>Add game search</button>
+        <button type="button" class="btn btn-primary" onclick=@(async () => await AddToSearched())>Add game search</button>
 
         @if (success)
         {
             <p>Game search was added</p>
+            // add confirm page
+            // with button to go back to profile
         }
     }
 }
 
 
-
-
-
 @functions {
-        DropDownItem[] response;
-        bool gameWasSearched = false;
-        bool gameDoesntExist = true;
-        GameDto gameDetails = null;
-        string gameID;
-        bool success = false;
+DropDownItem[] response;
+bool gameWasSearched = false;
+bool gameDoesntExist = true;
+GameDto gameDetails = null;
+string gameID;
+bool success = false;
 
-        string gameTitle = null;
+string gameTitle = null;
 public string GameTitle
+{
+    get => gameTitle;
+    set
     {
-        get => gameTitle;
-        set
-        {
-            gameTitle = value;
-            if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
-            StateHasChanged();
-        }
-    }
-
-    string selectedId = null;
-    public string SelectedId
-    {
-        get => selectedId;
-        set
-        {
-            selectedId = value;
-            if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
-        }
-    }
-
-    protected override async Task OnInitAsync()
-    {
-        var token = await tokenService.GetAccessToken();
-        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
-
-    }
-
-    private async Task FillAutoComplete()
-    {
-        response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
-        SelectedId = null;
-        gameWasSearched = true;
-        gameDetails = null;
-        success = false;
+        gameTitle = value;
+        if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
         StateHasChanged();
     }
+}
 
-    private void AddNewGame()
+string selectedId = null;
+public string SelectedId
+{
+    get => selectedId;
+    set
     {
-        gameDetails = new GameDto();
-        SelectedId = string.Empty;
-        GameTitle = string.Empty;
-        gameDoesntExist = true;
-        success = false;
+        selectedId = value;
+        if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
     }
+}
 
-    private async Task GetGameDetails()
-    {
-        gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
-        gameDoesntExist = false;
-        GameTitle = string.Empty;
-        gameID = gameDetails.GameId.ToString();
-        success = false;
-        StateHasChanged();
-    }
+protected override async Task OnInitAsync()
+{
+    var token = await tokenService.GetAccessToken();
+    Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
 
-    private async Task AddToSearched()
-    {
-        if (gameDoesntExist)
-            await AddGameToDB();
-        else
-            await UpdateGameInDB();
-        await AddSearch();
-    }
+}
 
-    private async Task AddGameToDB()
-    {
-        await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
-        var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
-        gameID = games[0].Id.ToString();
-    }
+private async Task FillAutoComplete()
+{
+    response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
+    SelectedId = null;
+    gameWasSearched = true;
+    gameDetails = null;
+    success = false;
+    StateHasChanged();
+}
 
-    private async Task UpdateGameInDB()
-    {
-        await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
-    }
+private void AddNewGame()
+{
+    gameDetails = new GameDto();
+    SelectedId = string.Empty;
+    GameTitle = string.Empty;
+    gameDoesntExist = true;
+    success = false;
+}
 
-    private async Task AddSearch()
+private async Task GetGameDetails()
+{
+    gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
+    gameDoesntExist = false;
+    GameTitle = string.Empty;
+    gameID = gameDetails.GameId.ToString();
+    success = false;
+    StateHasChanged();
+}
+
+private async Task AddToSearched()
+{
+    if (gameDoesntExist)
+        await AddGameToDB();
+    else
+        await UpdateGameInDB();
+    await AddSearch();
+}
+
+private async Task AddGameToDB()
+{
+    await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
+    gameID = games[0].Id.ToString();
+}
+
+private async Task UpdateGameInDB()
+{
+    await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
+}
+
+private async Task AddSearch()
+{
+    UserSearchGameDto newUserSearch = new UserSearchGameDto()
     {
-        UserSearchGameDto newUserSearch = new UserSearchGameDto()
-        {
-            GameId = Int32.Parse(gameID)
-        };
-        await Http.PostJsonAsync("http://localhost:5000/api/users/searches/", newUserSearch);
-        success = true;
-    }
+        GameId = Int32.Parse(gameID)
+    };
+    await Http.PostJsonAsync("http://localhost:5000/api/users/searches/", newUserSearch);
+    success = true;
+}
 
 }
