@@ -88,18 +88,32 @@ namespace ExchangeService.Controllers.Logic
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
                 Description = game.Description,
-                GenreName = games.GetGenre(game.GenreId).Name,
-                ImageUrl= game.ImageUrl,
+                GenreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name ?? String.Empty : String.Empty,
+                ImageUrl = game.ImageUrl ?? String.Empty,
                 IsComplete = usergame.IsComplete,
-                MinAgeRequired = game.MinAgeRequired.ToString(),
-                PlayerCount = playerCount,
+                MinAgeRequired = game.MinAgeRequired.ToString() ?? String.Empty,
+                PlayerCount = playerCount ?? String.Empty,
                 PublishDate = game.PublishDate,
-                Publisher = game.Publisher,
+                Publisher = game.Publisher ?? String.Empty,
                 Shipment = usergame.Shipment,
                 State = usergame.State,
                 Title = game.Title,
-                UserGameDescription = usergame.UserGameDescription
+                UserGameDescription = usergame.UserGameDescription ?? String.Empty
             };
+        }
+
+        public bool DeleteUserGame(int userGameId)
+        {
+            bool result = userProfiles.DeleteUserGame(userGameId);
+            unitOfWork.CompleteWork();
+            return result;
+        }
+
+        public bool DeleteUserSearch(int userSearchId)
+        {
+            bool result = userProfiles.DeleteUserSearch(userSearchId);
+            unitOfWork.CompleteWork();
+            return result;
         }
 
         public bool AddUserSearchGame(UserSearchGameDto newUserSearchGame, int userId)

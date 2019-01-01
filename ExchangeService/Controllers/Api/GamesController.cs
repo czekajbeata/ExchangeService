@@ -107,5 +107,21 @@ namespace ExchangeService.Controllers.Api
             var result = shelvesService.UpdateUserGame(userGameDto, normalizedId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
+
+        [Authorize]
+        [HttpDelete("api/users/searches/{userSearchId}")]
+        public IActionResult DeleteUserSearch(int userSearchId)
+        {
+            var result = shelvesService.DeleteUserSearch(userSearchId);
+            return result ? (IActionResult)Ok() : NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete("api/users/games/{userGameId}")]
+        public IActionResult DeleteUserGame(int userGameId)
+        {
+            var result = shelvesService.DeleteUserGame(userGameId);
+            return result ? (IActionResult)Ok() : NoContent();
+        }
     }
 }

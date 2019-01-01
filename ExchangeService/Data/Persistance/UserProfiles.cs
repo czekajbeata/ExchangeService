@@ -93,5 +93,23 @@ namespace ExchangeService.Data.Persistance
             var result = context.Exchanges.Add(exchange);
             return result.Entity;
         }
+
+        public bool DeleteUserGame(int userGameId)
+        {
+            var game = context.UserGames.FirstOrDefault(g => g.UserGameId == userGameId);
+            if (game == null)
+                return false;
+            context.UserGames.Remove(game);
+            return true;
+        }
+
+        public bool DeleteUserSearch(int userSearchId)
+        {
+            var search = context.UserSearchGames.FirstOrDefault(g => g.UserSearchGameId == userSearchId);
+            if (search == null)
+                return false;
+            context.UserSearchGames.Remove(search);
+            return true;
+        }
     }
 }
