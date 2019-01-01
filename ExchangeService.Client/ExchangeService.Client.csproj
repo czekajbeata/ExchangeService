@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Pages\PlainGame.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\GameForExchange.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

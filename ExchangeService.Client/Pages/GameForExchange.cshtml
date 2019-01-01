@@ -196,11 +196,8 @@
         var token = await tokenService.GetAccessToken();
         Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
         gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-Console.WriteLine(gameView.Title);
         gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + gameView.UserId);
         // get  my profile & if user ids are the same navigate to "editablegamefoxechange"
-Console.WriteLine(gameOwner.UserId);
-
     }
 
     private void ToogleContactDetails()

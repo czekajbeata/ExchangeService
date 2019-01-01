@@ -1,0 +1,89 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@page "/game/{GameId}"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+<h1>Game</h1>
+<br />
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Genre: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.GenreName</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Player count: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.PlayerCount</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Age required: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.MinAgeRequired</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Publisher: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.Publisher</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">PublishDate: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.PublishDate</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Description: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.Description</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="row justify-content-center">
+                        <img src="@gameView.ImageUrl" width="200" height="200">
+                    </div>
+                    <div class="row justify-content-center">
+                        <p class="font-weight-bold">@gameView.Title</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    [Parameter]
+    string GameId { get; set; }
+    GameDto gameView {get;set;} = new GameDto();
+
+    protected override async Task OnInitAsync()
+    {
+        var token = await tokenService.GetAccessToken();
+        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        gameView = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + GameId);
+    }
+}
