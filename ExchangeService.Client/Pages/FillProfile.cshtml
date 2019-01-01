@@ -5,43 +5,66 @@
 @inject TokenService tokenService
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<div class="container">
-    <h2>Thank you for registering!</h2>
-    <h3>Plese provide additional details before you get started:</h3>
-    <div class="form-group">
-        <label for="picture">Profile picture url</label>
-        <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@PictureUrl" />
+
+<h2>Thank you for registering!</h2>
+<h3>Plese provide additional details before you get started:</h3>
+<br/>
+
+<form>
+    <div class="form-group row">
+        <label for="picture" class="col-sm-3 col-form-label">Profile picture url</label>
+        <div class="col-sm-4">
+            <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@PictureUrl" />
+        </div>
     </div>
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" name="name" placeholder="Name" class="form-control" bind="@Name" />
+    <div class="form-group row">
+        <label for="name" class="col-sm-3 col-form-label">Name</label>
+        <div class="col-sm-4">
+            <input type="text" name="name" placeholder="Name" class="form-control" bind="@Name" />
+        </div>
     </div>
-    <div class="form-group">
-        <label for="surname">Surname</label>
-        <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@Surname" />
+    <div class="form-group row">
+        <label for="surname" class="col-sm-3 col-form-label">Surname</label>
+        <div class="col-sm-4">
+            <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@Surname" />
+        </div>
     </div>
-    <div class="form-group">
-        <label for="location">Location</label>
-        <input type="text" name="location" placeholder="Location" class="form-control" bind="@Location" />
+    <div class="form-group row">
+        <label for="location" class="col-sm-3 col-form-label">Location</label>
+        <div class="col-sm-4">
+            <input type="text" name="location" placeholder="Location" class="form-control" bind="@Location" />
+        </div>
     </div>
-    <div class="form-group">
-        <label for="delivery">Accepting delivery</label>
-        <input type="checkbox" name="delivery" placeholder="false" class="form-control" bind="@Delivery" />
+    <div class="form-group row" style="text-align:left">
+        <label for="delivery" class="col-sm-3 col-form-label">Accepting delivery</label>
+        <div class="col-sm-1">
+            <input type="checkbox" name="delivery" placeholder="false" class="form-control" bind="@Delivery" />
+        </div>
     </div>
-    <div class="form-group">
-        <label for="pickup">Accepting pickup</label>
-        <input type="checkbox" name="pickup" placeholder="false" class="form-control" bind="@PickUp" />
+    <div class="form-group row" style="text-align:left">
+        <label for="pickup" class="col-sm-3 col-form-label">Accepting pickup</label>
+        <div class="col-sm-1">
+            <input type="checkbox" name="pickup" placeholder="false" class="form-control" bind="@PickUp" />
+        </div>
     </div>
-    <div class="form-group">
-        <label for="email">Contact email</label>
-        <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@ContactEmail" />
+    <div class="form-group row">
+        <label for="email" class="col-sm-3 col-form-label">Contact email</label>
+        <div class="col-sm-4">
+            <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@ContactEmail" />
+        </div>
     </div>
-    <div class="form-group">
-        <label for="number">Phone number</label>
-        <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@PhoneNumber" />
+    <div class="form-group row">
+        <label for="number" class="col-sm-3 col-form-label">Phone number</label>
+        <div class="col-sm-4">
+            <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@PhoneNumber" />
+        </div>
     </div>
-    <button type="button" class="btn btn-primary" onclick="@SubmitForm">Create profile</button>
-</div>
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-primary btn-block" onclick="@SubmitForm">Create profile</button>
+        </div>
+    </div>
+</form>
 
 @functions{
     public bool PickUp { get; set; }
@@ -73,7 +96,7 @@
             ContactEmail = ContactEmail
         };
         await Http.PostJsonAsync("http://localhost:5000/api/users/profile", userView);
-        if(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile") != null)
+        if (await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile") != null)
         {
             UriHelper.NavigateTo("/myprofile");
         }
