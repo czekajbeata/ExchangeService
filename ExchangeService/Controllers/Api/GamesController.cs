@@ -50,6 +50,14 @@ namespace ExchangeService.Controllers.Api
             return shelvesService.GetUserSearchGames(id);
         }
 
+
+        [HttpGet("api/users/search/{userSearchId}")]
+        public UserSearchGameView GetUserSearch(int userSearchId)
+        {
+            return shelvesService.GetUserSearch(userSearchId);
+        }
+
+
         [HttpGet("api/users/games/{id}")]
         public IEnumerable<UserGameView> GetUserGames(int id)
         {

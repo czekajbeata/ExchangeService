@@ -111,5 +111,10 @@ namespace ExchangeService.Data.Persistance
             context.UserSearchGames.Remove(search);
             return true;
         }
+
+        public UserSearchGame GetUserSearch(int userSearchId)
+        {
+            return context.UserSearchGames.SingleOrDefault(u => u.UserSearchGameId == userSearchId);
+        }
     }
 }

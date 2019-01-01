@@ -22,5 +22,6 @@ namespace ExchangeService.Core
         Exchange AddExchange(Exchange newExchange);
         bool DeleteUserGame(int userGameId);
         bool DeleteUserSearch(int userSearchId);
+        UserSearchGame GetUserSearch(int userGameId);
     }
 }

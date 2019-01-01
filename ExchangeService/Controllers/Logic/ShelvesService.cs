@@ -54,6 +54,19 @@ namespace ExchangeService.Controllers.Logic
             return newGame.GameId != 0;
         }
 
+        internal UserSearchGameView GetUserSearch(int userSearchId)
+        {
+            var userSearch = userProfiles.GetUserSearch(userSearchId);
+            var game = games.GetGame(userSearch.GameId);
+            return new UserSearchGameView()
+            {
+                GameId = userSearch.GameId,
+                UserId = userSearch.UserId,
+                ImageUrl = game.ImageUrl,
+                Title = game.Title
+            };
+        }
+
         public UserGameView GetUserGame(int userGameId)
         {
             var usergame = userProfiles.GetUserGame(userGameId);

@@ -1,0 +1,19 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@page "/gamedeletesuccess"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+
+<div class="col-sm-7">
+    <div class="alert alert-success" role="alert">
+        You have successfully removed game from your profile.
+        <br />
+        <div class="row">
+            <div class="col-sm-6">
+                <a role="button" class="btn btn-light btn-block" href="/myprofile">Back to profile</a>
+            </div>
+        </div>
+    </div>
+</div>

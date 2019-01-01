@@ -1,0 +1,39 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@page "/deletesearch/{SearchId}"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+@if (GameSearch == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h5>Do you want to remove search for @GameSearch.Title from your profile?</h5>
+    <button type="button" class="btn btn-danger" onclick="@(async () => await Remove())">Remove</button>
+}
+
+@functions{
+    [Parameter]
+    string SearchId { get; set; }
+    UserSearchGameView GameSearch { get; set; }
+
+    protected override async Task OnInitAsync()
+    {
+        var token = await tokenService.GetAccessToken();
+        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        GameSearch = await Http.GetJsonAsync<UserSearchGameView>("http://localhost:5000/api/users/search/" + SearchId);
+
+        var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
+        if (GameSearch.UserId != loggedUserId)
+            UriHelper.NavigateTo("/gamedeletefail");
+    }
+
+    private async Task Remove()
+    {
+        await Http.DeleteAsync("http://localhost:5000/api/users/searches/" + SearchId);
+        UriHelper.NavigateTo("/gamedeletesuccess");
+    }
+}

@@ -23,6 +23,15 @@
     <Content Update="Pages\EditableGameForExchange.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Informations\ConfirmSearchDelete.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Informations\GameDelete - Fail.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Informations\GameDeleted - Success.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Informations\GameExchangeUpdated- Success .cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
