@@ -45,6 +45,14 @@ namespace ExchangeService.Controllers.Api
         }
 
         [Authorize]
+        [HttpGet("api/users/id")]
+        public int GetLoggedUserId()
+        {
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            return profilesService.ToNormalizedId(id);
+        }
+
+        [Authorize]
         [HttpGet("api/users/myprofile")]
         public UserView GetMyUserProfile()
         {
