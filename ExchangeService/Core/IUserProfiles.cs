@@ -6,9 +6,9 @@ namespace ExchangeService.Core
     public interface IUserProfiles
     {
         UserGame AddGame(UserGame game);
-        UserGame GetGame(int gameId, int userId);
+        UserGame GetUserGame(int gameId, int userId);
+        UserGame GetUserGame(int userGameId);
         IEnumerable<UserGame> GetUserGames(int userId);
-        UserGame GetUserGame(int gameId);
         UserSearchGame AddSearchGame(UserSearchGame game);
         IEnumerable<UserSearchGame> GetUserSearchGames(int userId);
         Comment AddComment(Comment comment);

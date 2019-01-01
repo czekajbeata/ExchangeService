@@ -56,10 +56,10 @@ namespace ExchangeService.Controllers.Api
             return shelvesService.GetUserGames(id);
         }
 
-        [HttpGet("api/users/game/{id}")]
-        public UserGameView GetUserGame(int id)
+        [HttpGet("api/users/game/{userGameId}")]
+        public UserGameView GetUserGame(int userGameId)
         {
-            return shelvesService.GetUserGame(id);
+            return shelvesService.GetUserGame(userGameId);
         }
 
         [Authorize]

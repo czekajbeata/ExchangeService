@@ -1,11 +1,11 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
-@page "/exchangegame/{UserGameId}"
+@page "/editableexchangegame/{UserGameId}"
 @inject HttpClient Http
 @inject TokenService tokenService
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<h1>Game for exchange</h1>
+<h1>Edit game for exchange</h1>
 <br />
 
 <div class="container">
@@ -27,11 +27,11 @@
             </div>
             @if (gameOwner.Pickup && !gameOwner.Delivery)
             {
-                <p class="font-italic">Pickup only</p>
+            <p class="font-italic">Pickup only</p>
             }
             else if (gameOwner.Delivery && !gameOwner.Pickup)
             {
-                <p class="font-italic">Delivery only</p>
+            <p class="font-italic">Delivery only</p>
             }
             <div class="form-group row">
                 <div class="col-sm-9">
@@ -61,25 +61,24 @@
             <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
             @if (contactDetailsVisible)
             {
-                <br />
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <span class="fas fa-phone" style="font-size: 24px"></span>
-                    </div>
-                    <div class="col-sm-10">
-                        <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
-                    </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <span class="fas fa-phone" style="font-size: 24px"></span>
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm-2">
-                        <span class="fas fa-envelope" style="font-size: 24px"></span>
-                    </div>
-                    <div class="col-sm-10">
-                        <p class="font-weight-normal">@gameOwner.ContactEmail</p>
-                    </div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" bind="@gameOwner.PhoneNumber" />
                 </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <span class="fas fa-envelope" style="font-size: 24px"></span>
+                </div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" bind="@gameOwner.ContactEmail" />
+                </div>
+            </div>
             }
-            <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
         </div>
 
         <div class="col-sm-9">
@@ -145,42 +144,36 @@
             </div>
             <div class="row">
                 <div class="col-sm-8">
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Shipment type: </p>
+                    <form>
+                        <div class="form-group row">
+                            <label for="shipment" class="col-sm-6 col-form-label"> Shipment type: </label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="shipment" placeholder="Shipment" bind="@gameView.Shipment" />
+                            </div>
                         </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.Shipment</p>
+                        <div class="form-group row">
+                            <label for="isComplete" class="col-sm-6 col-form-label"> Is this game complete: </label>
+                            <div class="col-sm-6">
+                                <input type="checkbox" class="form-control" id="isComplete" placeholder="false" bind="@gameView.IsComplete" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Is this game complete: </p>
+                        <div class="form-group row">
+                            <label for="gameState" class="col-sm-6 col-form-label"> Game state: </label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="gameState" placeholder="Game state" bind="@gameView.State" />
+                            </div>
                         </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.IsComplete</p>
+                        <div class="form-group row">
+                            <label for="stateDescription" class="col-sm-6 col-form-label"> State description: </label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="stateDescription" placeholder="Description of game state" bind="@gameView.UserGameDescription" />
+                            </div>
                         </div>
-                    </div>                    
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Game state: </p>
-                        </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.State</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">State description: </p>
-                        </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.UserGameDescription</p>
-                        </div>
-                    </div>
+                        <button type="button" class="btn btn-primary" onclick=@(async () => await UpdateUserGameDetails())>Update details</button>
+                    </form>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -197,8 +190,7 @@
         var token = await tokenService.GetAccessToken();
         Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
         gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + gameView.UserId);
-        // get  my profile & if user ids are the same navigate to "editablegamefoxechange"
+        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
     }
 
     private void ToogleContactDetails()
@@ -215,8 +207,16 @@
         }
     }
 
-    private void OfferDeal()
-    {
-        UriHelper.NavigateTo($"/offerdeal/{gameOwner.UserId}");
-    }
+private async Task UpdateUserGameDetails()
+{
+    UserGameDto updatedUserGame = new UserGameDto {
+    State = gameView.State,
+    IsComplete = gameView.IsComplete,
+    Shipment = gameView.Shipment,
+    UserGameDescription = gameView.UserGameDescription
+    };
+    await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
+    UriHelper.NavigateTo("/gameupdatedsuccess");
+}
+
 }

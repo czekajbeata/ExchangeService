@@ -37,19 +37,19 @@ namespace ExchangeService.Data.Persistance
             return context.Comments.Where(c => c.ReceivingUserId == userId);
         }
 
-        public UserGame GetGame(int gameId, int userId)
+        public UserGame GetUserGame(int gameId, int userId)
         {
             return context.UserGames.SingleOrDefault(g => g.GameId == gameId && g.UserId == userId);
+        }
+        
+        public UserGame GetUserGame(int userGameId)
+        {
+            return context.UserGames.SingleOrDefault(g => g.UserGameId == userGameId);
         }
 
         public IEnumerable<UserGame> GetUserGames(int userId)
         {
             return context.UserGames.Where(g => g.UserId == userId);
-        }
-
-        public UserGame GetUserGame(int gameId)
-        {
-            return context.UserGames.First(g => g.GameId == gameId);
         }
 
         public IEnumerable<UserSearchGame> GetUserSearchGames(int userId)

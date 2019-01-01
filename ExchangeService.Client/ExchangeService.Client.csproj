@@ -20,6 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Pages\EditableGameForExchange.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Informations\GameExchangeUpdated- Success .cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\PlainGame.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

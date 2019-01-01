@@ -54,9 +54,33 @@ namespace ExchangeService.Controllers.Logic
             return newGame.GameId != 0;
         }
 
-        public UserGameView GetUserGame(int gameId)
+        public UserGameView GetUserGame(int userGameId)
         {
-            var usergame = userProfiles.GetUserGame(gameId);
+            var usergame = userProfiles.GetUserGame(userGameId);
+            var game = games.GetGame(usergame.GameId);
+            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
+            return new UserGameView()
+            {
+                GameId = usergame.GameId,
+                UserId = usergame.UserId,
+                Description = game.Description,
+                GenreName = game.GenreId!= null ? games.GetGenre(game.GenreId).Name ?? String.Empty : String.Empty,
+                ImageUrl = game.ImageUrl ?? String.Empty,
+                IsComplete = usergame.IsComplete,
+                MinAgeRequired = game.MinAgeRequired.ToString() ?? String.Empty,
+                PlayerCount = playerCount ?? String.Empty,
+                PublishDate = game.PublishDate,
+                Publisher = game.Publisher ?? String.Empty,
+                Shipment = usergame.Shipment,
+                State = usergame.State,
+                Title = game.Title,
+                UserGameDescription = usergame.UserGameDescription ?? String.Empty
+            };
+        }
+
+        public UserGameView GetUserGame(int gameId, int userId)
+        {
+            var usergame = userProfiles.GetUserGame(gameId, userId);
             var game = games.GetGame(usergame.GameId);
             var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
             return new UserGameView()
@@ -134,7 +158,7 @@ namespace ExchangeService.Controllers.Logic
 
         public bool UpdateUserGame(UserGameDto updatedGame, int userId)
         {
-            var existingGame = userProfiles.GetGame(updatedGame.GameId, userId);
+            var existingGame = userProfiles.GetUserGame(updatedGame.GameId, userId);
             if (existingGame == null)
                 return false;
 
