@@ -1,0 +1,39 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@page "/deletegame/{UserGameId}"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+@if (UserGame == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<h5>Do you want to remove @UserGame.Title  from games for exchange from your profile?</h5>
+<button type="button" class="btn btn-danger" onclick="@(async () => await Remove())">Remove</button>
+}
+
+@functions{
+    [Parameter]
+    string UserGameId { get; set; }
+    UserGameView UserGame { get; set; }
+
+    protected override async Task OnInitAsync()
+    {
+        var token = await tokenService.GetAccessToken();
+        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        UserGame = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
+
+        var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
+        if (UserGame.UserId != loggedUserId)
+            UriHelper.NavigateTo("/gamedeletefail");
+    }
+
+    private async Task Remove()
+    {
+        await Http.DeleteAsync("http://localhost:5000/api/users/games/" + UserGameId);
+        UriHelper.NavigateTo("/gamedeletesuccess");
+    }
+}
