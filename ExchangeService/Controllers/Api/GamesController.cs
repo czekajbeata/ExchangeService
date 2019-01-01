@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeService.Controllers.Api
 {
-    [Authorize]
     [ApiController]
     public class GamesController : ControllerBase
     {
@@ -55,6 +54,12 @@ namespace ExchangeService.Controllers.Api
         public IEnumerable<UserGameView> GetUserGames(int id)
         {
             return shelvesService.GetUserGames(id);
+        }
+
+        [HttpGet("api/users/game/{id}")]
+        public UserGameView GetUserGame(int id)
+        {
+            return shelvesService.GetUserGame(id);
         }
 
         [Authorize]

@@ -54,6 +54,30 @@ namespace ExchangeService.Controllers.Logic
             return newGame.GameId != 0;
         }
 
+        public UserGameView GetUserGame(int gameId)
+        {
+            var usergame = userProfiles.GetUserGame(gameId);
+            var game = games.GetGame(usergame.GameId);
+            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
+            return new UserGameView()
+            {
+                GameId = usergame.GameId,
+                UserId = usergame.UserId,
+                Description = game.Description,
+                GenreName = games.GetGenre(game.GenreId).Name,
+                ImageUrl= game.ImageUrl,
+                IsComplete = usergame.IsComplete,
+                MinAgeRequired = game.MinAgeRequired.ToString(),
+                PlayerCount = playerCount,
+                PublishDate = game.PublishDate,
+                Publisher = game.Publisher,
+                Shipment = usergame.Shipment,
+                State = usergame.State,
+                Title = game.Title,
+                UserGameDescription = usergame.UserGameDescription
+            };
+        }
+
         public bool AddUserSearchGame(UserSearchGameDto newUserSearchGame, int userId)
         {
             UserSearchGame newUserSearch = new UserSearchGame()

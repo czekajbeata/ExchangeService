@@ -8,6 +8,7 @@ namespace ExchangeService.Core
         UserGame AddGame(UserGame game);
         UserGame GetGame(int gameId, int userId);
         IEnumerable<UserGame> GetUserGames(int userId);
+        UserGame GetUserGame(int gameId);
         UserSearchGame AddSearchGame(UserSearchGame game);
         IEnumerable<UserSearchGame> GetUserSearchGames(int userId);
         Comment AddComment(Comment comment);

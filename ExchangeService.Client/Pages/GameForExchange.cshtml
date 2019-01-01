@@ -1,0 +1,219 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@page "/exchangegame/{UserGameId}"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+<h1>Game for exchange</h1>
+<br />
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="row justify-content-center">
+                <img src="@gameOwner.ImageUrl" width="150" height="150">
+            </div>
+            <div class="row justify-content-center">
+                <p class="font-weight-bold">@gameOwner.Name @gameOwner.Surname</p>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                </div>
+                <div class="col-sm-10">
+                    <p class="font-weight-normal">@gameOwner.PickUpLocation</p>
+                </div>
+            </div>
+            @if (gameOwner.Pickup && !gameOwner.Delivery)
+            {
+            <p class="font-italic">Pickup only</p>
+            }
+            else if (gameOwner.Delivery && !gameOwner.Pickup)
+            {
+            <p class="font-italic">Delivery only</p>
+            }
+            <div class="form-group row">
+                <div class="col-sm-9">
+                    <p class="font-weight-normal">Exchanges made:</p>
+                </div>
+                <div class="col-sm-3">
+                    @gameOwner.ExchangesCount
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-9">
+                    <p class="font-weight-normal">Reviews:</p>
+                </div>
+                <div class="col-sm-3">
+                    @gameOwner.ReviewsCount
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-9">
+                    <p class="font-weight-normal">Average mark:</p>
+                </div>
+                <div class="col-sm-3">
+                    @gameOwner.AvgMark
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
+            @if (contactDetailsVisible)
+            {
+            <br />
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <span class="fas fa-phone" style="font-size: 24px"></span>
+                </div>
+                <div class="col-sm-10">
+                    <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <span class="fas fa-envelope" style="font-size: 24px"></span>
+                </div>
+                <div class="col-sm-10">
+                    <p class="font-weight-normal">@gameOwner.ContactEmail</p>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Genre: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.GenreName</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Player count: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.PlayerCount</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Age required: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.MinAgeRequired</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Publisher: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.Publisher</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">PublishDate: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.PublishDate</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Description: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.Description</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="row justify-content-center">
+                        <img src="@gameView.ImageUrl" width="200" height="200">
+                    </div>
+                    <div class="row justify-content-center">
+                        <p class="font-weight-bold">@gameView.Title</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Shipment: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.Shipment</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">Is complete: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.IsComplete</p>
+                        </div>
+                    </div>                    
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">State: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.State</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="font-weight-normal">State description: </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="font-italic">@gameView.UserGameDescription</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@functions {
+    [Parameter]
+    string UserGameId { get; set; }
+    UserGameView gameView {get;set;} = new UserGameView();
+    UserView gameOwner {get;set;} = new UserView();
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
+
+    protected override async Task OnInitAsync()
+    {
+        var token = await tokenService.GetAccessToken();
+        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
+Console.WriteLine(gameView.Title);
+        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + gameView.UserId);
+        // get  my profile & if user ids are the same navigate to "editablegamefoxechange"
+Console.WriteLine(gameOwner.UserId);
+
+    }
+
+    private void ToogleContactDetails()
+    {
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
+    }
+}
