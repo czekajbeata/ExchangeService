@@ -27,11 +27,11 @@
             </div>
             @if (gameOwner.Pickup && !gameOwner.Delivery)
             {
-            <p class="font-italic">Pickup only</p>
+                <p class="font-italic">Pickup only</p>
             }
             else if (gameOwner.Delivery && !gameOwner.Pickup)
             {
-            <p class="font-italic">Delivery only</p>
+                <p class="font-italic">Delivery only</p>
             }
             <div class="form-group row">
                 <div class="col-sm-9">
@@ -61,24 +61,25 @@
             <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
             @if (contactDetailsVisible)
             {
-            <br />
-            <div class="form-group row">
-                <div class="col-sm-2">
-                    <span class="fas fa-phone" style="font-size: 24px"></span>
+                <br />
+                <div class="form-group row">
+                    <div class="col-sm-2">
+                        <span class="fas fa-phone" style="font-size: 24px"></span>
+                    </div>
+                    <div class="col-sm-10">
+                        <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
+                    </div>
                 </div>
-                <div class="col-sm-10">
-                    <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
+                <div class="form-group row">
+                    <div class="col-sm-2">
+                        <span class="fas fa-envelope" style="font-size: 24px"></span>
+                    </div>
+                    <div class="col-sm-10">
+                        <p class="font-weight-normal">@gameOwner.ContactEmail</p>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2">
-                    <span class="fas fa-envelope" style="font-size: 24px"></span>
-                </div>
-                <div class="col-sm-10">
-                    <p class="font-weight-normal">@gameOwner.ContactEmail</p>
-                </div>
-            </div>
             }
+            <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
         </div>
 
         <div class="col-sm-9">
@@ -212,5 +213,10 @@
             contactDetailsVisible = true;
             contactDetailsButton = "Hide contact details";
         }
+    }
+
+    private void OfferDeal()
+    {
+        UriHelper.NavigateTo($"/offerdeal/{gameOwner.UserId}");
     }
 }
