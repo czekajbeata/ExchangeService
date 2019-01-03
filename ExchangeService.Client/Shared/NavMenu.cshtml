@@ -1,7 +1,7 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
+@inject AppState appState
 @inject HttpClient Http
-@inject TokenService tokenService
 
 <nav class="navbar navbar-expand-lg navbar-dark" style="padding-left:12.5%; padding-right:12.5%; background-color:#003380">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navBarData" aria-controls="navBarData" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,7 @@
                 <li class="nav-item dropdown @(isDropdownOpen ? "show" : string.Empty)">
                     <a class="nav-link dropdown-toggle" id="myProfile" data-toggle="dropdown" onclick="@ToggleNavDropdown" aria-haspopup="true" aria-expanded="@(isDropdownOpen ? "true" : "false")">
                         <i class="fas fa-user"></i>
-                        @loggedUser.Name @loggedUser.Surname
+                        @loggedUserName
                     </a>
                     <div class="dropdown-menu @(isDropdownOpen ? "show" : string.Empty)" aria-labelledby="myProfile">
                         <a class="dropdown-item" href="/myprofile">Profile page</a>
@@ -49,29 +49,30 @@
 
 
 @functions {
-bool isDropdownOpen = false;
-bool isUserLogged = false;
-UserView loggedUser = new UserView();
-string Search { get; set; } = "";
+    bool isDropdownOpen = false;
+    bool isUserLogged = false;
+    string loggedUserName = "";
+    string Search { get; set; } = "";
 
-void ToggleNavDropdown()
-{
-    isDropdownOpen = !isDropdownOpen;
-}
-
-protected override async Task OnInitAsync()
-{
-    var token = await tokenService.GetAccessToken();
-    Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
-    loggedUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
-    if (loggedUser != null)
+    void ToggleNavDropdown()
     {
-        isUserLogged = true;
+        isDropdownOpen = !isDropdownOpen;
     }
-}
 
-private void SearchGames()
-{
-    Console.WriteLine("current search: " + Search);
-}
+    protected override async Task OnInitAsync()
+    {
+        Console.WriteLine("navbar: " + appState.IsUserLoggedIn);
+        if (appState.IsUserLoggedIn)
+        {
+            Console.WriteLine("token: " + appState.Token);
+            var user = await appState.GetMyProfile();
+            loggedUserName = user.Name + " " + user.Surname;
+            isUserLogged = true;
+        }
+    }
+
+    private void SearchGames()
+    {
+        Console.WriteLine("current search: " + Search);
+    }
 }

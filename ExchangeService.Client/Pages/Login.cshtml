@@ -1,8 +1,10 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
+@using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
 @page "/login"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <div class="container">
@@ -33,6 +35,7 @@
         };
         var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
         await tokenService.SaveAccessToken(response.Token);
+        appState.LogUser(response.Token);
         UriHelper.NavigateTo("/myprofile");
     }
 
