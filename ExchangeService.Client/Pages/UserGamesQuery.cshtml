@@ -6,13 +6,13 @@
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-@if (games == null)
+@if (userGames == null)
 {
 <p><em>Loading...</em></p>
 }
 else
 {
-<h1>Users games for @games[0].Title</h1>
+<h1>Users games for @userGames[0].Title</h1>
 <br />
 
 <div class="container">
@@ -20,21 +20,21 @@ else
     <table class="table table-striped">
         <thead>
             <tr>
-                <th style="width: 20%">Game</th>
-                <th style="width: 10%">State</th>
-                <th style="width: 15%">Is complete</th>
-                <th style="width: 15%">Shipment</th>
-                <th style="width: 25%">User</th>
+                <th style="width: 23%">Game</th>
+                <th style="width: 13%">State</th>
+                <th style="width: 13%">Is complete</th>
+                <th style="width: 13%">Shipment</th>
+                <th style="width: 23%">User</th>
                 <th style="width: 10%"></th>
             </tr>
         </thead>
         <tbody>
-            @foreach(var gameRow in games)
-                        {
+            @foreach(var gameRow in userGames)
+            {
             <tr>
                 <td>
-                    <div class="row justify-content-center">
-                        <div class="col-sm-8">
+                    <div class="row">
+                        <div class="col-sm-6">
                             <img src="@gameRow.ImageUrl" width="80" height="80" />
                         </div>
                         <div class="col-sm-4">
@@ -54,49 +54,59 @@ else
                 <td>@gameRow.State</td>
                 <td>@gameRow.IsComplete</td>
                 <td>@gameRow.Shipment</td>
-                <td>profile details</td>
                 <td>
-                    <button type="button" class="btn btn-primary btn-block" >Details</button>
-                    <button type="button" class="btn btn-primary btn-block" >Offer a deal</button>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <img src="@gameRow.UserImageUrl" width="80" height="80" />
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="row">
+                                @gameRow.Name @gameRow.Surname
+                            </div>
+                            <div class="row">
+                                <i class="fas fa-map-marker-alt" /> @gameRow.Location
+                            </div>
+                            <div class="row">
+                                Avg mark: @gameRow.AvgMark
+                            </div>
+                        </div>
+                    </div>
 
-                    @*buttons : details & offeradeal -> give entire row from oreach to method*@
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => GetDetails(gameRow))">Details</button>
+                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => OfferDeal(gameRow))">Offer a deal</button>
+
                 </td>
             </tr>
-                        }
+            }
         </tbody>
     </table>
-
-
-
 </div>
 }
-
 
 @functions {
     [Parameter]
     string GameId { get; set; }
-    UserGameView[] games;
-    UserView[] users;
-
+    GameAndUserView[] userGames;
 
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
-        var usergames = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/usergames/" + GameId);
+        var usergames = await Http.GetJsonAsync<IEnumerable<GameAndUserView>>("http://localhost:5000/api/usergames/" + GameId);
 // if is null -> redirect to information page "no exchanges offered for this game"
-        games = usergames.ToArray();
-        await FillUsers();
+        userGames = usergames.ToArray();
     }
 
-    private async Task FillUsers()
+    private void GetDetails(GameAndUserView row)
     {
-        var gameOwners = new List<UserView>();
-        foreach(var game in games)
-        {
-            var owner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + game.UserId);
-            gameOwners.Add(owner);
-        }
-        users = gameOwners.ToArray();
+        var id = row.UserGameId;
+        UriHelper.NavigateTo($"/exchangegame/{row.UserGameId}");
     }
+
+    private void OfferDeal(GameAndUserView row)
+{
+        UriHelper.NavigateTo($"/offerdeal/{row.UserId}");
+}
 
 }

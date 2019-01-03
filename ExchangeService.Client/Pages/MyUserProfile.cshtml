@@ -193,11 +193,13 @@ else
     {
         appState.TrySetAccessTokens();
         myProfile = await appState.GetMyProfile();
+        Console.WriteLine(myProfile.UserId);
         var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
         if (result.Count() > 0) await FillComents(result.ToArray());
 
         var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
         userGames = toExchange.ToArray();
+        Console.WriteLine(userGames.Count());
         var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
         userSearchGames = forSearch.ToArray();
     }

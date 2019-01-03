@@ -3,6 +3,7 @@ using ExchangeService.Core;
 using ExchangeService.Core.Entities;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace ExchangeService.Controllers.Logic
 {
@@ -218,22 +219,11 @@ namespace ExchangeService.Controllers.Logic
         public IEnumerable<UserGameView> GetUserGames(int userId)
         {
             var gamePieces = userProfiles.GetUserGames(userId);
-            return TranslateUserGamesToView(gamePieces);
-        }
-
-        public IEnumerable<UserGameView> GetUserGamesByGame(int gameId)
-        {
-            var gamePieces = userProfiles.GetUserGamesByGame(gameId);
-            return TranslateUserGamesToView(gamePieces);
-        }
-
-        private IEnumerable<UserGameView> TranslateUserGamesToView(IEnumerable<UserGame> userGames)
-        {
-            List<UserGameView> searchedGameViews = new List<UserGameView>();
-            foreach (var game in userGames)
+            List<UserGameView> gameViews = new List<UserGameView>();
+            foreach (var game in gamePieces)
             {
                 var gameCopy = GetGameDetails(game.GameId);
-                searchedGameViews.Add(new UserGameView()
+                gameViews.Add(new UserGameView()
                 {
                     GameId = game.GameId,
                     UserId = game.UserId,
@@ -251,7 +241,41 @@ namespace ExchangeService.Controllers.Logic
                     Shipment = game.Shipment
                 });
             }
-            return searchedGameViews;
+            return gameViews;
         }
+
+        public IEnumerable<GameAndUserView> GetUserGamesByGame(int gameId)
+        {
+            var gamePieces = userProfiles.GetUserGamesByGame(gameId);
+            List<GameAndUserView> gameViews = new List<GameAndUserView>();
+            foreach (var game in gamePieces)
+            {
+                var gameCopy = GetGameDetails(game.GameId);
+                var userProfile = userProfiles.GetUserProfile(game.UserId);
+                var comments = userProfiles.GetComments(game.UserId);
+                var avgMark = userProfiles.GetComments(game.UserId).Select(c => c.Mark).Sum() / comments.Count();
+                if (!(avgMark > 0)) avgMark = 0;
+                gameViews.Add(new GameAndUserView()
+                {
+                    UserGameId = game.UserGameId,
+                    GameId = game.GameId,
+                    UserId = game.UserId,
+                    Title = gameCopy.Title,
+                    PlayerCount = gameCopy.PlayerCount,
+                    MinAgeRequired = gameCopy.MinAgeRequired,
+                    State = game.State,
+                    IsComplete = game.IsComplete,
+                    Shipment = game.Shipment,
+                    ImageUrl = gameCopy.ImageUrl,
+                    Name = userProfile.Name,
+                    Surname = userProfile.Surname,
+                    Location = userProfile.Location,
+                    UserImageUrl = userProfile.ImageUrl,
+                    AvgMark = avgMark
+                });
+            }
+            return gameViews;
+        }
+        
     }
 }
