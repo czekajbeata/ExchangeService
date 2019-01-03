@@ -218,13 +218,25 @@ namespace ExchangeService.Controllers.Logic
         public IEnumerable<UserGameView> GetUserGames(int userId)
         {
             var gamePieces = userProfiles.GetUserGames(userId);
+            return TranslateUserGamesToView(gamePieces);
+        }
+
+        public IEnumerable<UserGameView> GetUserGamesByGame(int gameId)
+        {
+            var gamePieces = userProfiles.GetUserGamesByGame(gameId);
+            return TranslateUserGamesToView(gamePieces);
+        }
+
+        private IEnumerable<UserGameView> TranslateUserGamesToView(IEnumerable<UserGame> userGames)
+        {
             List<UserGameView> searchedGameViews = new List<UserGameView>();
-            foreach (var game in gamePieces)
+            foreach (var game in userGames)
             {
                 var gameCopy = GetGameDetails(game.GameId);
                 searchedGameViews.Add(new UserGameView()
                 {
                     GameId = game.GameId,
+                    UserId = game.UserId,
                     Title = gameCopy.Title,
                     Description = gameCopy.Description,
                     UserGameDescription = game.UserGameDescription,

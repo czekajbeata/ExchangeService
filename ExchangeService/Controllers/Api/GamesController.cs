@@ -58,10 +58,16 @@ namespace ExchangeService.Controllers.Api
         }
 
 
-        [HttpGet("api/users/games/{id}")]
+        [HttpGet("api/users/games/{userId}")]
         public IEnumerable<UserGameView> GetUserGames(int id)
         {
             return shelvesService.GetUserGames(id);
+        }
+
+        [HttpGet("api/usergames/{gameId}")]
+        public IEnumerable<UserGameView> GetUserGamesByGame(int gameId)
+        {
+            return shelvesService.GetUserGamesByGame(gameId);
         }
 
         [HttpGet("api/users/game/{userGameId}")]

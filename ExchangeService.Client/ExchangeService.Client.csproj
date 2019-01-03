@@ -24,6 +24,9 @@
     <Content Update="Pages\EditableGameForExchange.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\UserGamesQuery.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Informations\ConfirmForExchangeDelete.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
