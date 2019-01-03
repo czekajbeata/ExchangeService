@@ -8,6 +8,7 @@ namespace ExchangeService.Shared.Enums
     public enum Shipment
     {
         Pickup,
-        Delivery
+        Delivery,
+        Any
     }
 }

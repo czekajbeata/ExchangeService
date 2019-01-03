@@ -1,4 +1,5 @@
 ﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Shared.Enums;
 @using ExchangeService.Client.Services;
 @page "/addexchangegame"
 @inject HttpClient Http
@@ -87,13 +88,19 @@
         </div>
 
         <button type="button" class="btn btn-primary" onclick=@(async () => await SaveGameDetails())>Save details</button>
-
+        <br/><br/>
         @if (newUserGame != null)
         {
             <div class="form-group row">
                 <label for="shipment" class="col-sm-6 col-form-label"> Shipment type: </label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="shipment" placeholder="Shipment" bind="@newUserGame.Shipment" />
+                    <select bind="@newUserGame.Shipment" class="form-control">
+                        <option selected>...</option>
+                        @foreach (var shipmentType in Enum.GetValues(typeof(Shipment)))
+                        {
+                            <option value="@shipmentType">@shipmentType</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="form-group row">
@@ -105,7 +112,13 @@
             <div class="form-group row">
                 <label for="gameState" class="col-sm-6 col-form-label"> Game state: </label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="gameState" placeholder="Game state" bind="@newUserGame.State" />
+                    <select bind="@newUserGame.State" class="form-control">
+                        <option selected>...</option>
+                        @foreach (var gameState in Enum.GetValues(typeof(GameState)))
+                        {
+                            <option value="@gameState">@gameState</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="form-group row">
@@ -152,6 +165,8 @@
         }
     }
 
+    string selectedGenreId = null;
+    string selectedShimpentId = null;
     protected override void OnInit()
     {
         appState.TrySetAccessTokens();

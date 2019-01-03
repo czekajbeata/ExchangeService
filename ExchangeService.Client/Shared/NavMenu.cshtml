@@ -61,10 +61,8 @@
 
     protected override async Task OnInitAsync()
     {
-        Console.WriteLine("navbar: " + appState.IsUserLoggedIn);
         if (appState.IsUserLoggedIn)
         {
-            Console.WriteLine("token: " + appState.Token);
             var user = await appState.GetMyProfile();
             loggedUserName = user.Name + " " + user.Surname;
             isUserLogged = true;

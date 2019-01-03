@@ -59,7 +59,6 @@ namespace ExchangeService.Client.Services
 
         private async Task SetMyProfile()
         {
-            Console.WriteLine("in set");
             userProfile = await http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
             localStorage.SetItem("myprofile", userProfile);
             NotifyStateChanged();
