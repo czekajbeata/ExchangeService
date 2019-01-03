@@ -1,35 +1,71 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">ExchangeService.Client</a>
-    <button class="navbar-toggler" onclick=@ToggleNavMenu>
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@inject HttpClient Http
+@inject TokenService tokenService
 
-<div class=@(collapseNavMenu ? "collapse" : null) onclick=@ToggleNavMenu>
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match=NavLinkMatch.All>
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
-    </ul>
-</div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-left:12.5%; padding-right:12.5%">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navBarData" aria-controls="navBarData" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <div class="collapse navbar-collapse" id="navBarData">
+            <form class="form-inline">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search game" aria-label="Search" bind="@Search" />
+                <button class="btn btn-outline-success my-2 my-sm-0" onclick="SearchGames()">Search</button>
+            </form>
+            <ul class="navbar-nav ml-auto">
+                @if (!isUserLogged)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item dropdown @(isDropdownOpen ? "show" : string.Empty)">
+                        <a class="nav-link dropdown-toggle" id="myProfile" data-toggle="dropdown" onclick="@ToggleNavDropdown" aria-haspopup="true" aria-expanded="@(isDropdownOpen ? "true" : "false")">
+                            @loggedUser.Name @loggedUser.Surname
+                        </a>
+                        <div class="dropdown-menu @(isDropdownOpen ? "show" : string.Empty)" aria-labelledby="myProfile">
+                            <a class="dropdown-item" href="/myprofile">Profile page</a>
+                            <a class="dropdown-item" href="/myexchanges">My exchanges</a>
+                            <a class="dropdown-item" href="#">My matches</a>
+                            <a class="dropdown-item" href="/logout">Log out</a>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+</nav>
+
 
 @functions {
-    bool collapseNavMenu = true;
+    bool isDropdownOpen = false;
+    bool isUserLogged = false;
+    UserView loggedUser = new UserView();
+    string Search { get; set; } = "";
 
-    void ToggleNavMenu()
+    void ToggleNavDropdown()
     {
-        collapseNavMenu = !collapseNavMenu;
+        isDropdownOpen = !isDropdownOpen;
+    }
+
+    protected override async Task OnInitAsync()
+    {
+        var token = await tokenService.GetAccessToken();
+        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        loggedUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
+        if(loggedUser != null)
+        {
+            isUserLogged = true;
+        }
+    }
+
+    private void SearchGames()
+    {
+        Console.WriteLine("current search: " + Search);
     }
 }
