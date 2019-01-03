@@ -8,105 +8,103 @@
 
 @if (userGames == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
-<h1>Users games for @userGames[0].Title</h1>
-<br />
+    <h1>Users games for @userGames[0].Title</h1>
+    <br />
 
-<div class="container">
+    <div class="container">
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th style="width: 23%">Game</th>
-                <th style="width: 13%">State</th>
-                <th style="width: 13%">Is complete</th>
-                <th style="width: 13%">Shipment</th>
-                <th style="width: 23%">User</th>
-                <th style="width: 10%"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var gameRow in userGames)
-            {
-            <tr>
-                <td>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <img src="@gameRow.ImageUrl" width="80" height="80" />
-                        </div>
-                        <div class="col-sm-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 20%">Game</th>
+                    <th style="width: 13%">State</th>
+                    <th style="width: 13%">Is complete</th>
+                    <th style="width: 13%">Shipment</th>
+                    <th style="width: 26%">User</th>
+                    <th style="width: 10%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var gameRow in userGames)
+                {
+                    <tr>
+                        <td>
                             <div class="row">
-                                <i class="fas fa-users"></i>
-                                @gameRow.PlayerCount
+                                <div class="col-sm-6">
+                                    <img src="@gameRow.ImageUrl" width="80" height="80" />
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="row">
+                                        <i class="fas fa-users"></i>
+                                        @gameRow.PlayerCount
+                                    </div>
+                                    <div class="row">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="row">
+                                        @gameRow.MinAgeRequired +
+                                    </div>
+                                </div>
                             </div>
+                        </td>
+                        <td>@gameRow.State</td>
+                        <td>@gameRow.IsComplete</td>
+                        <td>@gameRow.Shipment</td>
+                        <td>
                             <div class="row">
-                                <i class="fas fa-clock"></i>
+                                <div class="col-sm-6">
+                                    <img src="@gameRow.UserImageUrl" width="80" height="80" />
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="row">
+                                        @gameRow.Name @gameRow.Surname
+                                    </div>
+                                    <div class="row">
+                                        <i class="fas fa-map-marker-alt" /> @gameRow.Location
+                                    </div>
+                                    <div class="row">
+                                        Avg mark: @gameRow.AvgMark
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row">
-                                @gameRow.MinAgeRequired +
-                            </div>
-                        </div>
-                    </div>
-                </td>
-                <td>@gameRow.State</td>
-                <td>@gameRow.IsComplete</td>
-                <td>@gameRow.Shipment</td>
-                <td>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <img src="@gameRow.UserImageUrl" width="80" height="80" />
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="row">
-                                @gameRow.Name @gameRow.Surname
-                            </div>
-                            <div class="row">
-                                <i class="fas fa-map-marker-alt" /> @gameRow.Location
-                            </div>
-                            <div class="row">
-                                Avg mark: @gameRow.AvgMark
-                            </div>
-                        </div>
-                    </div>
 
-                </td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => GetDetails(gameRow))">Details</button>
-                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => OfferDeal(gameRow))">Offer a deal</button>
-
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
-</div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-block" onclick="@(() => GetDetails(gameRow))">Details</button>
+                            <button type="button" class="btn btn-primary btn-block" onclick="@(() => OfferDeal(gameRow))">Offer a deal</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @functions {
-    [Parameter]
-    string GameId { get; set; }
-    GameAndUserView[] userGames;
+[Parameter]
+string GameId { get; set; }
+GameAndUserView[] userGames;
 
-    protected override async Task OnInitAsync()
-    {
-        appState.TrySetAccessTokens();
-        var usergames = await Http.GetJsonAsync<IEnumerable<GameAndUserView>>("http://localhost:5000/api/usergames/" + GameId);
-// if is null -> redirect to information page "no exchanges offered for this game"
-        userGames = usergames.ToArray();
-    }
-
-    private void GetDetails(GameAndUserView row)
-    {
-        var id = row.UserGameId;
-        UriHelper.NavigateTo($"/exchangegame/{row.UserGameId}");
-    }
-
-    private void OfferDeal(GameAndUserView row)
+protected override async Task OnInitAsync()
 {
-        UriHelper.NavigateTo($"/offerdeal/{row.UserId}");
+    appState.TrySetAccessTokens();
+    var usergames = await Http.GetJsonAsync<IEnumerable<GameAndUserView>>("http://localhost:5000/api/usergames/" + GameId);
+    // if is null -> redirect to information page "no exchanges offered for this game"
+    userGames = usergames.ToArray();
+}
+
+private void GetDetails(GameAndUserView row)
+{
+    UriHelper.NavigateTo($"/exchangegame/{row.UserGameId}");
+}
+
+private void OfferDeal(GameAndUserView row)
+{
+    UriHelper.NavigateTo($"/offerdeal/{row.UserId}");
 }
 
 }

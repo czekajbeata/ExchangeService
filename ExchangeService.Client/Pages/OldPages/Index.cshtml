@@ -4,11 +4,66 @@
 @page "/{Query}"
 @inject HttpClient Http
 @inject AppState appState
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <h1>Games catalogue</h1>
 <br />
 
-column for filters & column for games
+<div class="container">
+    <div class="row">
+        <div class="col-sm-2">
+            should be filters
+        </div>
+        <div class="col-sm-10">
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th style="width: 30%">Game</th>
+                        <th style="width: 10%">Title</th>
+                        <th style="width: 20%">Genre</th>
+                        <th style="width: 30%">Description</th>
+                        <th style="width: 10%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var gameRow in games)
+                    {
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <img src="@gameRow.ImageUrl" width="100" height="100" />
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="row">
+                                        <i class="fas fa-users"></i>
+                                        @gameRow.PlayerCount
+                                    </div>
+                                    <div class="row">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="row">
+                                        @gameRow.MinAgeRequired +
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td> @gameRow.Title </td>
+                        <td> @gameRow.GenreName </td>
+                        <td> @gameRow.Description </td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-block" onclick="@(() => GetDetails(gameRow))">Details</button>
+                            <button type="button" class="btn btn-primary btn-block" onclick="@(() => OfferDeal(gameRow))">Game offers</button>
+
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 @*<SurveyPrompt Title="How is Blazor working for you?" />*@
 <div class="container">
@@ -28,16 +83,26 @@ column for filters & column for games
 
 @functions
 {
-    [Parameter]
-    string Query { get; set; }
-    GameDto[] games = new GameDto[] { };
+[Parameter]
+string Query { get; set; }
+GameDto[] games = new GameDto[] { };
 
-    protected override async Task OnInitAsync()
-    {
-        appState.TrySetAccessTokens();
-        var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
-        games = gamesByQuery.ToArray();
-        Console.WriteLine(games.Count());
-    }
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
+    games = gamesByQuery.ToArray();
+    Console.WriteLine(games.Count());
+}
+
+private void GetDetails(GameDto row)
+{
+    UriHelper.NavigateTo($"/game/{row.GameId}");
+}
+
+private void OfferDeal(GameDto row)
+{
+    UriHelper.NavigateTo($"/games/{row.GameId}");
+}
 
 }
