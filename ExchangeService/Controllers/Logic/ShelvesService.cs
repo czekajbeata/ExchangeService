@@ -36,6 +36,30 @@ namespace ExchangeService.Controllers.Logic
             return newUserGame.GameId != 0;
         }
 
+        public IEnumerable<GameDto> GetAllGames(string query)
+        {
+            var gamesDetails = games.GetGames(query);
+            List<GameDto> gameDtos = new List<GameDto>();
+            foreach(var game in gamesDetails)
+            {
+                var genreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name : null;
+                var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
+                gameDtos.Add(new GameDto()
+                {
+                    Description = game.Description,
+                    GameId = game.GameId,
+                    GenreName = genreName,
+                    ImageUrl = game.ImageUrl,
+                    PlayerCount = playerCount,
+                    MinAgeRequired = game.MinAgeRequired.ToString(),
+                    PublishDate = game.PublishDate,
+                    Publisher = game.Publisher,
+                    Title = game.Title
+                });
+            }
+            return gameDtos;
+        }
+
         public bool AddGame(GameDto game)
         {
             Game newGame = new Game()
@@ -55,7 +79,7 @@ namespace ExchangeService.Controllers.Logic
             return newGame.GameId != 0;
         }
 
-        internal UserSearchGameView GetUserSearch(int userSearchId)
+        public UserSearchGameView GetUserSearch(int userSearchId)
         {
             var userSearch = userProfiles.GetUserSearch(userSearchId);
             var game = games.GetGame(userSearch.GameId);

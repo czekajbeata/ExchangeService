@@ -1,7 +1,12 @@
-﻿@page "/"
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@page "/"
+@page "/{Query}"
+@inject HttpClient Http
+@inject AppState appState
 
 <h1>Games catalogue</h1>
-<br/>
+<br />
 
 column for filters & column for games
 
@@ -13,9 +18,26 @@ column for filters & column for games
             <span class="oi oi-pencil mr-2" aria-hidden="true"></span>
             <strong>Problems? </strong>
             <span class="text-nowrap">
-                 Contact us at
+                Contact us at
                 <text class="font-italic">helper@exchanges.com.</text>
             </span>
         </div>
     </div>
 </div>
+
+
+@functions
+{
+    [Parameter]
+    string Query { get; set; }
+    GameDto[] games = new GameDto[] { };
+
+    protected override async Task OnInitAsync()
+    {
+        appState.TrySetAccessTokens();
+        var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
+        games = gamesByQuery.ToArray();
+        Console.WriteLine(games.Count());
+    }
+
+}

@@ -27,6 +27,12 @@ namespace ExchangeService.Controllers.Api
             return dropDownService.GetGenres();
         }
 
+        [HttpGet("api/{query?}")]
+        public IEnumerable<GameDto> GetAllGames(string query)
+        {
+            return shelvesService.GetAllGames(query);
+        }
+
         [HttpGet("api/games/{query?}")]
         public IEnumerable<DropDownItem> GetGames(string query)
         {
