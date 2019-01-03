@@ -16,13 +16,11 @@ namespace ExchangeService.Core.Entities
         [Required]
         public string OtherUsersGames { get; set; }
         [Required]
-        public bool Pickup { get; set; }
+        public Shipment Shipment { get; set; }
         [Required]
         public string OfferingUserContactInfo { get; set; }
         [Required]
         public string OtherUserContactInfo { get; set; }
-        [Required]
-        public bool Delivery { get; set; }
         [Required]
         public ExchangeState State { get; set; }
     }

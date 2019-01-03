@@ -28,17 +28,9 @@ else
                     <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
                 </div>
                 <div class="col-sm-10">
-                    <p class="font-weight-normal">@myProfile.PickUpLocation</p>
+                    <p class="font-weight-normal">@myProfile.Location</p>
                 </div>
             </div>
-            @if (myProfile.Pickup && !myProfile.Delivery)
-            {
-                <p class="font-italic">Pickup only</p>
-            }
-            else if (myProfile.Delivery && !myProfile.Pickup)
-            {
-                <p class="font-italic">Delivery only</p>
-            }
             <div class="form-group row">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Exchanges made:</p>

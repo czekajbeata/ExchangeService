@@ -31,9 +31,7 @@ namespace ExchangeService.Controllers.Logic
             User newUser = new User()
             {
                 InnerUserId = innerUserId,
-                Delivery = user.Delivery,
-                Pickup = user.Pickup,
-                PickUpLocation = user.PickUpLocation ?? String.Empty,
+                Location = user.Location ?? String.Empty,
                 Name = user.Name,
                 Surname = user.Surname ?? String.Empty,
                 ImageUrl = user.ImageUrl ?? String.Empty,
@@ -56,9 +54,7 @@ namespace ExchangeService.Controllers.Logic
             return new UserView()
             {
                 UserId = user.UserId,
-                Delivery = user.Delivery,
-                Pickup = user.Pickup,
-                PickUpLocation = user.PickUpLocation,
+                Location = user.Location,
                 Name = user.Name,
                 Surname = user.Surname,
                 ImageUrl = user.ImageUrl,

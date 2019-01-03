@@ -17,11 +17,7 @@ namespace ExchangeService.Core.Entities
         public string Name { get; set; }
         [StringLength(128)]
         public string Surname { get; set; }
-        [Required]
-        public bool Pickup { get; set; }
-        public string PickUpLocation { get; set; }
-        [Required]
-        public bool Delivery { get; set; }
+        public string Location { get; set; }
         public string ImageUrl { get; set; }
         public string ContactEmail { get; set; }
         public string PhoneNumber { get; set; }

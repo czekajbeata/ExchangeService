@@ -23,15 +23,7 @@ else
                     <td>
                         <img src="@myProfile.ImageUrl" width="150" height="150">
                         <h5>@myProfile.Name @myProfile.Surname</h5>
-                        <h6>! @myProfile.PickUpLocation</h6>
-                        @if (myProfile.Pickup && !myProfile.Delivery)
-                        {
-                            <p>Pickup only</p>
-                        }
-                        else if (myProfile.Delivery && !myProfile.Pickup)
-                        {
-                            <p>Delivery only</p>
-                        }
+                        <h6>! @myProfile.Location</h6>
                         <p>Exchanges made: @myProfile.ExchangesCount</p>
                         <p>Reviews: @myProfile.ReviewsCount</p>
                         <p>STARS @myProfile.AvgMark</p>
@@ -54,15 +46,7 @@ else
                     <td>
                         <img src="@otherUser.ImageUrl" width="150" height="150">
                         <h5>@otherUser.Name @otherUser.Surname</h5>
-                        <h6>! @otherUser.PickUpLocation</h6>
-                        @if (otherUser.Pickup && !otherUser.Delivery)
-                        {
-                            <p>Pickup only</p>
-                        }
-                        else if (otherUser.Delivery && !otherUser.Pickup)
-                        {
-                            <p>Delivery only</p>
-                        }
+                        <h6>! @otherUser.Location</h6>
                         <p>Exchanges made: @otherUser.ExchangesCount</p>
                         <p>Reviews: @otherUser.ReviewsCount</p>
                         <p>STARS @otherUser.AvgMark</p>
@@ -115,15 +99,7 @@ else
                     <td>
                         <img src="@myProfile.ImageUrl" width="150" height="150">
                         <h5>@myProfile.Name @myProfile.Surname</h5>
-                        <h6>! @myProfile.PickUpLocation</h6>
-                        @if (myProfile.Pickup && !myProfile.Delivery)
-                        {
-                            <p>Pickup only</p>
-                        }
-                        else if (myProfile.Delivery && !myProfile.Pickup)
-                        {
-                            <p>Delivery only</p>
-                        }
+                        <h6>! @myProfile.Location</h6>
                         <p>Exchanges made: @myProfile.ExchangesCount</p>
                         <p>Reviews: @myProfile.ReviewsCount</p>
                         <p>STARS @myProfile.AvgMark</p>
@@ -153,13 +129,13 @@ else
                                         <p>@exchange.Shipment</p>
                                     </td>
                                     <td>
-                                        @if (exchange.Shipment == Shipment.Pickup)
+                                        @if (exchange.Shipment == Shipment.Delivery)
                                         {
-                                            <p>Your contact details:</p>
+                                            <p>Your delivery adress:</p>
                                         }
                                         else
                                         {
-                                            <p>Your delivery adress:</p>
+                                            <p>Your contact details:</p>
                                         }
                                         <p>@firstUserContactInfo</p>
                                     </td>
@@ -170,15 +146,7 @@ else
                     <td>
                         <img src="@otherUser.ImageUrl" width="150" height="150">
                         <h5>@otherUser.Name @otherUser.Surname</h5>
-                        <h6>! @otherUser.PickUpLocation</h6>
-                        @if (otherUser.Pickup && !otherUser.Delivery)
-                        {
-                            <p>Pickup only</p>
-                        }
-                        else if (otherUser.Delivery && !otherUser.Pickup)
-                        {
-                            <p>Delivery only</p>
-                        }
+                        <h6>! @otherUser.Location</h6>
                         <p>Exchanges made: @otherUser.ExchangesCount</p>
                         <p>Reviews: @otherUser.ReviewsCount</p>
                         <p>STARS @otherUser.AvgMark</p>
@@ -198,94 +166,94 @@ else
 }
 
 @functions {
-    [Parameter]
-    string UserId { get; set; }
+[Parameter]
+string UserId { get; set; }
 
-    ExchangeDto exchange;
+ExchangeDto exchange;
 
-    UserView myProfile;
-    UserView otherUser;
-    UserGameView[] myGames;
-    UserGameView[] otherGames;
-    int visiblePageNumber = 1;
+UserView myProfile;
+UserView otherUser;
+UserGameView[] myGames;
+UserGameView[] otherGames;
+int visiblePageNumber = 1;
 
-    bool[] areSelectedMyGames;
-    bool[] areSelectedOtherGames;
+bool[] areSelectedMyGames;
+bool[] areSelectedOtherGames;
 
-    bool isPickup;
-    bool isDelivery;
+bool isPickup;
+bool isDelivery;
 
-    string firstUserContactInfo;
+string firstUserContactInfo;
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    myProfile = await appState.GetMyProfile();
+    int otherUserId = Int32.Parse(UserId);
+    otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
+
+    var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+    myGames = mine.ToArray();
+    var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
+    otherGames = other.ToArray();
+
+    areSelectedMyGames = new bool[myGames.Count()];
+    areSelectedOtherGames = new bool[otherGames.Count()];
+    exchange = new ExchangeDto();
+}
+
+private void MoveToNext()
+{
+    visiblePageNumber++;
+}
+
+private void MoveToPrevious()
+{
+    visiblePageNumber--;
+}
+
+private async Task OfferAnExchange()
+{
+    string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
+    string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
+
+    Console.WriteLine(offering);
+    Console.WriteLine(others);
+    await Http.PostJsonAsync("http://localhost:5000/api/users/exchanges", exchange);
+    MoveToNext();
+}
+
+private void ShowSummary()
+{
+    exchange.OtherUserId = Int32.Parse(UserId);
+    MoveToNext();
+    SetUpGames();
+    SetUpShippment();
+}
+
+private void SetUpGames()
+{
+    var myGamesIndexes = new List<string>();
+    for (int i = 0; i < myGames.Count(); i++)
     {
-        appState.TrySetAccessTokens();
-        myProfile = await appState.GetMyProfile();
-        int otherUserId = Int32.Parse(UserId);
-        otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
-
-        var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-        myGames = mine.ToArray();
-        var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
-        otherGames = other.ToArray();
-
-        areSelectedMyGames = new bool[myGames.Count()];
-        areSelectedOtherGames = new bool[otherGames.Count()];
-        exchange = new ExchangeDto();
+        if (areSelectedMyGames[i] == true) myGamesIndexes.Add(myGames[i].GameId.ToString());
     }
-
-    private void MoveToNext()
+    exchange.MyGamesIds = myGamesIndexes.ToArray();
+    var otherGamesIndexes = new List<string>();
+    for (int i = 0; i < otherGames.Count(); i++)
     {
-        visiblePageNumber++;
+        if (areSelectedOtherGames[i] == true) otherGamesIndexes.Add(otherGames[i].GameId.ToString());
     }
+    exchange.OtherUserGamesIds = otherGamesIndexes.ToArray();
+}
 
-    private void MoveToPrevious()
-    {
-        visiblePageNumber--;
-    }
-
-    private async Task OfferAnExchange()
-    {
-        string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
-        string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
-
-        Console.WriteLine(offering);
-        Console.WriteLine(others);
-        await Http.PostJsonAsync("http://localhost:5000/api/users/exchanges", exchange);
-        MoveToNext();
-    }
-
-    private void ShowSummary()
-    {
-        exchange.OtherUserId = Int32.Parse(UserId);
-        MoveToNext();
-        SetUpGames();
-        SetUpShippment();
-    }
-
-    private void SetUpGames()
-    {
-        var myGamesIndexes = new List<string>();
-        for (int i = 0; i < myGames.Count(); i++)
-        {
-            if (areSelectedMyGames[i] == true) myGamesIndexes.Add(myGames[i].GameId.ToString());
-        }
-        exchange.MyGamesIds = myGamesIndexes.ToArray();
-        var otherGamesIndexes = new List<string>();
-        for (int i = 0; i < otherGames.Count(); i++)
-        {
-            if (areSelectedOtherGames[i] == true) otherGamesIndexes.Add(otherGames[i].GameId.ToString());
-        }
-        exchange.OtherUserGamesIds = otherGamesIndexes.ToArray();
-    }
-
-    private void SetUpShippment()
-    {
-        if (isPickup)
-            exchange.Shipment = Shipment.Pickup;
-        else
-            exchange.Shipment = Shipment.Delivery;
-        exchange.OfferingUserContactInfo = firstUserContactInfo;
-    }
+private void SetUpShippment()
+{
+    if (isPickup)
+        exchange.Shipment = Shipment.Pickup;
+    else
+        exchange.Shipment = Shipment.Delivery;
+    exchange.OfferingUserContactInfo = firstUserContactInfo;
+}
 }
 

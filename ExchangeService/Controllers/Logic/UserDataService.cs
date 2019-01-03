@@ -47,8 +47,7 @@ namespace ExchangeService.Controllers.Logic
                 OtherUserId = exchange.OtherUserId,
                 OfferingUsersGames = offering,
                 OtherUsersGames = others,
-                Pickup = exchange.Shipment == Shipment.Pickup ? true : false,
-                Delivery = exchange.Shipment == Shipment.Delivery ? true : false,
+                Shipment = exchange.Shipment,
                 State = exchange.State,
                 OfferingUserContactInfo = exchange.OfferingUserContactInfo ?? string.Empty,
                 OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty
@@ -143,7 +142,7 @@ namespace ExchangeService.Controllers.Logic
                 var newExchangeDto = new ExchangeDto()
                 {
                     ExchangeId = exchange.ExchangeId,
-                    Shipment = exchange.Pickup? Shipment.Pickup : Shipment.Delivery,
+                    Shipment = exchange.Shipment,
                     OfferingUserContactInfo = exchange.OfferingUserContactInfo,
                     OtherUserContactInfo = exchange.OtherUserContactInfo,
                     State = exchange.State

@@ -39,15 +39,15 @@ namespace ExchangeService.Controllers.Logic
         {
             Game newGame = new Game()
             {
-                Description = game.Description != null? game.Description : null,
+                Description = game.Description ?? String.Empty,
                 GenreId =  game.GenreName != null ? games.GetGenreByName(game.GenreName).GenreId : (int?)null,
-                ImageUrl = game.ImageUrl != null ? game.ImageUrl : null,
+                ImageUrl = game.ImageUrl ?? null,
                 MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
                 MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
                 MinAgeRequired = game.MinAgeRequired != null ? Int32.Parse(game.MinAgeRequired) : (int?)null,
-                PublishDate = game.PublishDate != null ? game.PublishDate : null,
-                Publisher = game.Publisher != null ? game.Publisher : null,
-                Title = game.Title != null ? game.Title : null
+                PublishDate = game.PublishDate,
+                Publisher = game.Publisher ?? String.Empty,
+                Title = game.Title ?? String.Empty
             };
             games.AddGame(newGame);
             unitOfWork.CompleteWork();
@@ -77,7 +77,7 @@ namespace ExchangeService.Controllers.Logic
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
                 Description = game.Description,
-                GenreName = game.GenreId!= null ? games.GetGenre(game.GenreId).Name ?? String.Empty : String.Empty,
+                GenreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name ?? String.Empty : String.Empty,
                 ImageUrl = game.ImageUrl ?? String.Empty,
                 IsComplete = usergame.IsComplete,
                 MinAgeRequired = game.MinAgeRequired.ToString() ?? String.Empty,

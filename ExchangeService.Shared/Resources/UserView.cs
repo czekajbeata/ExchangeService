@@ -9,9 +9,7 @@ namespace ExchangeService.Shared.Resources
         public int UserId { get; set; }        
         public string Name { get; set; }
         public string Surname { get; set; }
-        public bool Pickup { get; set; }
-        public string PickUpLocation { get; set; }
-        public bool Delivery { get; set; }
+        public string Location { get; set; }
         public string ImageUrl { get; set; }
         public double AvgMark { get; set; }
         public int ReviewsCount { get; set; }
