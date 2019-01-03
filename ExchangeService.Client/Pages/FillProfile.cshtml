@@ -3,6 +3,7 @@
 @page "/fillprofile"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 
@@ -76,10 +77,9 @@
     public string Name { get; set; }
     public string Surname { get; set; }
 
-    protected override async Task OnInitAsync()
+    protected override void OnInit()
     {
-        var token = await tokenService.GetAccessToken();
-        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        appState.TrySetAccessTokens();
     }
 
     private async Task SubmitForm()

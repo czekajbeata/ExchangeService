@@ -199,9 +199,8 @@ else
 
     protected override async Task OnInitAsync()
     {
-        myProfile = await appState.GetMyProfile();
         appState.TrySetAccessTokens();
-
+        myProfile = await appState.GetMyProfile();
         var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
         if (result.Count() > 0) await FillComents(result.ToArray());
 

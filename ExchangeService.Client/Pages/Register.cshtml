@@ -3,6 +3,7 @@
 @page "/register"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <div class="container">
@@ -33,6 +34,7 @@
         await Http.PostJsonAsync("http://localhost:5000/api/token/register", tokenvm);
         var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
         await tokenService.SaveAccessToken(response.Token);
+        appState.LogUser(response.Token);
         if (!string.IsNullOrEmpty(await tokenService.GetAccessToken()))
         {
             UriHelper.NavigateTo("/fillprofile");

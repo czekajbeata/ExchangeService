@@ -3,6 +3,7 @@
 @page "/exchangegame/{UserGameId}"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <h1>Game for exchange</h1>
@@ -194,8 +195,7 @@
 
     protected override async Task OnInitAsync()
     {
-        var token = await tokenService.GetAccessToken();
-        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        appState.TrySetAccessTokens();
         gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
 
         var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");

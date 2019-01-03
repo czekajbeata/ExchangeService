@@ -3,6 +3,7 @@
 @page "/myexchanges"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 
 @if (myExchanges == null)
 {
@@ -51,9 +52,7 @@ string[] myGames;
 
 protected override async Task OnInitAsync()
 {
-    var token = await tokenService.GetAccessToken();
-    Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
-
+    appState.TrySetAccessTokens();
     var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeDto>>("http://localhost:5000/api/users/myexchanges");
     myExchanges = exchanges.ToArray();
     await FillOtherUsers();

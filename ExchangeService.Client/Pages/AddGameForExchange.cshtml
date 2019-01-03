@@ -3,6 +3,7 @@
 @page "/addexchangegame"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <h1>Add game for exchange</h1>
@@ -151,10 +152,9 @@
         }
     }
 
-    protected override async Task OnInitAsync()
+    protected override void OnInit()
     {
-        var token = await tokenService.GetAccessToken();
-        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        appState.TrySetAccessTokens();
     }
 
     private async Task FillAutoComplete()

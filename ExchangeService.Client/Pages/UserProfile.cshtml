@@ -3,6 +3,7 @@
 @page "/profile/{UserId}"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <h1>User profile</h1>
@@ -69,7 +70,7 @@ else
             <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
             @if (contactDetailsVisible)
             {
-                <br/>
+                <br />
                 <div class="form-group row">
                     <div class="col-sm-2">
                         <span class="fas fa-phone" style="font-size: 24px"></span>
@@ -199,17 +200,16 @@ else
 
     protected override async Task OnInitAsync()
     {
-        var token = await tokenService.GetAccessToken();
-        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        appState.TrySetAccessTokens();
+        var myProfile = await appState.GetMyProfile();
 
         int profileOwnersId = Int32.Parse(UserId);
         profileOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + profileOwnersId);
 
-        //var myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
-        //if (myProfile.UserId == profileOwner.UserId)
-        //{
-        //    UriHelper.NavigateTo("/myprofile");
-        //}
+        if (myProfile.UserId == profileOwner.UserId)
+        {
+            UriHelper.NavigateTo("/myprofile");
+        }
 
         var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
         if (result.Count() > 0) await FillComents(result.ToArray());

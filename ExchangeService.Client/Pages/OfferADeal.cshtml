@@ -4,6 +4,7 @@
 @page "/offerdeal/{UserId}"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 
 <h5>Offer an exchange</h5>
 
@@ -218,16 +219,13 @@ else
 
     protected override async Task OnInitAsync()
     {
-        var token = await tokenService.GetAccessToken();
-        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
-
-        myProfile = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
+        appState.TrySetAccessTokens();
+        myProfile = await appState.GetMyProfile();
         int otherUserId = Int32.Parse(UserId);
         otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
 
         var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
         myGames = mine.ToArray();
-
         var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
         otherGames = other.ToArray();
 
