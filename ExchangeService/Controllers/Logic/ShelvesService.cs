@@ -87,6 +87,7 @@ namespace ExchangeService.Controllers.Logic
             var game = games.GetGame(userSearch.GameId);
             return new UserSearchGameView()
             {
+                UserSearchId = userSearch.UserSearchGameId,
                 GameId = userSearch.GameId,
                 UserId = userSearch.UserId,
                 ImageUrl = game.ImageUrl,
@@ -101,6 +102,7 @@ namespace ExchangeService.Controllers.Logic
             var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
             return new UserGameView()
             {
+                UserGameId = usergame.UserGameId,
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
                 GameTimeInMin = game.GameTimeInMin.ToString() ?? String.Empty,
@@ -126,6 +128,7 @@ namespace ExchangeService.Controllers.Logic
             var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
             return new UserGameView()
             {
+                UserGameId = usergame.UserGameId,
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
                 GameTimeInMin = game.GameTimeInMin.ToString() ?? String.Empty,
@@ -238,6 +241,7 @@ namespace ExchangeService.Controllers.Logic
                 var gamePiece = GetGameDetails(game.GameId);
                 searchedGameViews.Add(new UserSearchGameView()
                 {
+                    UserSearchId = game.UserSearchGameId,
                     GameId = game.GameId,
                     Title = gamePiece.Title,
                     ImageUrl = gamePiece.ImageUrl
@@ -255,6 +259,7 @@ namespace ExchangeService.Controllers.Logic
                 var gameCopy = GetGameDetails(game.GameId);
                 gameViews.Add(new UserGameView()
                 {
+                    UserGameId = game.UserGameId,
                     GameId = game.GameId,
                     UserId = game.UserId,
                     Title = gameCopy.Title,

@@ -3,6 +3,7 @@
 @page "/deletesearch/{SearchId}"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 @if (GameSearch == null)
@@ -22,8 +23,7 @@ else
 
     protected override async Task OnInitAsync()
     {
-        var token = await tokenService.GetAccessToken();
-        Http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", token));
+        appState.TrySetAccessTokens();
         GameSearch = await Http.GetJsonAsync<UserSearchGameView>("http://localhost:5000/api/users/search/" + SearchId);
 
         var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");

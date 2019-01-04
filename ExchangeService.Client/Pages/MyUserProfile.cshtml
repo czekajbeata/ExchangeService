@@ -92,11 +92,15 @@ else
                 </div>
             </div>
             <div class="row">
-                @for (int i = 0; i < userGames.Count(); i++)
+                @foreach(var userGame in userGames)
                 {
                     <div class="col-sm-2">
-                        <div><img src="@userGames[i].ImageUrl" width="100" height="100" /></div>
-                        <div>@userGames[i].Title</div>
+                        <div><img src="@userGame.ImageUrl" width="100" height="100" /></div>
+                        <div>@userGame.Title</div>
+                    </div>
+                    <div class="col-sm-1">
+                        <i onclick="@(() => EditGame(userGame))" class="fas fa-edit"></i>
+                        <i onclick="@(() => DeleteGameForExchange(userGame))" class="fas fa-trash-alt"></i>
                     </div>
                 }
             </div>
@@ -114,11 +118,14 @@ else
                 </div>
             </div>
             <div class="row">
-                @for (int i = 0; i < userSearchGames.Count(); i++)
+                @foreach (var userSearch in userSearchGames)
                 {
                     <div class="col-sm-2">
-                        <div><img src="@userSearchGames[i].ImageUrl" width="100" height="100" /></div>
-                        <div>@userSearchGames[i].Title</div>
+                        <div><img src="@userSearch.ImageUrl" width="100" height="100" /></div>
+                        <div>@userSearch.Title</div>
+                    </div>
+                    <div class="col-sm-1">
+                        <i onclick="@(() => DeleteGameSearch(userSearch))" class="fas fa-trash-alt"></i>
                     </div>
                 }
             </div>
@@ -181,47 +188,62 @@ else
 
 
 @functions {
-UserView myProfile;
-CommentDto[] comments = new CommentDto[] { };
-List<UserView> comentators = new List<UserView>() { };
-UserGameView[] userGames = new UserGameView[] { };
-UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
-bool contactDetailsVisible = false;
-string contactDetailsButton = "Show contact details";
+    UserView myProfile;
+    CommentDto[] comments = new CommentDto[] { };
+    List<UserView> comentators = new List<UserView>() { };
+    UserGameView[] userGames = new UserGameView[] { };
+    UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    myProfile = await appState.GetMyProfile();
-    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
-    if (result.Count() > 0) await FillComents(result.ToArray());
-
-    var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-    userGames = toExchange.ToArray();
-    var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
-    userSearchGames = forSearch.ToArray();
-}
-
-private async Task FillComents(CommentDto[] dbComments)
-{
-    comments = dbComments;
-    foreach (var comment in comments)
+    protected override async Task OnInitAsync()
     {
-        comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
-    }
-}
+        appState.TrySetAccessTokens();
+        myProfile = await appState.GetMyProfile();
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
+        if (result.Count() > 0) await FillComents(result.ToArray());
 
-private void ToogleContactDetails()
-{
-    if (contactDetailsVisible)
-    {
-        contactDetailsVisible = false;
-        contactDetailsButton = "Show contact details";
+        var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+        userGames = toExchange.ToArray();
+        var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
+        userSearchGames = forSearch.ToArray();
     }
-    else
+
+    private async Task FillComents(CommentDto[] dbComments)
     {
-        contactDetailsVisible = true;
-        contactDetailsButton = "Hide contact details";
+        comments = dbComments;
+        foreach (var comment in comments)
+        {
+            comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
+        }
     }
-}
+
+    private void ToogleContactDetails()
+    {
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
+    }
+
+    private void EditGame(UserGameView game)
+    {
+        UriHelper.NavigateTo("/editableexchangegame/" + game.UserGameId);
+    }
+
+    private void DeleteGameForExchange(UserGameView game)
+    {
+        UriHelper.NavigateTo("/deletegame/" + game.UserGameId);
+    }
+
+    private void DeleteGameSearch(UserSearchGameView search)
+    {
+        UriHelper.NavigateTo("/deletesearch/" + search.UserSearchId);
+    }
 }

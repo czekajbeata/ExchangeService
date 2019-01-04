@@ -5,6 +5,7 @@ namespace ExchangeService.Shared.Resources
 {
     public class UserGameView
     {
+        public int UserGameId { get; set; }
         public int GameId { get; set; }
         public int UserId { get; set; }
         public string Title { get; set; }
