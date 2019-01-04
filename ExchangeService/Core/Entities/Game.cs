@@ -23,5 +23,7 @@ namespace ExchangeService.Core.Entities
         public int? MaxPlayerCount { get; set; }
         [Range(1, int.MaxValue)]
         public int? MinAgeRequired { get; set; }
+        [Range(1, int.MaxValue)]
+        public int? GameTimeInMin { get; set; }
     }
 }

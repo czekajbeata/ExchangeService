@@ -54,7 +54,8 @@ namespace ExchangeService.Controllers.Logic
                     MinAgeRequired = game.MinAgeRequired.ToString(),
                     PublishDate = game.PublishDate,
                     Publisher = game.Publisher,
-                    Title = game.Title
+                    Title = game.Title,
+                    GameTimeInMin = game.GameTimeInMin.ToString()
                 });
             }
             return gameDtos;
@@ -72,7 +73,8 @@ namespace ExchangeService.Controllers.Logic
                 MinAgeRequired = game.MinAgeRequired != null ? Int32.Parse(game.MinAgeRequired) : (int?)null,
                 PublishDate = game.PublishDate,
                 Publisher = game.Publisher ?? String.Empty,
-                Title = game.Title ?? String.Empty
+                Title = game.Title ?? String.Empty,
+                GameTimeInMin = game.GameTimeInMin != null ?  Int32.Parse(game.GameTimeInMin) : (int?)null
             };
             games.AddGame(newGame);
             unitOfWork.CompleteWork();
@@ -101,6 +103,7 @@ namespace ExchangeService.Controllers.Logic
             {
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
+                GameTimeInMin = game.GameTimeInMin.ToString() ?? String.Empty,
                 Description = game.Description,
                 GenreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name ?? String.Empty : String.Empty,
                 ImageUrl = game.ImageUrl ?? String.Empty,
@@ -125,6 +128,7 @@ namespace ExchangeService.Controllers.Logic
             {
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
+                GameTimeInMin = game.GameTimeInMin.ToString() ?? String.Empty,
                 Description = game.Description,
                 GenreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name ?? String.Empty : String.Empty,
                 ImageUrl = game.ImageUrl ?? String.Empty,
@@ -184,7 +188,8 @@ namespace ExchangeService.Controllers.Logic
                 MinAgeRequired = game.MinAgeRequired.ToString(),
                 PublishDate = game.PublishDate,
                 Publisher = game.Publisher,
-                Title = game.Title
+                Title = game.Title,
+                GameTimeInMin = game.GameTimeInMin.ToString()
             };
         }
 
@@ -203,6 +208,7 @@ namespace ExchangeService.Controllers.Logic
             existingGame.PublishDate = updatedGame.PublishDate;
             existingGame.Publisher = updatedGame.Publisher;
             existingGame.Title = updatedGame.Title;
+            existingGame.GameTimeInMin = Int32.Parse(updatedGame.GameTimeInMin);
 
             unitOfWork.CompleteWork();
             return true;
@@ -262,7 +268,8 @@ namespace ExchangeService.Controllers.Logic
                     MinAgeRequired = gameCopy.MinAgeRequired,
                     State = game.State,
                     IsComplete = game.IsComplete,
-                    Shipment = game.Shipment
+                    Shipment = game.Shipment,
+                    GameTimeInMin = gameCopy.GameTimeInMin
                 });
             }
             return gameViews;
@@ -287,6 +294,7 @@ namespace ExchangeService.Controllers.Logic
                     Title = gameCopy.Title,
                     PlayerCount = gameCopy.PlayerCount,
                     MinAgeRequired = gameCopy.MinAgeRequired,
+                    GameTimeInMin = gameCopy.GameTimeInMin,
                     State = game.State,
                     IsComplete = game.IsComplete,
                     Shipment = game.Shipment,
