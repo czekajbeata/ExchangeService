@@ -31,7 +31,7 @@ else
                     <td>
                         @foreach(var myGame in myGames)
                         {
-                            <input type="checkbox" value="@(myGamesIds.Contains(myGame.GameId))" onchange="@(() => ToogleMyGamesForExchange(myGame))" />@myGame.Title <br />
+                            <input type="checkbox" checked="@(myGamesIds.Contains(myGame.GameId))" onchange="@(() => ToogleMyGamesForExchange(myGame))" />@myGame.Title <br />
                         }
                     </td>
                     <td>
@@ -40,7 +40,7 @@ else
                     <td>
                         @foreach (var otherGame in otherGames)
                         {
-                            <input type="checkbox" value="@(otherGamesIds.Contains(otherGame.GameId))" onchange="@(() => ToogleOtherGamesForExchange(otherGame))" />@otherGame.Title <br />
+                            <input type="checkbox" checked="@(otherGamesIds.Contains(otherGame.GameId))" onchange="@(() => ToogleOtherGamesForExchange(otherGame))" />@otherGame.Title <br />
                         }
                     </td>
                     <td>
@@ -268,6 +268,7 @@ else
             myGamesIds.Remove(game.GameId);
         else
             myGamesIds.Add(game.GameId);
+        StateHasChanged();
     }
 
     private void ToogleOtherGamesForExchange(UserGameView game)
@@ -276,6 +277,7 @@ else
             otherGamesIds.Remove(game.GameId);
         else
             otherGamesIds.Add(game.GameId);
+        StateHasChanged();
     }
 }
 
