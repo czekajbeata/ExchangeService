@@ -18,7 +18,7 @@
             <div class="row justify-content-center">
                 <p class="font-weight-bold">@gameOwner.Name @gameOwner.Surname</p>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-2">
                     <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
                 </div>
@@ -26,7 +26,7 @@
                     <p class="font-weight-normal">@gameOwner.Location</p>
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Exchanges made:</p>
                 </div>
@@ -34,7 +34,7 @@
                     @gameOwner.ExchangesCount
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Reviews:</p>
                 </div>
@@ -42,7 +42,7 @@
                     @gameOwner.ReviewsCount
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Average mark:</p>
                 </div>
@@ -55,7 +55,7 @@
             @if (contactDetailsVisible)
             {
                 <br />
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <div class="col-sm-2">
                         <span class="fas fa-phone" style="font-size: 24px"></span>
                     </div>
@@ -63,7 +63,7 @@
                         <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <div class="col-sm-2">
                         <span class="fas fa-envelope" style="font-size: 24px"></span>
                     </div>
@@ -161,7 +161,7 @@
                         <div class="col-sm-4">
                             <p class="font-italic">@gameView.IsComplete</p>
                         </div>
-                    </div>                    
+                    </div>
                     <div class="row">
                         <div class="col-sm-8">
                             <p class="font-weight-normal">Game state: </p>
@@ -186,41 +186,41 @@
 </div>
 
 @functions {
-    [Parameter]
-    string UserGameId { get; set; }
-    UserGameView gameView {get;set;} = new UserGameView();
-    UserView gameOwner {get;set;} = new UserView();
-    bool contactDetailsVisible = false;
-    string contactDetailsButton = "Show contact details";
+[Parameter]
+string UserGameId { get; set; }
+UserGameView gameView { get; set; } = new UserGameView();
+UserView gameOwner { get; set; } = new UserView();
+bool contactDetailsVisible = false;
+string contactDetailsButton = "Show contact details";
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
+
+    var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
+    if (gameView.UserId == loggedUserId)
+        UriHelper.NavigateTo($"/editableexchangegame/{UserGameId}");
+
+    gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + gameView.UserId);
+}
+
+private void ToogleContactDetails()
+{
+    if (contactDetailsVisible)
     {
-        appState.TrySetAccessTokens();
-        gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-
-        var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
-        if(gameView.UserId == loggedUserId)
-            UriHelper.NavigateTo($"/editableexchangegame/{UserGameId}");
-
-        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + gameView.UserId);
+        contactDetailsVisible = false;
+        contactDetailsButton = "Show contact details";
     }
-
-    private void ToogleContactDetails()
+    else
     {
-        if (contactDetailsVisible)
-        {
-            contactDetailsVisible = false;
-            contactDetailsButton = "Show contact details";
-        }
-        else
-        {
-            contactDetailsVisible = true;
-            contactDetailsButton = "Hide contact details";
-        }
+        contactDetailsVisible = true;
+        contactDetailsButton = "Hide contact details";
     }
+}
 
-    private void OfferDeal()
-    {
-        UriHelper.NavigateTo($"/offerdeal/{gameOwner.UserId}");
-    }
+private void OfferDeal()
+{
+    UriHelper.NavigateTo($"/offerdeal/{gameOwner.UserId}");
+}
 }
