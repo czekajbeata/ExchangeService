@@ -127,7 +127,6 @@ else
 
     private void SeeDetails(ExchangeView exchange)
     {
-        // redirect
-        // page like summary but with both users contact details - if accepted
+        UriHelper.NavigateTo("/exchangedetails/" + exchange.ExchangeId);
     }
 }

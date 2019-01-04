@@ -10,7 +10,7 @@ namespace ExchangeService.Shared.Resources
         public string[] MyGamesIds { get; set; }
         public string[] OtherUserGamesIds { get; set; }
         public Shipment Shipment { get; set; }
-        public string OfferingUserContactInfo { get; set; }
+        public string MyContactInfo { get; set; }
         public string OtherUserContactInfo { get; set; }
         public ExchangeState State { get; set; }
         public DateTime MyFinalizeTime { get; set; }

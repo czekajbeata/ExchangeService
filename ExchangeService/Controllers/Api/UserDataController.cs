@@ -81,7 +81,6 @@ namespace ExchangeService.Controllers.Api
             return userDataService.GetShortenedExchange(ExchangeId);
         }
 
-
         [HttpGet("api/users/exchange/{ExchangeId?}")]
         public ExchangeDto GetExchange(int ExchangeId)
         {

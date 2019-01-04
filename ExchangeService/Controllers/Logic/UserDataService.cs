@@ -51,7 +51,7 @@ namespace ExchangeService.Controllers.Logic
                 OtherUsersGames = others,
                 Shipment = exchange.Shipment,
                 State = exchange.State,
-                OfferingUserContactInfo = exchange.OfferingUserContactInfo ?? string.Empty,
+                OfferingUserContactInfo = exchange.MyContactInfo,
                 OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty,
                 OfferingUserFinalizeTime = exchange.MyFinalizeTime,
                 OtherUserFinalizeTime = exchange.OtherUserFinalizeTime
@@ -120,8 +120,6 @@ namespace ExchangeService.Controllers.Logic
             {
                 ExchangeId = exchange.ExchangeId,
                 Shipment = exchange.Shipment,
-                OfferingUserContactInfo = exchange.OfferingUserContactInfo ?? string.Empty,
-                OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty,
                 State = exchange.State
             };
             if (exchange.OfferingUserId == userId)
@@ -131,6 +129,8 @@ namespace ExchangeService.Controllers.Logic
                 newExchangeDto.OtherUserGamesIds = exchange.OtherUsersGames.Split(',').ToArray();
                 newExchangeDto.MyFinalizeTime = exchange.OfferingUserFinalizeTime;
                 newExchangeDto.OtherUserFinalizeTime = exchange.OtherUserFinalizeTime;
+                newExchangeDto.MyContactInfo = exchange.OfferingUserContactInfo ?? string.Empty;
+                newExchangeDto.OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty;
             }
             else
             {
@@ -139,6 +139,8 @@ namespace ExchangeService.Controllers.Logic
                 newExchangeDto.OtherUserGamesIds = exchange.OfferingUsersGames.Split(',').ToArray();
                 newExchangeDto.MyFinalizeTime = exchange.OtherUserFinalizeTime;
                 newExchangeDto.OtherUserFinalizeTime = exchange.OfferingUserFinalizeTime;
+                newExchangeDto.OtherUserContactInfo = exchange.OfferingUserContactInfo ?? string.Empty;
+                newExchangeDto.MyContactInfo = exchange.OtherUserContactInfo ?? string.Empty;
             }
             return newExchangeDto;
         }
@@ -212,7 +214,6 @@ namespace ExchangeService.Controllers.Logic
                 {
                     ExchangeId = exchange.ExchangeId,
                     Shipment = exchange.Shipment,
-                    OfferingUserContactInfo = exchange.OfferingUserContactInfo,
                     OtherUserContactInfo = exchange.OtherUserContactInfo,
                     State = exchange.State
                 };
@@ -223,6 +224,8 @@ namespace ExchangeService.Controllers.Logic
                     newExchangeDto.OtherUserGamesIds = exchange.OtherUsersGames.Split(',').ToArray();
                     newExchangeDto.MyFinalizeTime = exchange.OfferingUserFinalizeTime;
                     newExchangeDto.OtherUserFinalizeTime = exchange.OtherUserFinalizeTime;
+                    newExchangeDto.MyContactInfo = exchange.OfferingUserContactInfo ?? string.Empty;
+                    newExchangeDto.OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty;
                 }
                 else
                 {
@@ -231,6 +234,8 @@ namespace ExchangeService.Controllers.Logic
                     newExchangeDto.OtherUserGamesIds = exchange.OfferingUsersGames.Split(',').ToArray();
                     newExchangeDto.MyFinalizeTime = exchange.OtherUserFinalizeTime;
                     newExchangeDto.OtherUserFinalizeTime = exchange.OfferingUserFinalizeTime;
+                    newExchangeDto.OtherUserContactInfo = exchange.OfferingUserContactInfo ?? string.Empty;
+                    newExchangeDto.MyContactInfo = exchange.OtherUserContactInfo ?? string.Empty;
                 }
                 exchanges.Add(newExchangeDto);
             }
