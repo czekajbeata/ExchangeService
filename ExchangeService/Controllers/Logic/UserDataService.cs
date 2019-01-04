@@ -163,6 +163,60 @@ namespace ExchangeService.Controllers.Logic
             }
             return exchanges;
         }
-        
+
+        public IEnumerable<ExchangeView> GetMyExchanges(int userId)
+        {
+            var myExchanges = userProfiles.GetUserExchanges(userId);
+            List<ExchangeView> exchanges = new List<ExchangeView>();
+            foreach (var exchange in myExchanges)
+            {
+                var newExchangeView = new ExchangeView()
+                {
+                    ExchangeId = exchange.ExchangeId,
+                    Shipment = exchange.Shipment,
+                    State = exchange.State
+                };
+                if (exchange.OfferingUserId == userId)
+                {
+                    newExchangeView.AmIOffering = true;
+                    var user = userProfiles.GetUserProfile(exchange.OtherUserId);
+                    newExchangeView.OtherUserName = user.Name + " " + user.Surname;
+                    newExchangeView.UserImage = user.ImageUrl;
+                    var myGames = exchange.OfferingUsersGames.Split(',').ToArray();
+                    var otherUserGames= exchange.OtherUsersGames.Split(',').ToArray();
+                    for(int i = 0; i < myGames.Count(); i++)
+                    {
+                        myGames[i] = games.GetGame(Int32.Parse(myGames[i])).Title;
+                    }
+                    for (int i = 0; i < otherUserGames.Count(); i++)
+                    {
+                        otherUserGames[i] = games.GetGame(Int32.Parse(otherUserGames[i])).Title;
+                    }
+                    newExchangeView.MyGames = myGames;
+                    newExchangeView.OtherUserGames = otherUserGames;
+                }
+                else
+                {
+                    newExchangeView.AmIOffering = false;
+                    var user = userProfiles.GetUserProfile(exchange.OfferingUserId);
+                    newExchangeView.OtherUserName = user.Name + " " + user.Surname;
+                    newExchangeView.UserImage = user.ImageUrl;
+                    var myGames = exchange.OtherUsersGames.Split(',').ToArray();
+                    var otherUserGames = exchange.OfferingUsersGames.Split(',').ToArray();
+                    for (int i = 0; i < myGames.Count(); i++)
+                    {
+                        myGames[i] = games.GetGame(Int32.Parse(myGames[i])).Title;
+                    }
+                    for (int i = 0; i < otherUserGames.Count(); i++)
+                    {
+                        otherUserGames[i] = games.GetGame(Int32.Parse(otherUserGames[i])).Title;
+                    }
+                    newExchangeView.MyGames = myGames;
+                    newExchangeView.OtherUserGames = otherUserGames;
+                }
+                exchanges.Add(newExchangeView);
+            }
+            return exchanges;
+        }
     }
 }

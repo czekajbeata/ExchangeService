@@ -62,11 +62,11 @@ namespace ExchangeService.Controllers.Api
 
         [Authorize]
         [HttpGet("api/users/myexchanges")]
-        public IEnumerable<ExchangeDto> GetMyExchanges()
+        public IEnumerable<ExchangeView> GetMyExchanges()
         {
             var id = User.Claims.Single(c => c.Type == "Id").Value;
             var normalizedId = profilesService.ToNormalizedId(id);
-            return userDataService.GetUserExchanges(normalizedId);
+            return userDataService.GetMyExchanges(normalizedId);
         }
 
         [HttpGet("api/users/exchanges/{id?}")]

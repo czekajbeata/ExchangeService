@@ -5,6 +5,9 @@
 @inject TokenService tokenService
 @inject AppState appState
 
+<h1>My exchanges</h1>
+<br/>
+
 @if (myExchanges == null)
 {
     <p><em>Loading...</em></p>
@@ -16,22 +19,55 @@ else
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th scope="col">Other user</th>
-                    <th scope="col">You're getting</th>
-                    <th scope="col">You're giving</th>
-                    <th scope="col">Shippment</th>
-                    <th scope="col">Exchange state</th>
+                    <th style="width: 15%">Exchanger</th>
+                    <th style="width: 20%">You're getting</th>
+                    <th style="width: 20%">You're giving</th>
+                    <th style="width: 12%">Shippment</th>
+                    <th style="width: 13%">State</th>
+                    <th style="width: 20%"></th>
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < myExchanges.Count(); i++)
+                @foreach (var exchange in myExchanges)
                 {
                     <tr>
-                        <td>@otherUsers[i].Name @otherUsers[i].Surname</td>
-                        <td>@otherUsersGames[i]</td>
-                        <td>@myGames[i]</td>
-                        <td>@myExchanges[i].Shipment</td>
-                        <td>@myExchanges[i].State</td>
+                        <td>
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <img src="@exchange.UserImage" width="100" height="100">
+                                </div>
+                                <div class="row justify-content-center">
+                                    <p class="font-weight-bold">@exchange.OtherUserName</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @foreach (var game in @exchange.OtherUserGames)
+                            {
+                                <p>@game</p>
+                            }
+                        </td>
+                        <td>
+                            @foreach (var game in @exchange.MyGames)
+                            {
+                                <p>@game</p>
+                            }
+                        </td>
+                        <td>@exchange.Shipment</td>
+                        <td>@exchange.State</td>
+                        <td>
+                            <div class="container">
+                                <div class="row">
+                                    Accept
+                                </div>
+                                <div class="row">
+                                    Finalize
+                                </div>
+                                <div class="row">
+                                    Abandon
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -45,68 +81,12 @@ else
 
 
 @functions {
-ExchangeDto[] myExchanges;
-UserView[] otherUsers;
-string[] otherUsersGames;
-string[] myGames;
+ExchangeView[] myExchanges;
 
 protected override async Task OnInitAsync()
 {
     appState.TrySetAccessTokens();
-    var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeDto>>("http://localhost:5000/api/users/myexchanges");
+    var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeView>>("http://localhost:5000/api/users/myexchanges");
     myExchanges = exchanges.ToArray();
-    await FillOtherUsers();
-    await FillOtherUsersGames();
-    await FillMyGames();
-}
-
-private async Task FillOtherUsers()
-{
-    int count = myExchanges.Count();
-    otherUsers = new UserView[count];
-    for (int i = 0; i < count; i++)
-    {
-        otherUsers[i] = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + myExchanges[i].OtherUserId);
-    }
-}
-
-private async Task FillOtherUsersGames()
-{
-    int count = myExchanges.Count();
-    otherUsersGames = new string[count];
-    for (int i = 0; i < count; i++)
-    {
-        var gameId = myExchanges[i].OtherUserGamesIds[0];
-        var gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
-        otherUsersGames[i] = gameDto.Title;
-
-        for (int j = 1; j < myExchanges[i].OtherUserGamesIds.Count(); j++)
-        {
-            gameId = myExchanges[i].OtherUserGamesIds[j];
-            gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
-            otherUsersGames[i] += ", ";
-            otherUsersGames[i] += gameDto.Title;
-        }
-    }
-}
-
-private async Task FillMyGames()
-{
-    int count = myExchanges.Count();
-    myGames = new string[count];
-    for (int i = 0; i < count; i++)
-    {
-        var gameId = myExchanges[i].MyGamesIds[0];
-        var gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
-        myGames[i] = gameDto.Title;
-
-        for (int j = 1; j < myExchanges[i].MyGamesIds.Count(); j++)
-        {
-            gameId = myExchanges[i].MyGamesIds[j];
-            gameDto = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + gameId);
-            myGames[i] += ", ";
-            myGames[i] += gameDto.Title;
-        }
-    }
 }
 }
