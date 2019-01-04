@@ -2,6 +2,7 @@
 @using ExchangeService.Client.Services;
 @inject AppState appState
 @inject HttpClient Http
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <nav class="navbar navbar-expand-lg navbar-dark" style="padding-left:12.5%; padding-right:12.5%; background-color:#003380">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navBarData" aria-controls="navBarData" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,7 +16,7 @@
                 <input class="form-control" type="search" placeholder="Game title" aria-label="Search" bind="@Search" />
             </div>
             <div class="col-sm-4">
-                <button class="btn btn-outline-primary btn-block" onclick="SearchGames()">Search</button>
+                <button class="btn btn-outline-primary btn-block" onclick="@(() => SearchGames())">Search</button>
             </div>
         </div>
         <ul class="navbar-nav ml-auto">
@@ -71,6 +72,7 @@
 
     private void SearchGames()
     {
-        Console.WriteLine("current search: " + Search);
+        StateHasChanged();
+        UriHelper.NavigateTo($"/{Search}"); 
     }
 }

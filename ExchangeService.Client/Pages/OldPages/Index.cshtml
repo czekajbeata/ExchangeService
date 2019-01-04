@@ -83,26 +83,42 @@
 
 @functions
 {
-[Parameter]
-string Query { get; set; }
-GameDto[] games = new GameDto[] { };
+    GameDto[] games = new GameDto[] { };
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
-    games = gamesByQuery.ToArray();
-    Console.WriteLine(games.Count());
-}
+    string query = null;
+    [Parameter]
+    private string Query
+    {
+        get => query;
+        set
+        {   
+            query = value;
+            if (!string.IsNullOrEmpty(query)) FillGames().ConfigureAwait(false);
+            StateHasChanged();
+        }
+    }
 
-private void GetDetails(GameDto row)
-{
-    UriHelper.NavigateTo($"/game/{row.GameId}");
-}
+    protected override async Task OnInitAsync()
+    {
+        await FillGames();
+    }
 
-private void OfferDeal(GameDto row)
-{
-    UriHelper.NavigateTo($"/games/{row.GameId}");
-}
+    private async Task FillGames()
+    {
+        appState.TrySetAccessTokens();
+        var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
+        games = gamesByQuery.ToArray();
+        Console.WriteLine(games.Count());
+    }
+
+    private void GetDetails(GameDto row)
+    {
+        UriHelper.NavigateTo($"/game/{row.GameId}");
+    }
+
+    private void OfferDeal(GameDto row)
+    {
+        UriHelper.NavigateTo($"/games/{row.GameId}");
+    }
 
 }
