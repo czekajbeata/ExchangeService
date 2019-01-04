@@ -5,8 +5,10 @@
 @inject HttpClient Http
 @inject TokenService tokenService
 @inject AppState appState
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<h5>Offer an exchange</h5>
+<h1>Offer an exchange</h1>
+<br />
 
 @if (myProfile == null || otherUser == null)
 {
@@ -16,243 +18,412 @@ else
 {
     @if (visiblePageNumber == 1)
     {
-        <h5>1. Select games</h5>
-        <table>
-            <tbody>
-                <tr>
-                    <td>
-                        <img src="@myProfile.ImageUrl" width="150" height="150">
-                        <h5>@myProfile.Name @myProfile.Surname</h5>
-                        <h6>! @myProfile.Location</h6>
-                        <p>Exchanges made: @myProfile.ExchangesCount</p>
-                        <p>Reviews: @myProfile.ReviewsCount</p>
-                        <p>STARS @myProfile.AvgMark</p>
-                    </td>
-                    <td>
-                        @foreach(var myGame in myGames)
-                        {
-                            <input type="checkbox" checked="@(myGamesIds.Contains(myGame.GameId))" onchange="@(() => ToogleMyGamesForExchange(myGame))" />@myGame.Title <br />
-                        }
-                    </td>
-                    <td>
-                        |
-                    </td>
-                    <td>
-                        @foreach (var otherGame in otherGames)
-                        {
-                            <input type="checkbox" checked="@(otherGamesIds.Contains(otherGame.GameId))" onchange="@(() => ToogleOtherGamesForExchange(otherGame))" />@otherGame.Title <br />
-                        }
-                    </td>
-                    <td>
-                        <img src="@otherUser.ImageUrl" width="150" height="150">
-                        <h5>@otherUser.Name @otherUser.Surname</h5>
-                        <h6>! @otherUser.Location</h6>
-                        <p>Exchanges made: @otherUser.ExchangesCount</p>
-                        <p>Reviews: @otherUser.ReviewsCount</p>
-                        <p>STARS @otherUser.AvgMark</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        @if (myGamesIds.Count() > 0 && otherGamesIds.Count() > 0 )
-        {
-            <button onclick=@(() => MoveToNext())>Next</button>
-        }
+        <h3>1. Select games</h3>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="alert alert-secondary" role="alert">
+                        <div class="row justify-content-center">
+                            <img src="@myProfile.ImageUrl" width="150" height="150">
+                        </div>
+                        <div class="row justify-content-center">
+                            <p class="font-weight-bold">@myProfile.Name @myProfile.Surname</p>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-2">
+                                <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                            </div>
+                            <div class="col-sm-10">
+                                <p class="font-weight-normal">@myProfile.Location</p>
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Exchanges made:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @myProfile.ExchangesCount
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Reviews:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @myProfile.ReviewsCount
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Average mark:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @myProfile.AvgMark
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    @foreach (var myGame in myGames)
+                    {
+                        <input type="checkbox" checked="@(myGamesIds.Contains(myGame.GameId))" onchange="@(() => ToogleMyGamesForExchange(myGame))" />@myGame.Title <br />
+                    }
+                </div>
+                <div class="col-sm-3">
+                    @foreach (var otherGame in otherGames)
+                    {
+                        <input type="checkbox" checked="@(otherGamesIds.Contains(otherGame.GameId))" onchange="@(() => ToogleOtherGamesForExchange(otherGame))" />@otherGame.Title <br />
+                    }
+                </div>
+                <div class="col-sm-3">
+                    <div class="alert alert-secondary" role="alert">
+                        <div class="row justify-content-center">
+                            <img src="@otherUser.ImageUrl" width="150" height="150">
+                        </div>
+                        <div class="row justify-content-center">
+                            <p class="font-weight-bold">@otherUser.Name @otherUser.Surname</p>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-2">
+                                <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                            </div>
+                            <div class="col-sm-10">
+                                <p class="font-weight-normal">@otherUser.Location</p>
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Exchanges made:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @otherUser.ExchangesCount
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Reviews:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @otherUser.ReviewsCount
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Average mark:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @otherUser.AvgMark
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br /><br />
+            <div class="row">
+                <div class="col-sm-9" />
+                <div class="col-sm-3">
+                    @if (myGamesIds.Count() > 0 && otherGamesIds.Count() > 0)
+                    {
+                        <button type="button" class="btn btn-primary btn-block" onclick=@(() => MoveToNext())>Next</button>
+                    }
+                </div>
+            </div>
+        </div>
     }
 
     @if (visiblePageNumber == 2)
     {
-        <h5>2. Choose shippment type</h5>
+        <h3>2. Choose shippment type</h3>
         <form action="">
             <input type="radio" name="shipping" onchange="@(() => { isPickup = true; isDelivery = false; })" checked="@isPickup" /> PickUp <br>
             <input type="radio" name="shipping" onchange="@(() => { isDelivery = true; isPickup = false; })" checked="@isDelivery" /> Delivery <br>
         </form>
-        <button onclick=@(() => MoveToPrevious())>Previous</button>
-        @if (isDelivery || isPickup)
-        {
-            <button onclick=@(() => MoveToNext())>Next</button>
-        }
+        <br /><br />
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary btn-block" onclick=@(() => MoveToPrevious())>Previous</button>
+                </div>
+                <div class="col-sm-6" />
+                <div class="col-sm-3">
+                    @if (isDelivery || isPickup)
+                    {
+                        <button type="button" class="btn btn-primary btn-block" onclick=@(() => MoveToNext())>Next</button>
+                    }
+                </div>
+            </div>
+        </div>
     }
 
     @if (visiblePageNumber == 3)
     {
-        @if (isDelivery)
-        {
-            <h5>3. Provide address for package delivery</h5>
-        }
-        else
-        {
-            <h5>3. Provide contact details to discuss the pickup</h5>
-        }
-        <input type="text" bind="@firstUserContactInfo" />
-        <button onclick=@(() => MoveToPrevious())>Previous</button>
-        <button onclick=@(() => ShowSummary())>Show summary</button>
+        <div class="container">
+            <div class="row">
+
+                @if (isDelivery)
+                {
+                    <h3>3. Provide address for package delivery</h3>
+                    <input class="form-control  input-lg" type="text" placeholder="Delivery details..." bind="@firstUserContactInfo" />
+                }
+                else
+                {
+                    <h3>3. Provide contact details to discuss the pickup</h3>
+                    <input class="form-control" type="text" placeholder="Contact details..." bind="@firstUserContactInfo" />
+                }
+            </div>
+            <br />
+            <br />
+            <div class="row">
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary btn-block" onclick=@(() => MoveToPrevious())>Previous</button>
+                </div>
+                <div class="col-sm-6" />
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary btn-block" onclick=@(() => ShowSummary())>Show summary</button>
+                </div>
+            </div>
+        </div>
     }
 
     @if (visiblePageNumber == 4)
     {
-        <h5>4. Exchange summary</h5>
+        <h3>4. Exchange summary</h3>
 
-        <table>
-            <tbody>
-                <tr>
-                    <td>
-                        <img src="@myProfile.ImageUrl" width="150" height="150">
-                        <h5>@myProfile.Name @myProfile.Surname</h5>
-                        <h6>! @myProfile.Location</h6>
-                        <p>Exchanges made: @myProfile.ExchangesCount</p>
-                        <p>Reviews: @myProfile.ReviewsCount</p>
-                        <p>STARS @myProfile.AvgMark</p>
-                    </td>
-                    <td>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        Games you give away:
-                                        @foreach (var gameId in exchange.MyGamesIds)
-                                        {
-                                            <p>@myGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
-                                        }
-                                    </td>
-                                    <td>
-                                        Games you get:
-                                        @foreach (var gameId in exchange.OtherUserGamesIds)
-                                        {
-                                            <p>@otherGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
-                                        }
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Type of exchange:
-                                        <p>@exchange.Shipment</p>
-                                    </td>
-                                    <td>
-                                        @if (exchange.Shipment == Shipment.Delivery)
-                                        {
-                                            <p>Your delivery adress:</p>
-                                        }
-                                        else
-                                        {
-                                            <p>Your contact details:</p>
-                                        }
-                                        <p>@firstUserContactInfo</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                    <td>
-                        <img src="@otherUser.ImageUrl" width="150" height="150">
-                        <h5>@otherUser.Name @otherUser.Surname</h5>
-                        <h6>! @otherUser.Location</h6>
-                        <p>Exchanges made: @otherUser.ExchangesCount</p>
-                        <p>Reviews: @otherUser.ReviewsCount</p>
-                        <p>STARS @otherUser.AvgMark</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <button onclick=@(() => MoveToPrevious())>Previous</button>
-        <button onclick=@(async () => await OfferAnExchange())>Offer an exchange</button>
-    }
-
-    @if (visiblePageNumber == 5)
-    {
-        <h5>5. Exchange was registered</h5>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="alert alert-secondary" role="alert">
+                        <div class="row justify-content-center">
+                            <img src="@myProfile.ImageUrl" width="150" height="150">
+                        </div>
+                        <div class="row justify-content-center">
+                            <p class="font-weight-bold">@myProfile.Name @myProfile.Surname</p>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-2">
+                                <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                            </div>
+                            <div class="col-sm-10">
+                                <p class="font-weight-normal">@myProfile.Location</p>
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Exchanges made:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @myProfile.ExchangesCount
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Reviews:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @myProfile.ReviewsCount
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Average mark:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @myProfile.AvgMark
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="alert alert-secondary" style="background-color:#f2f2f3" role="alert">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-6">
+                                <p class="font-weight-bold"> Games you give away: </p>
+                                @foreach (var gameId in exchange.MyGamesIds)
+                                {
+                                    <p>@myGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
+                                }
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="font-weight-bold"> Games you get: </p>                                
+                                @foreach (var gameId in exchange.OtherUserGamesIds)
+                                {
+                                    <p>@otherGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
+                                }
+                            </div>
+                        </div>
+                        <br/><br />
+                        <div class="row justify-content-center">
+                            <div class="col-sm-6">
+                                <p class="font-weight-bold">Type of exchange: </p>
+                                <p>@exchange.Shipment</p>
+                            </div>
+                            <div class="col-sm-6">
+                                @if (exchange.Shipment == Shipment.Delivery)
+                                {
+                                    <p class="font-weight-bold">Your delivery adress:</p>
+                                }
+                                else
+                                {
+                                    <p class="font-weight-bold">Your contact details:</p>
+                                }
+                                <p class="font-italic">@firstUserContactInfo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-sm-3">
+                        <div class="alert alert-secondary" role="alert">
+                            <div class="row justify-content-center">
+                                <img src="@otherUser.ImageUrl" width="150" height="150">
+                            </div>
+                            <div class="row justify-content-center">
+                                <p class="font-weight-bold">@otherUser.Name @otherUser.Surname</p>
+                            </div>
+                            <div class="row" style="padding:4px">
+                                <div class="col-sm-2">
+                                    <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                                </div>
+                                <div class="col-sm-10">
+                                    <p class="font-weight-normal">@otherUser.Location</p>
+                                </div>
+                            </div>
+                            <div class="row" style="padding:4px">
+                                <div class="col-sm-9">
+                                    <p class="font-weight-normal">Exchanges made:</p>
+                                </div>
+                                <div class="col-sm-3">
+                                    @otherUser.ExchangesCount
+                                </div>
+                            </div>
+                            <div class="row" style="padding:4px">
+                                <div class="col-sm-9">
+                                    <p class="font-weight-normal">Reviews:</p>
+                                </div>
+                                <div class="col-sm-3">
+                                    @otherUser.ReviewsCount
+                                </div>
+                            </div>
+                            <div class="row" style="padding:4px">
+                                <div class="col-sm-9">
+                                    <p class="font-weight-normal">Average mark:</p>
+                                </div>
+                                <div class="col-sm-3">
+                                    @otherUser.AvgMark
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <br /><br />
+            <div class="row">
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary btn-block" onclick=@(() => MoveToPrevious())>Previous</button>
+                </div>
+                <div class="col-sm-3" />
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-danger btn-block" onclick=@(() => AbandonExchange())>Abandon</button>
+                </div>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-success btn-block" onclick=@(async () => await OfferAnExchange())>Offer an exchange</button>
+                </div>
+            </div>
+        </div>
     }
 }
 
 @functions {
-    [Parameter]
-    string UserId { get; set; }
+[Parameter]
+string UserId { get; set; }
 
-    ExchangeDto exchange;
-    UserView myProfile;
-    UserView otherUser;
-    UserGameView[] myGames;
-    UserGameView[] otherGames;
-    int visiblePageNumber = 1;
-    List<int> myGamesIds = new List<int>();
-    List<int> otherGamesIds = new List<int>();
-    bool isPickup;
-    bool isDelivery;
+ExchangeDto exchange;
+UserView myProfile;
+UserView otherUser;
+UserGameView[] myGames;
+UserGameView[] otherGames;
+int visiblePageNumber = 1;
+List<int> myGamesIds = new List<int>();
+List<int> otherGamesIds = new List<int>();
+bool isPickup;
+bool isDelivery;
 
-    string firstUserContactInfo;
+string firstUserContactInfo;
 
-    protected override async Task OnInitAsync()
-    {
-        appState.TrySetAccessTokens();
-        myProfile = await appState.GetMyProfile();
-        int otherUserId = Int32.Parse(UserId);
-        otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    myProfile = await appState.GetMyProfile();
+    int otherUserId = Int32.Parse(UserId);
+    otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
 
-        var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-        myGames = mine.ToArray();
-        var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
-        otherGames = other.ToArray();
-        exchange = new ExchangeDto();
-    }
+    var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+    myGames = mine.ToArray();
+    var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
+    otherGames = other.ToArray();
+    exchange = new ExchangeDto();
+}
 
-    private void MoveToNext()
-    {
-        visiblePageNumber++;
-    }
+private void MoveToNext()
+{
+    visiblePageNumber++;
+}
 
-    private void MoveToPrevious()
-    {
-        visiblePageNumber--;
-    }
+private void MoveToPrevious()
+{
+    visiblePageNumber--;
+}
 
-    private async Task OfferAnExchange()
-    {
-        string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
-        string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
-        await Http.PostJsonAsync("http://localhost:5000/api/users/exchanges", exchange);
-        MoveToNext();
-    }
+private async Task OfferAnExchange()
+{
+    string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
+    string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
+    await Http.PostJsonAsync("http://localhost:5000/api/users/exchanges", exchange);
+    UriHelper.NavigateTo("/exchangeoffersuccess");
+}
 
-    private void ShowSummary()
-    {
-        exchange.OtherUserId = Int32.Parse(UserId);
-        MoveToNext();
-        SetUpGames();
-        SetUpShippment();
-    }
+private void AbandonExchange()
+{
+    UriHelper.NavigateTo("/exchangeofferabandon");
+}
 
-    private void SetUpGames()
-    {
-        exchange.MyGamesIds = myGamesIds.Select(g => g.ToString()).ToArray();
-        exchange.OtherUserGamesIds = otherGamesIds.Select(g => g.ToString()).ToArray();
-    }
+private void ShowSummary()
+{
+    exchange.OtherUserId = Int32.Parse(UserId);
+    MoveToNext();
+    SetUpGames();
+    SetUpShippment();
+}
 
-    private void SetUpShippment()
-    {
-        if (isPickup)
-            exchange.Shipment = Shipment.Pickup;
-        else
-            exchange.Shipment = Shipment.Delivery;
-        exchange.OfferingUserContactInfo = firstUserContactInfo;
-    }
+private void SetUpGames()
+{
+    exchange.MyGamesIds = myGamesIds.Select(g => g.ToString()).ToArray();
+    exchange.OtherUserGamesIds = otherGamesIds.Select(g => g.ToString()).ToArray();
+}
 
-    private void ToogleMyGamesForExchange(UserGameView game)
-    {
-        if (myGamesIds.Contains(game.GameId))
-            myGamesIds.Remove(game.GameId);
-        else
-            myGamesIds.Add(game.GameId);
-        StateHasChanged();
-    }
+private void SetUpShippment()
+{
+    if (isPickup)
+        exchange.Shipment = Shipment.Pickup;
+    else
+        exchange.Shipment = Shipment.Delivery;
+    exchange.OfferingUserContactInfo = firstUserContactInfo;
+}
 
-    private void ToogleOtherGamesForExchange(UserGameView game)
-    {
-        if (otherGamesIds.Contains(game.GameId))
-            otherGamesIds.Remove(game.GameId);
-        else
-            otherGamesIds.Add(game.GameId);
-        StateHasChanged();
-    }
+private void ToogleMyGamesForExchange(UserGameView game)
+{
+    if (myGamesIds.Contains(game.GameId))
+        myGamesIds.Remove(game.GameId);
+    else
+        myGamesIds.Add(game.GameId);
+    StateHasChanged();
+}
+
+private void ToogleOtherGamesForExchange(UserGameView game)
+{
+    if (otherGamesIds.Contains(game.GameId))
+        otherGamesIds.Remove(game.GameId);
+    else
+        otherGamesIds.Add(game.GameId);
+    StateHasChanged();
+}
 }
 
