@@ -52,7 +52,9 @@ namespace ExchangeService.Controllers.Logic
                 Shipment = exchange.Shipment,
                 State = exchange.State,
                 OfferingUserContactInfo = exchange.OfferingUserContactInfo ?? string.Empty,
-                OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty
+                OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty,
+                OfferingUserFinalizeTime = exchange.MyFinalizeTime,
+                OtherUserFinalizeTime = exchange.OtherUserFinalizeTime
             };
             userProfiles.AddExchange(newExchange);
             unitOfWork.CompleteWork();
@@ -156,12 +158,16 @@ namespace ExchangeService.Controllers.Logic
                     newExchangeDto.OtherUserId = exchange.OtherUserId;
                     newExchangeDto.MyGamesIds = exchange.OfferingUsersGames.Split(',').ToArray();
                     newExchangeDto.OtherUserGamesIds = exchange.OtherUsersGames.Split(',').ToArray();
+                    newExchangeDto.MyFinalizeTime = exchange.OfferingUserFinalizeTime;
+                    newExchangeDto.OtherUserFinalizeTime = exchange.OtherUserFinalizeTime;
                 }
                 else
                 {
                     newExchangeDto.OtherUserId = exchange.OfferingUserId;
                     newExchangeDto.MyGamesIds = exchange.OtherUsersGames.Split(',').ToArray();
                     newExchangeDto.OtherUserGamesIds = exchange.OfferingUsersGames.Split(',').ToArray();
+                    newExchangeDto.MyFinalizeTime = exchange.OtherUserFinalizeTime;
+                    newExchangeDto.OtherUserFinalizeTime = exchange.OfferingUserFinalizeTime;
                 }
                 exchanges.Add(newExchangeDto);
             }
@@ -198,6 +204,8 @@ namespace ExchangeService.Controllers.Logic
                     }
                     newExchangeView.MyGames = myGames;
                     newExchangeView.OtherUserGames = otherUserGames;
+                    newExchangeView.MyFinalizeTime = exchange.OfferingUserFinalizeTime;
+                    newExchangeView.OtherUserFinalizeTime = exchange.OtherUserFinalizeTime;
                 }
                 else
                 {
@@ -217,6 +225,8 @@ namespace ExchangeService.Controllers.Logic
                     }
                     newExchangeView.MyGames = myGames;
                     newExchangeView.OtherUserGames = otherUserGames;
+                    newExchangeView.MyFinalizeTime = exchange.OtherUserFinalizeTime;
+                    newExchangeView.OtherUserFinalizeTime = exchange.OfferingUserFinalizeTime;
                 }
                 exchanges.Add(newExchangeView);
             }

@@ -13,6 +13,8 @@ namespace ExchangeService.Shared.Resources
         public string OfferingUserContactInfo { get; set; }
         public string OtherUserContactInfo { get; set; }
         public ExchangeState State { get; set; }
+        public DateTime MyFinalizeTime { get; set; }
+        public DateTime OtherUserFinalizeTime { get; set; }
 
     }
 }

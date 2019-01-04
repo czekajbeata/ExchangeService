@@ -23,7 +23,7 @@ namespace ExchangeService.Core.Entities
         public string OtherUserContactInfo { get; set; }
         [Required]
         public ExchangeState State { get; set; }
-        public DateTime FirstUserFinalizeTime { get; set; }
-        public DateTime SecondUserFinalizeTime { get; set; }
+        public DateTime OfferingUserFinalizeTime { get; set; }
+        public DateTime OtherUserFinalizeTime { get; set; }
     }
 }
