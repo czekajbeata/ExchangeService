@@ -70,7 +70,7 @@ namespace ExchangeService.Client.Services
             localStorage.SetItem("token", Token);
             IsUserLoggedIn = true;
             localStorage.SetItem("isUserLoggedIn", IsUserLoggedIn);
-            http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", Token));
+            TrySetAccessTokens();
             NotifyStateChanged();
         }
 
