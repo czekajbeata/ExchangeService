@@ -7,7 +7,7 @@
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<div class="container">
+<form>
     <h1>Log in </h1>
     <div class="form-group">
         <label for="email">Email</label>
@@ -19,7 +19,7 @@
     </div>
 
     <button type="button" class="btn btn-primary" onclick="@SubmitForm">Log in</button>
-</div>
+</form>
 
 @functions{
     public string Email { get; set; } = "";

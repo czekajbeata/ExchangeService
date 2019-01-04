@@ -6,8 +6,10 @@
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<h5>Do you want to log out?</h5>
-<button type="button" class="btn btn-danger" onclick="@LogOut">Confirm</button>
+<form>
+    <h5>Do you want to log out?</h5>
+    <button type="button" class="btn btn-danger" onclick="@LogOut">Confirm</button>
+</form>
 
 @functions{
 
