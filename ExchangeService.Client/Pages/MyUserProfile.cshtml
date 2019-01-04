@@ -17,68 +17,71 @@ else
 {
     <div class="row" style="padding:4px">
         <div class="col-sm-3">
-            <div class="row justify-content-center">
-                <img src="@myProfile.ImageUrl" width="150" height="150">
-            </div>
-            <div class="row justify-content-center">
-                <p class="font-weight-bold">@myProfile.Name @myProfile.Surname</p>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-2">
-                    <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+
+            <div class="alert alert-secondary" role="alert">
+                <div class="row justify-content-center">
+                    <img src="@myProfile.ImageUrl" width="150" height="150">
                 </div>
-                <div class="col-sm-10">
-                    <p class="font-weight-normal">@myProfile.Location</p>
+                <div class="row justify-content-center">
+                    <p class="font-weight-bold">@myProfile.Name @myProfile.Surname</p>
                 </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Exchanges made:</p>
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-2">
+                        <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                    </div>
+                    <div class="col-sm-10">
+                        <p class="font-weight-normal">@myProfile.Location</p>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    @myProfile.ExchangesCount
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Exchanges made:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @myProfile.ExchangesCount
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Reviews:</p>
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Reviews:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @myProfile.ReviewsCount
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    @myProfile.ReviewsCount
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Average mark:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @myProfile.AvgMark
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Average mark:</p>
-                </div>
-                <div class="col-sm-3">
-                    @myProfile.AvgMark
-                </div>
+
+                <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
+                @if (contactDetailsVisible)
+                {
+                    <br />
+                    <div class="row" style="padding:4px">
+                        <div class="col-sm-2">
+                            <span class="fas fa-phone" style="font-size: 24px"></span>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" bind="@myProfile.PhoneNumber" />
+                        </div>
+                    </div>
+                    <div class="row" style="padding:4px">
+                        <div class="col-sm-2">
+                            <span class="fas fa-envelope" style="font-size: 24px"></span>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" bind="@myProfile.ContactEmail" />
+                        </div>
+                    </div>
+                }
             </div>
 
-            <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
-            @if (contactDetailsVisible)
-            {
-                <br />
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-2">
-                        <span class="fas fa-phone" style="font-size: 24px"></span>
-                    </div>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" bind="@myProfile.PhoneNumber" />
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-2">
-                        <span class="fas fa-envelope" style="font-size: 24px"></span>
-                    </div>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" bind="@myProfile.ContactEmail" />
-                    </div>
-                </div>
-            }
         </div>
-
         <div class="col-sm-9">
 
             <div class="row">
@@ -92,7 +95,7 @@ else
                 </div>
             </div>
             <div class="row">
-                @foreach(var userGame in userGames)
+                @foreach (var userGame in userGames)
                 {
                     <div class="col-sm-2">
                         <div><img src="@userGame.ImageUrl" width="100" height="100" /></div>
@@ -188,62 +191,62 @@ else
 
 
 @functions {
-    UserView myProfile;
-    CommentDto[] comments = new CommentDto[] { };
-    List<UserView> comentators = new List<UserView>() { };
-    UserGameView[] userGames = new UserGameView[] { };
-    UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
-    bool contactDetailsVisible = false;
-    string contactDetailsButton = "Show contact details";
+UserView myProfile;
+CommentDto[] comments = new CommentDto[] { };
+List<UserView> comentators = new List<UserView>() { };
+UserGameView[] userGames = new UserGameView[] { };
+UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
+bool contactDetailsVisible = false;
+string contactDetailsButton = "Show contact details";
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    myProfile = await appState.GetMyProfile();
+    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
+    if (result.Count() > 0) await FillComents(result.ToArray());
+
+    var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+    userGames = toExchange.ToArray();
+    var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
+    userSearchGames = forSearch.ToArray();
+}
+
+private async Task FillComents(CommentDto[] dbComments)
+{
+    comments = dbComments;
+    foreach (var comment in comments)
     {
-        appState.TrySetAccessTokens();
-        myProfile = await appState.GetMyProfile();
-        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
-        if (result.Count() > 0) await FillComents(result.ToArray());
-
-        var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-        userGames = toExchange.ToArray();
-        var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
-        userSearchGames = forSearch.ToArray();
+        comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
     }
+}
 
-    private async Task FillComents(CommentDto[] dbComments)
+private void ToogleContactDetails()
+{
+    if (contactDetailsVisible)
     {
-        comments = dbComments;
-        foreach (var comment in comments)
-        {
-            comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
-        }
+        contactDetailsVisible = false;
+        contactDetailsButton = "Show contact details";
     }
-
-    private void ToogleContactDetails()
+    else
     {
-        if (contactDetailsVisible)
-        {
-            contactDetailsVisible = false;
-            contactDetailsButton = "Show contact details";
-        }
-        else
-        {
-            contactDetailsVisible = true;
-            contactDetailsButton = "Hide contact details";
-        }
+        contactDetailsVisible = true;
+        contactDetailsButton = "Hide contact details";
     }
+}
 
-    private void EditGame(UserGameView game)
-    {
-        UriHelper.NavigateTo("/editableexchangegame/" + game.UserGameId);
-    }
+private void EditGame(UserGameView game)
+{
+    UriHelper.NavigateTo("/editableexchangegame/" + game.UserGameId);
+}
 
-    private void DeleteGameForExchange(UserGameView game)
-    {
-        UriHelper.NavigateTo("/deletegame/" + game.UserGameId);
-    }
+private void DeleteGameForExchange(UserGameView game)
+{
+    UriHelper.NavigateTo("/deletegame/" + game.UserGameId);
+}
 
-    private void DeleteGameSearch(UserSearchGameView search)
-    {
-        UriHelper.NavigateTo("/deletesearch/" + search.UserSearchId);
-    }
+private void DeleteGameSearch(UserSearchGameView search)
+{
+    UriHelper.NavigateTo("/deletesearch/" + search.UserSearchId);
+}
 }

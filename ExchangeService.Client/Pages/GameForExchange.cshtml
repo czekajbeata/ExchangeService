@@ -12,67 +12,71 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-3">
-            <div class="row justify-content-center">
-                <img src="@gameOwner.ImageUrl" width="150" height="150">
-            </div>
-            <div class="row justify-content-center">
-                <p class="font-weight-bold">@gameOwner.Name @gameOwner.Surname</p>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-2">
-                    <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
-                </div>
-                <div class="col-sm-10">
-                    <p class="font-weight-normal">@gameOwner.Location</p>
-                </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Exchanges made:</p>
-                </div>
-                <div class="col-sm-3">
-                    @gameOwner.ExchangesCount
-                </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Reviews:</p>
-                </div>
-                <div class="col-sm-3">
-                    @gameOwner.ReviewsCount
-                </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Average mark:</p>
-                </div>
-                <div class="col-sm-3">
-                    @gameOwner.AvgMark
-                </div>
-            </div>
 
-            <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
-            @if (contactDetailsVisible)
-            {
-                <br />
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-2">
-                        <span class="fas fa-phone" style="font-size: 24px"></span>
-                    </div>
-                    <div class="col-sm-10">
-                        <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
-                    </div>
+            <div class="alert alert-secondary" role="alert">
+                <div class="row justify-content-center">
+                    <img src="@gameOwner.ImageUrl" width="150" height="150">
+                </div>
+                <div class="row justify-content-center">
+                    <p class="font-weight-bold">@gameOwner.Name @gameOwner.Surname</p>
                 </div>
                 <div class="row" style="padding:4px">
                     <div class="col-sm-2">
-                        <span class="fas fa-envelope" style="font-size: 24px"></span>
+                        <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
                     </div>
                     <div class="col-sm-10">
-                        <p class="font-weight-normal">@gameOwner.ContactEmail</p>
+                        <p class="font-weight-normal">@gameOwner.Location</p>
                     </div>
                 </div>
-            }
-            <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Exchanges made:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @gameOwner.ExchangesCount
+                    </div>
+                </div>
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Reviews:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @gameOwner.ReviewsCount
+                    </div>
+                </div>
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Average mark:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @gameOwner.AvgMark
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
+                @if (contactDetailsVisible)
+                {
+                    <br />
+                    <div class="row" style="padding:4px">
+                        <div class="col-sm-2">
+                            <span class="fas fa-phone" style="font-size: 24px"></span>
+                        </div>
+                        <div class="col-sm-10">
+                            <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
+                        </div>
+                    </div>
+                    <div class="row" style="padding:4px">
+                        <div class="col-sm-2">
+                            <span class="fas fa-envelope" style="font-size: 24px"></span>
+                        </div>
+                        <div class="col-sm-10">
+                            <p class="font-weight-normal">@gameOwner.ContactEmail</p>
+                        </div>
+                    </div>
+                }
+                <button type="button" class="btn btn-primary btn-block" onclick=@(() => VisitProfile())>Visit profile</button>
+                <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
+            </div>
         </div>
 
         <div class="col-sm-9">
@@ -222,5 +226,10 @@ private void ToogleContactDetails()
 private void OfferDeal()
 {
     UriHelper.NavigateTo($"/offerdeal/{gameOwner.UserId}");
+}
+
+private void VisitProfile()
+{
+    UriHelper.NavigateTo($"/profile/{gameOwner.UserId}");
 }
 }

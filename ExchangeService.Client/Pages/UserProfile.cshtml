@@ -18,68 +18,71 @@ else
     <div class="row" style="padding:4px">
 
         <div class="col-sm-3">
-            <div class="row justify-content-center">
-                <img src="@profileOwner.ImageUrl" width="150" height="150">
-            </div>
-            <div class="row justify-content-center">
-                <p class="font-weight-bold">@profileOwner.Name @profileOwner.Surname</p>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-2">
-                    <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+            <div class="alert alert-secondary" role="alert">
+                <div class="row justify-content-center">
+                    <img src="@profileOwner.ImageUrl" width="150" height="150">
                 </div>
-                <div class="col-sm-10">
-                    <p class="font-weight-normal">@profileOwner.Location</p>
+                <div class="row justify-content-center">
+                    <p class="font-weight-bold">@profileOwner.Name @profileOwner.Surname</p>
                 </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Exchanges made:</p>
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-2">
+                        <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                    </div>
+                    <div class="col-sm-10">
+                        <p class="font-weight-normal">@profileOwner.Location</p>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    @profileOwner.ExchangesCount
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Exchanges made:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @profileOwner.ExchangesCount
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Reviews:</p>
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Reviews:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @profileOwner.ReviewsCount
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    @profileOwner.ReviewsCount
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-9">
+                        <p class="font-weight-normal">Average mark:</p>
+                    </div>
+                    <div class="col-sm-3">
+                        @profileOwner.AvgMark
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Average mark:</p>
-                </div>
-                <div class="col-sm-3">
-                    @profileOwner.AvgMark
-                </div>
-            </div>
 
-            <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
-            @if (contactDetailsVisible)
-            {
-                <br />
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-2">
-                        <span class="fas fa-phone" style="font-size: 24px"></span>
+                <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
+                @if (contactDetailsVisible)
+                {
+                    <br />
+                    <div class="row" style="padding:4px">
+                        <div class="col-sm-2">
+                            <span class="fas fa-phone" style="font-size: 24px"></span>
+                        </div>
+                        <div class="col-sm-10">
+                            <p class="font-weight-normal">@profileOwner.PhoneNumber</p>
+                        </div>
                     </div>
-                    <div class="col-sm-10">
-                        <p class="font-weight-normal">@profileOwner.PhoneNumber</p>
+                    <div class="row" style="padding:4px">
+                        <div class="col-sm-2">
+                            <span class="fas fa-envelope" style="font-size: 24px"></span>
+                        </div>
+                        <div class="col-sm-10">
+                            <p class="font-weight-normal">@profileOwner.ContactEmail</p>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-2">
-                        <span class="fas fa-envelope" style="font-size: 24px"></span>
-                    </div>
-                    <div class="col-sm-10">
-                        <p class="font-weight-normal">@profileOwner.ContactEmail</p>
-                    </div>
-                </div>
-            }
-            <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
+                }
+                <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
+            </div>
         </div>
+
         <div class="col-sm-9">
 
             <div class="row" style="padding:4px">
