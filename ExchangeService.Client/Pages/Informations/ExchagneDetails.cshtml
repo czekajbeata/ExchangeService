@@ -7,7 +7,7 @@
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-@if (Exchange == null)
+@if (Exchange == null || myProfile == null || otherUser == null )
 {
 <p><em>Loading...</em></p>
 }
@@ -63,16 +63,16 @@ else
                     <div class="col-sm-6">
                         <p class="font-weight-bold"> Games you give away: </p>
                         @foreach (var gameId in Exchange.MyGamesIds)
-                                {
-                        <p>@myGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
-                                }
+                                    {
+                        <p>@games.SingleOrDefault(g => g.Id == Int32.Parse(gameId)).Name</p>
+                                    }
                     </div>
                     <div class="col-sm-6">
                         <p class="font-weight-bold"> Games you get: </p>
                         @foreach (var gameId in Exchange.OtherUserGamesIds)
-                                {
-                        <p>@otherGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
-                                }
+                                    {
+                        <p>@games.SingleOrDefault(g => g.Id == Int32.Parse(gameId)).Name</p>
+                                    }
                     </div>
                 </div>
                 <br /><br />
@@ -83,21 +83,21 @@ else
                     </div>
                     <div class="col-sm-6">
                         @if (Exchange.Shipment == Shipment.Delivery)
-                         {
+                             {
                         <p class="font-weight-bold">Your delivery adress:</p>
                         <p class="font-italic">@Exchange.MyContactInfo</p>
 
                         <p class="font-weight-bold">Other user delivery adress:</p>
                         <p class="font-italic">@Exchange.OtherUserContactInfo</p>
-                        }
-                        else
-                        {
+                            }
+                            else
+                            {
                         <p class="font-weight-bold">Your contact details:</p>
                         <p class="font-italic">@Exchange.MyContactInfo</p>
 
                         <p class="font-weight-bold">Other user contact details:</p>
                         <p class="font-italic">@Exchange.OtherUserContactInfo</p>
-                        }
+                            }
                     </div>
                 </div>
             </div>
@@ -145,27 +145,40 @@ else
             </div>
         </div>
     </div>
-</div>
+    <div class="row">
+        <br/>
+            <div class="col-sm-3">
+                <a role="button" class="btn btn-secondary btn-block" href="/myexchanges">Back to exchanges</a>
+            </div>
+        </div>
+    </div>
 }
 
 @functions{
     [Parameter]
     string ExchangeId { get; set; }
-    ExchangeDto Exchange { get; set; } 
+    ExchangeDto Exchange { get; set; }
     UserView myProfile;
     UserView otherUser;
 UserGameView[] myGames;
 UserGameView[] otherGames;
+DropDownItem[] games;
 
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
+    myProfile = await appState.GetMyProfile();
         Exchange = await Http.GetJsonAsync<ExchangeDto>("http://localhost:5000/api/users/exchange/" + ExchangeId);
         otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + Exchange.OtherUserId);
-        var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-        myGames = mine.ToArray();
-        var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
-        otherGames = other.ToArray();
+
+
+    var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+    myGames = mine.ToArray();
+    var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
+    otherGames = other.ToArray();
+
+
+    games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/");
     }
 }
 
