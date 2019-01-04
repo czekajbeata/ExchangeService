@@ -8,7 +8,8 @@
 
 <h1>Games catalogue</h1>
 <br />
-
+@if (games != null && games.Length > 0)
+{
 <div class="container">
     <div class="row">
         <div class="col-sm-2">
@@ -64,6 +65,7 @@
         </div>
     </div>
 </div>
+}
 
 @*<SurveyPrompt Title="How is Blazor working for you?" />*@
 <div class="container">
@@ -83,7 +85,7 @@
 
 @functions
 {
-    GameDto[] games = new GameDto[] { };
+    GameDto[] games;
 
     string query = null;
     [Parameter]
@@ -91,7 +93,7 @@
     {
         get => query;
         set
-        {   
+        {
             query = value;
             if (!string.IsNullOrEmpty(query)) FillGames().ConfigureAwait(false);
             StateHasChanged();
@@ -108,7 +110,7 @@
         appState.TrySetAccessTokens();
         var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
         games = gamesByQuery.ToArray();
-        Console.WriteLine(games.Count());
+        StateHasChanged();
     }
 
     private void GetDetails(GameDto row)
