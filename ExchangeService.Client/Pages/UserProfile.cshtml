@@ -130,7 +130,7 @@ else
                     </div>
                 </div>
             </div>
-            @if (comments.Count() > 0)
+            @if (comments.Count() > 0 || comments.SingleOrDefault(c => c.IsVisible) != null)
             {
                 <table class="table table-striped">
                     <thead>

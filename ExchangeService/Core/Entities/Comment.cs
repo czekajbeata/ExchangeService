@@ -8,6 +8,7 @@ namespace ExchangeService.Core.Entities
         public int CommentId { get; set; }
         public int ReceivingUserId { get; set; }
         public int LeavingUserId { get; set; }
+        public int ConnectedExchangeId { get; set; }
         public DateTime CommentDate { get; set; }
         [Required]
         [StringLength(512)]

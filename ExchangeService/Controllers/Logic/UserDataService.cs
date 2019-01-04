@@ -20,7 +20,7 @@ namespace ExchangeService.Controllers.Logic
             this.unitOfWork = unitOfWork;
             this.games = games;
         }
-        
+
         public bool AddComment(CommentDto comment, int receivingUserId)
         {
             Comment newComment = new Comment()
@@ -29,7 +29,9 @@ namespace ExchangeService.Controllers.Logic
                 LeavingUserId = comment.LeavingUserId,
                 CommentDate = DateTime.Today,
                 Mark = comment.Mark,
-                Text = comment.Text
+                Text = comment.Text,
+                IsVisible = comment.IsVisible,
+                ConnectedExchangeId = comment.ConnectedExchangeId
             };
             userProfiles.AddComment(newComment);
             unitOfWork.CompleteWork();
@@ -68,7 +70,9 @@ namespace ExchangeService.Controllers.Logic
                     LeavingUserId = comment.LeavingUserId,
                     CommentDate = comment.CommentDate,
                     Mark = comment.Mark,
-                    Text = comment.Text
+                    Text = comment.Text,
+                    IsVisible = comment.IsVisible,
+                    ConnectedExchangeId = comment.ConnectedExchangeId
                 });
             }
             return commentDtos;
@@ -81,15 +85,15 @@ namespace ExchangeService.Controllers.Logic
             List<MatchView> userMatches = new List<MatchView>();
 
             // --- filling games they have that you want
-            foreach(var searchedGame in usersSearchedGamesIds)
+            foreach (var searchedGame in usersSearchedGamesIds)
             {
-                var otherUsersGames = userProfiles.GetUserGamesByGame(searchedGame);          
-                foreach(var otherUsersGame in otherUsersGames)
+                var otherUsersGames = userProfiles.GetUserGamesByGame(searchedGame);
+                foreach (var otherUsersGame in otherUsersGames)
                 {
                     string gameTitle = games.GetGame(otherUsersGame.GameId).Title;
                     var existingMatch = userMatches.FirstOrDefault(m => m.OtherUserId == otherUsersGame.UserId);
 
-                    if(existingMatch != null)
+                    if (existingMatch != null)
                     {
                         existingMatch.GamesTheyHave.Add(gameTitle);
                     }
@@ -101,7 +105,7 @@ namespace ExchangeService.Controllers.Logic
                             GamesTheyHave = new List<string>() { gameTitle },
                             GamesTheyWant = new List<string>() { }
                         });
-                    }                    
+                    }
                 }
             }
 
@@ -183,8 +187,8 @@ namespace ExchangeService.Controllers.Logic
                     newExchangeView.OtherUserName = user.Name + " " + user.Surname;
                     newExchangeView.UserImage = user.ImageUrl;
                     var myGames = exchange.OfferingUsersGames.Split(',').ToArray();
-                    var otherUserGames= exchange.OtherUsersGames.Split(',').ToArray();
-                    for(int i = 0; i < myGames.Count(); i++)
+                    var otherUserGames = exchange.OtherUsersGames.Split(',').ToArray();
+                    for (int i = 0; i < myGames.Count(); i++)
                     {
                         myGames[i] = games.GetGame(Int32.Parse(myGames[i])).Title;
                     }

@@ -9,5 +9,6 @@ namespace ExchangeService.Shared.Resources
         public string Text { get; set; }
         public double Mark { get; set; }
         public bool IsVisible { get; set; }
+        public int ConnectedExchangeId { get; set; }
     }
 }
