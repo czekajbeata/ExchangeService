@@ -7,7 +7,6 @@ namespace ExchangeService.Core.Entities
         public int UserGameId { get; set; }
         public int UserId { get; set; }
         public int GameId { get; set; }
-        public Game Game { get; set; }
         public string UserGameDescription { get; set; }
         public GameState State { get; set; }
         public bool IsComplete { get; set; }
