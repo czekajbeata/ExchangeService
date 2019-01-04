@@ -68,7 +68,7 @@ else
                                 <div class="row">
                                     @if (exchange.State == ExchangeState.InProgress)
                                     {
-                                        <button type="button" class="btn btn-outline-primary" style="margin:4px" onclick="@(() => SeeDetails(exchange))">Details</button>
+                                        <button type="button" class="btn btn-outline-primary btn-block" style="margin:4px" onclick="@(() => SeeDetails(exchange))">Details</button>
                                         <button type="button" class="btn btn-success btn-block" style="margin:4px" onclick="@(() => FinalizeADeal(exchange))">Finalize</button>
                                     }
                                 </div>
@@ -121,8 +121,7 @@ else
 
     private void AcceptADeal(ExchangeView exchange)
     {
-        // add your contact info
-        // change to inprogress
+        UriHelper.NavigateTo("/exchangeaccpet/" + exchange.ExchangeId);
 
     }
 

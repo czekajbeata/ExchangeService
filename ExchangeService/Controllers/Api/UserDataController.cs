@@ -75,16 +75,32 @@ namespace ExchangeService.Controllers.Api
             return userDataService.GetUserExchanges(id);
         }
 
-        [HttpGet("api/users/exchange/{ExchangeId?}")]
-        public ShortenedExchangeView GetExchange(int ExchangeId)
+        [HttpGet("api/users/shortendexchange/{ExchangeId?}")]
+        public ShortenedExchangeView GetShortenedExchange(int ExchangeId)
         {
-            return userDataService.GetExchange(ExchangeId);
+            return userDataService.GetShortenedExchange(ExchangeId);
+        }
+
+
+        [HttpGet("api/users/exchange/{ExchangeId?}")]
+        public ExchangeDto GetExchange(int ExchangeId)
+        {
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
+            return userDataService.GetExchange(ExchangeId, normalizedId);
         }
 
         [HttpPut("api/users/exchanges/decline")]
         public IActionResult AbandonExchange([FromBody] ShortenedExchangeView exchange)
         {
             var result =  userDataService.AbandonExchange(exchange.ExchangeId);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
+        [HttpPut("api/users/exchanges/accept")]
+        public IActionResult AcceptExchange([FromBody] ExchangeDto exchange)
+        {
+            var result = userDataService.AcceptExchange(exchange);
             return result ? (IActionResult)Ok() : BadRequest();
         }
     }

@@ -80,6 +80,18 @@ namespace ExchangeService.Controllers.Logic
             return commentDtos;
         }
 
+        public ShortenedExchangeView GetShortenedExchange(int exchangeId)
+        {
+            var exchange = userProfiles.GetExchange(exchangeId);
+            return new ShortenedExchangeView()
+            {
+                ExchangeId = exchange.ExchangeId,
+                State = exchange.State,
+                FirstUserId = exchange.OfferingUserId,
+                SecondUserId = exchange.OtherUserId
+            };
+        }
+
         public bool AbandonExchange(int exchangeId)
         {
             var existingExchange = userProfiles.GetExchange(exchangeId);
@@ -90,17 +102,45 @@ namespace ExchangeService.Controllers.Logic
             return true;
         }
 
-        internal ShortenedExchangeView GetExchange(int exchangeId)
+        public bool AcceptExchange(ExchangeDto exchange)
+        {
+            var existingExchange = userProfiles.GetExchange(exchange.ExchangeId);
+            if (existingExchange == null)
+                return false;
+            existingExchange.State = ExchangeState.InProgress;
+            existingExchange.OtherUserContactInfo = exchange.OtherUserContactInfo;
+            unitOfWork.CompleteWork();
+            return true;
+        }
+
+        public ExchangeDto GetExchange(int exchangeId, int userId)
         {
             var exchange = userProfiles.GetExchange(exchangeId);
-            var newExchangeView = new ShortenedExchangeView()
+            var newExchangeDto = new ExchangeDto()
             {
                 ExchangeId = exchange.ExchangeId,
-                State = exchange.State,
-                FirstUserId = exchange.OfferingUserId,
-                SecondUserId = exchange.OtherUserId
+                Shipment = exchange.Shipment,
+                OfferingUserContactInfo = exchange.OfferingUserContactInfo ?? string.Empty,
+                OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty,
+                State = exchange.State
             };
-            return newExchangeView;
+            if (exchange.OfferingUserId == userId)
+            {
+                newExchangeDto.OtherUserId = exchange.OtherUserId;
+                newExchangeDto.MyGamesIds = exchange.OfferingUsersGames.Split(',').ToArray();
+                newExchangeDto.OtherUserGamesIds = exchange.OtherUsersGames.Split(',').ToArray();
+                newExchangeDto.MyFinalizeTime = exchange.OfferingUserFinalizeTime;
+                newExchangeDto.OtherUserFinalizeTime = exchange.OtherUserFinalizeTime;
+            }
+            else
+            {
+                newExchangeDto.OtherUserId = exchange.OfferingUserId;
+                newExchangeDto.MyGamesIds = exchange.OtherUsersGames.Split(',').ToArray();
+                newExchangeDto.OtherUserGamesIds = exchange.OfferingUsersGames.Split(',').ToArray();
+                newExchangeDto.MyFinalizeTime = exchange.OtherUserFinalizeTime;
+                newExchangeDto.OtherUserFinalizeTime = exchange.OfferingUserFinalizeTime;
+            }
+            return newExchangeDto;
         }
 
         public IEnumerable<MatchView> GetMatches(int userId)

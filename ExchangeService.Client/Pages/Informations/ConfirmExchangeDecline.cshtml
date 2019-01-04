@@ -27,7 +27,7 @@ else
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
-        Exchange = await Http.GetJsonAsync<ShortenedExchangeView>("http://localhost:5000/api/users/exchange/" + ExchangeId);
+        Exchange = await Http.GetJsonAsync<ShortenedExchangeView>("http://localhost:5000/api/users/shortendexchange/" + ExchangeId);
 
         var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
         if ((Exchange.FirstUserId != loggedUserId && Exchange.SecondUserId != loggedUserId )||

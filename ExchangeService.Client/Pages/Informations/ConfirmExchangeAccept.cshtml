@@ -1,0 +1,67 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Shared.Enums;
+@using ExchangeService.Client.Services;
+@page "/exchangeaccpet/{ExchangeId}"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject AppState appState
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+@if (Exchange == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<div class="container">
+    <div class="row">
+
+        @if (Exchange.Shipment == Shipment.Delivery)
+                {
+        <h3>Provide address for package delivery</h3>
+        <input class="form-control  input-lg" type="text" placeholder="Delivery details..." bind="@ContactDetails" />
+                }
+                else
+                {
+        <h3>Provide contact details to discuss the pickup</h3>
+        <input class="form-control" type="text" placeholder="Contact details..." bind="@ContactDetails" />
+                }
+    </div>
+    <br />
+    <br />
+    <div class="row">
+        <div class="col-sm-3" />
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-secondary btn-block" onclick=@(() => BackToExchagnes())>Back to exchanges</button>
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-success btn-block" onclick=@(() => Accept())>Accept exchange</button>
+        </div>
+    </div>
+</div>
+}
+
+@functions{
+    [Parameter]
+    string ExchangeId { get; set; }
+    ExchangeDto Exchange { get; set; }
+string ContactDetails {get;set;}
+
+    protected override async Task OnInitAsync()
+    {
+        appState.TrySetAccessTokens();
+        Exchange = await Http.GetJsonAsync<ExchangeDto>("http://localhost:5000/api/users/exchange/" + ExchangeId);
+    }
+
+    private async Task Accept()
+    {
+        await Http.PutJsonAsync("http://localhost:5000/api/users/exchanges/accept", Exchange);
+        UriHelper.NavigateTo("/exchangeacceptsuccess");
+    }
+
+private void BackToExchagnes()
+{
+        UriHelper.NavigateTo("/myexchanges");
+}
+
+}
