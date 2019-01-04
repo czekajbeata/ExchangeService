@@ -15,7 +15,7 @@
 }
 else
 {
-    <div class="form-group row">
+    <div class="row" style="padding:4px">
         <div class="col-sm-3">
             <div class="row justify-content-center">
                 <img src="@myProfile.ImageUrl" width="150" height="150">
@@ -23,7 +23,7 @@ else
             <div class="row justify-content-center">
                 <p class="font-weight-bold">@myProfile.Name @myProfile.Surname</p>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-2">
                     <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
                 </div>
@@ -31,7 +31,7 @@ else
                     <p class="font-weight-normal">@myProfile.Location</p>
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Exchanges made:</p>
                 </div>
@@ -39,7 +39,7 @@ else
                     @myProfile.ExchangesCount
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Reviews:</p>
                 </div>
@@ -47,7 +47,7 @@ else
                     @myProfile.ReviewsCount
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Average mark:</p>
                 </div>
@@ -60,7 +60,7 @@ else
             @if (contactDetailsVisible)
             {
                 <br />
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <div class="col-sm-2">
                         <span class="fas fa-phone" style="font-size: 24px"></span>
                     </div>
@@ -68,7 +68,7 @@ else
                         <input type="text" class="form-control" bind="@myProfile.PhoneNumber" />
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <div class="col-sm-2">
                         <span class="fas fa-envelope" style="font-size: 24px"></span>
                     </div>
@@ -125,7 +125,7 @@ else
             <br />
             <br />
 
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-5">
                     <div class="alert alert-primary" role="alert">
                         Reviews
@@ -156,10 +156,10 @@ else
                                 </td>
                                 <td>@comments[i].CommentDate.ToShortDateString()</td>
                                 <td>
-                                    <div class="form-group row">
+                                    <div class="row" style="padding:4px">
                                         Mark: @comments[i].Mark
                                     </div>
-                                    <div class="form-group row">
+                                    <div class="row" style="padding:4px">
                                         @comments[i].Text
                                     </div>
                                 </td>
@@ -181,47 +181,47 @@ else
 
 
 @functions {
-    UserView myProfile;
-    CommentDto[] comments = new CommentDto[] { };
-    List<UserView> comentators = new List<UserView>() { };
-    UserGameView[] userGames = new UserGameView[] { };
-    UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
-    bool contactDetailsVisible = false;
-    string contactDetailsButton = "Show contact details";
+UserView myProfile;
+CommentDto[] comments = new CommentDto[] { };
+List<UserView> comentators = new List<UserView>() { };
+UserGameView[] userGames = new UserGameView[] { };
+UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
+bool contactDetailsVisible = false;
+string contactDetailsButton = "Show contact details";
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    myProfile = await appState.GetMyProfile();
+    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
+    if (result.Count() > 0) await FillComents(result.ToArray());
+
+    var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+    userGames = toExchange.ToArray();
+    var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
+    userSearchGames = forSearch.ToArray();
+}
+
+private async Task FillComents(CommentDto[] dbComments)
+{
+    comments = dbComments;
+    foreach (var comment in comments)
     {
-        appState.TrySetAccessTokens();
-        myProfile = await appState.GetMyProfile();
-        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
-        if (result.Count() > 0) await FillComents(result.ToArray());
-
-        var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-        userGames = toExchange.ToArray();
-        var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + myProfile.UserId);
-        userSearchGames = forSearch.ToArray();
+        comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
     }
+}
 
-    private async Task FillComents(CommentDto[] dbComments)
+private void ToogleContactDetails()
+{
+    if (contactDetailsVisible)
     {
-        comments = dbComments;
-        foreach (var comment in comments)
-        {
-            comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
-        }
+        contactDetailsVisible = false;
+        contactDetailsButton = "Show contact details";
     }
-
-    private void ToogleContactDetails()
+    else
     {
-        if (contactDetailsVisible)
-        {
-            contactDetailsVisible = false;
-            contactDetailsButton = "Show contact details";
-        }
-        else
-        {
-            contactDetailsVisible = true;
-            contactDetailsButton = "Hide contact details";
-        }
+        contactDetailsVisible = true;
+        contactDetailsButton = "Hide contact details";
     }
+}
 }

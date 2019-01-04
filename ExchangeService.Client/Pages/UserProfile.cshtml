@@ -15,7 +15,7 @@
 }
 else
 {
-    <div class="form-group row">
+    <div class="row" style="padding:4px">
 
         <div class="col-sm-3">
             <div class="row justify-content-center">
@@ -24,7 +24,7 @@ else
             <div class="row justify-content-center">
                 <p class="font-weight-bold">@profileOwner.Name @profileOwner.Surname</p>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-2">
                     <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
                 </div>
@@ -32,7 +32,7 @@ else
                     <p class="font-weight-normal">@profileOwner.Location</p>
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Exchanges made:</p>
                 </div>
@@ -40,7 +40,7 @@ else
                     @profileOwner.ExchangesCount
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Reviews:</p>
                 </div>
@@ -48,7 +48,7 @@ else
                     @profileOwner.ReviewsCount
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Average mark:</p>
                 </div>
@@ -61,7 +61,7 @@ else
             @if (contactDetailsVisible)
             {
                 <br />
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <div class="col-sm-2">
                         <span class="fas fa-phone" style="font-size: 24px"></span>
                     </div>
@@ -69,7 +69,7 @@ else
                         <p class="font-weight-normal">@profileOwner.PhoneNumber</p>
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <div class="col-sm-2">
                         <span class="fas fa-envelope" style="font-size: 24px"></span>
                     </div>
@@ -82,14 +82,14 @@ else
         </div>
         <div class="col-sm-9">
 
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-5">
                     <div class="alert alert-primary" role="alert">
                         Games for exchange
                     </div>
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 @for (int i = 0; i < userGames.Count(); i++)
                 {
                     <div class="col-sm-2">
@@ -101,14 +101,14 @@ else
             <br />
             <br />
 
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-5">
                     <div class="alert alert-primary" role="alert">
                         Games searches
                     </div>
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 @for (int i = 0; i < userSearchGames.Count(); i++)
                 {
                     <div class="col-sm-2">
@@ -120,7 +120,7 @@ else
             <br />
             <br />
 
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-5">
                     <div class="alert alert-primary" role="alert">
                         Reviews
@@ -151,10 +151,10 @@ else
                                 </td>
                                 <td>@comments[i].CommentDate.ToShortDateString()</td>
                                 <td>
-                                    <div class="form-group row">
+                                    <div class="row" style="padding:4px">
                                         Mark: @comments[i].Mark
                                     </div>
-                                    <div class="form-group row">
+                                    <div class="row" style="padding:4px">
                                         @comments[i].Text
                                     </div>
                                 </td>
@@ -165,7 +165,7 @@ else
             }
             else
             {
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <p class="font-italic">This user has no reviews.</p>
                 </div>
             }
@@ -176,66 +176,66 @@ else
 
 
 @functions {
-    [Parameter]
-    string UserId { get; set; }
+[Parameter]
+string UserId { get; set; }
 
-    UserView profileOwner;
-    CommentDto[] comments = new CommentDto[] { };
-    List<UserView> comentators = new List<UserView>() { };
-    UserGameView[] userGames = new UserGameView[] { };
-    UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
-    bool contactDetailsVisible = false;
-    string contactDetailsButton = "Show contact details";
+UserView profileOwner;
+CommentDto[] comments = new CommentDto[] { };
+List<UserView> comentators = new List<UserView>() { };
+UserGameView[] userGames = new UserGameView[] { };
+UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
+bool contactDetailsVisible = false;
+string contactDetailsButton = "Show contact details";
 
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    var myProfile = await appState.GetMyProfile();
+
+    int profileOwnersId = Int32.Parse(UserId);
+    profileOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + profileOwnersId);
+
+    if (myProfile.UserId == profileOwner.UserId)
     {
-        appState.TrySetAccessTokens();
-        var myProfile = await appState.GetMyProfile();
-
-        int profileOwnersId = Int32.Parse(UserId);
-        profileOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + profileOwnersId);
-
-        if (myProfile.UserId == profileOwner.UserId)
-        {
-            UriHelper.NavigateTo("/myprofile");
-        }
-
-        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
-        if (result.Count() > 0) await FillComents(result.ToArray());
-
-        var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + profileOwnersId);
-        userGames = toExchange.ToArray();
-        var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + profileOwnersId);
-        userSearchGames = forSearch.ToArray();
+        UriHelper.NavigateTo("/myprofile");
     }
 
-    private async Task FillComents(CommentDto[] dbComments)
-    {
-        comments = dbComments;
-        foreach (var comment in comments)
-        {
-            comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
-        }
-    }
+    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
+    if (result.Count() > 0) await FillComents(result.ToArray());
 
-    private void ToogleContactDetails()
-    {
-        if (contactDetailsVisible)
-        {
-            contactDetailsVisible = false;
-            contactDetailsButton = "Show contact details";
-        }
-        else
-        {
-            contactDetailsVisible = true;
-            contactDetailsButton = "Hide contact details";
-        }
-    }
+    var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + profileOwnersId);
+    userGames = toExchange.ToArray();
+    var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + profileOwnersId);
+    userSearchGames = forSearch.ToArray();
+}
 
-    private void OfferDeal()
+private async Task FillComents(CommentDto[] dbComments)
+{
+    comments = dbComments;
+    foreach (var comment in comments)
     {
-        UriHelper.NavigateTo($"/offerdeal/{profileOwner.UserId}");
+        comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
     }
+}
+
+private void ToogleContactDetails()
+{
+    if (contactDetailsVisible)
+    {
+        contactDetailsVisible = false;
+        contactDetailsButton = "Show contact details";
+    }
+    else
+    {
+        contactDetailsVisible = true;
+        contactDetailsButton = "Hide contact details";
+    }
+}
+
+private void OfferDeal()
+{
+    UriHelper.NavigateTo($"/offerdeal/{profileOwner.UserId}");
+}
 
 }
