@@ -10,7 +10,7 @@ namespace ExchangeService.Shared.Enums
         Waiting,
         InProgress,
         Finalized,
-        Abandoned
+        Declined
     }
 }
 

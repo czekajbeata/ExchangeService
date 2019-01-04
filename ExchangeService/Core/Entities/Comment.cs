@@ -15,5 +15,6 @@ namespace ExchangeService.Core.Entities
         [Required]
         [Range(0,5)]
         public double Mark { get; set; }
+        public bool IsVisible { get; set; }
     }
 }
