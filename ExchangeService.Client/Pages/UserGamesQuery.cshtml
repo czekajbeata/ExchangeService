@@ -34,20 +34,33 @@ else
                     <tr>
                         <td>
                             <div class="row">
-                                <div class="col-sm-6">
+                                <div class="col-sm-5">
                                     <img src="@gameRow.ImageUrl" width="80" height="80" />
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-7">
                                     <div class="row">
-                                        <i class="fas fa-users"></i>
-                                        @gameRow.PlayerCount
+                                        <div class="col-sm-2">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            @gameRow.PlayerCount
+                                        </div>
                                     </div>
                                     <div class="row">
-                                        <i class="fas fa-clock"></i>
-                                        @gameRow.GameTimeInMin
+                                        <div class="col-sm-2">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            @gameRow.GameTimeInMin min
+                                        </div>
                                     </div>
                                     <div class="row">
-                                        @gameRow.MinAgeRequired +
+                                        <div class="col-sm-2">
+                                            <i class="fas fa-user-friends"></i>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            @gameRow.MinAgeRequired +
+                                        </div>
                                     </div>
                                 </div>
                             </div>

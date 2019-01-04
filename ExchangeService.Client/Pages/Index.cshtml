@@ -10,62 +10,75 @@
 <br />
 @if (games != null && games.Length > 0)
 {
-<div class="container">
-    <div class="row">
-        <div class="col-sm-2">
-            should be filters
-        </div>
-        <div class="col-sm-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+                should be filters
+            </div>
+            <div class="col-sm-10">
 
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th style="width: 30%">Game</th>
-                        <th style="width: 10%">Title</th>
-                        <th style="width: 20%">Genre</th>
-                        <th style="width: 30%">Description</th>
-                        <th style="width: 10%"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var gameRow in games)
-                    {
-                    <tr>
-                        <td>
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <img src="@gameRow.ImageUrl" width="100" height="100" />
-                                </div>
-                                <div class="col-sm-4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%">Game</th>
+                            <th style="width: 10%">Title</th>
+                            <th style="width: 20%">Genre</th>
+                            <th style="width: 30%">Description</th>
+                            <th style="width: 10%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var gameRow in games)
+                        {
+                            <tr>
+                                <td>
                                     <div class="row">
-                                        <i class="fas fa-users"></i>
-                                        @gameRow.PlayerCount
+                                        <div class="col-sm-5">
+                                            <img src="@gameRow.ImageUrl" width="100" height="100" />
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <i class="fas fa-users"></i>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @gameRow.PlayerCount
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <i class="fas fa-clock"></i>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @gameRow.GameTimeInMin min
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <i class="fas fa-user-friends"></i>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @gameRow.MinAgeRequired +
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="row">
-                                        <i class="fas fa-clock"></i>
-                                        @gameRow.GameTimeInMin
-                                    </div>
-                                    <div class="row">
-                                        @gameRow.MinAgeRequired +
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td> @gameRow.Title </td>
-                        <td> @gameRow.GenreName </td>
-                        <td> @gameRow.Description </td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-block" onclick="@(() => GetDetails(gameRow))">Details</button>
-                            <button type="button" class="btn btn-primary btn-block" onclick="@(() => OfferDeal(gameRow))">Game offers</button>
+                                </td>
+                                <td> @gameRow.Title </td>
+                                <td> @gameRow.GenreName </td>
+                                <td> @gameRow.Description </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => GetDetails(gameRow))">Details</button>
+                                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => OfferDeal(gameRow))">Game offers</button>
 
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 }
 
 @*<SurveyPrompt Title="How is Blazor working for you?" />*@
@@ -86,42 +99,42 @@
 
 @functions
 {
-    GameDto[] games;
+GameDto[] games;
 
-    string query = null;
-    [Parameter]
-    private string Query
+string query = null;
+[Parameter]
+private string Query
+{
+    get => query;
+    set
     {
-        get => query;
-        set
-        {
-            query = value;
-            if (!string.IsNullOrEmpty(query)) FillGames().ConfigureAwait(false);
-            StateHasChanged();
-        }
-    }
-
-    protected override async Task OnInitAsync()
-    {
-        await FillGames();
-    }
-
-    private async Task FillGames()
-    {
-        appState.TrySetAccessTokens();
-        var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
-        games = gamesByQuery.ToArray();
+        query = value;
+        if (!string.IsNullOrEmpty(query)) FillGames().ConfigureAwait(false);
         StateHasChanged();
     }
+}
 
-    private void GetDetails(GameDto row)
-    {
-        UriHelper.NavigateTo($"/game/{row.GameId}");
-    }
+protected override async Task OnInitAsync()
+{
+    await FillGames();
+}
 
-    private void OfferDeal(GameDto row)
-    {
-        UriHelper.NavigateTo($"/games/{row.GameId}");
-    }
+private async Task FillGames()
+{
+    appState.TrySetAccessTokens();
+    var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
+    games = gamesByQuery.ToArray();
+    StateHasChanged();
+}
+
+private void GetDetails(GameDto row)
+{
+    UriHelper.NavigateTo($"/game/{row.GameId}");
+}
+
+private void OfferDeal(GameDto row)
+{
+    UriHelper.NavigateTo($"/games/{row.GameId}");
+}
 
 }
