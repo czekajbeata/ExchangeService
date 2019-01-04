@@ -85,26 +85,29 @@ else
 }
 
 @functions {
-[Parameter]
-string GameId { get; set; }
-GameAndUserView[] userGames;
+    [Parameter]
+    string GameId { get; set; }
+    GameAndUserView[] userGames;
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    var usergames = await Http.GetJsonAsync<IEnumerable<GameAndUserView>>("http://localhost:5000/api/usergames/" + GameId);
-    // if is null -> redirect to information page "no exchanges offered for this game"
-    userGames = usergames.ToArray();
-}
+    protected override async Task OnInitAsync()
+    {
+        appState.TrySetAccessTokens();
+        var usergames = await Http.GetJsonAsync<IEnumerable<GameAndUserView>>("http://localhost:5000/api/usergames/" + GameId);
+        userGames = usergames.ToArray();
+        if(userGames == null || !(userGames.Count() > 0))
+        {
+            UriHelper.NavigateTo($"/usergamesfail");
+        }
+    }
 
-private void GetDetails(GameAndUserView row)
-{
-    UriHelper.NavigateTo($"/exchangegame/{row.UserGameId}");
-}
+    private void GetDetails(GameAndUserView row)
+    {
+        UriHelper.NavigateTo($"/exchangegame/{row.UserGameId}");
+    }
 
-private void OfferDeal(GameAndUserView row)
-{
-    UriHelper.NavigateTo($"/offerdeal/{row.UserId}");
-}
+    private void OfferDeal(GameAndUserView row)
+    {
+        UriHelper.NavigateTo($"/offerdeal/{row.UserId}");
+    }
 
 }

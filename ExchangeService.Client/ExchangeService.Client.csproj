@@ -27,6 +27,9 @@
     <Content Update="Pages\Catalogue.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Informations\UserGamesByGame - Fail.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\UserGamesQuery.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
