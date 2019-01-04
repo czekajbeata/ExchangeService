@@ -170,19 +170,13 @@ else
     string UserId { get; set; }
 
     ExchangeDto exchange;
-
     UserView myProfile;
     UserView otherUser;
     UserGameView[] myGames;
     UserGameView[] otherGames;
     int visiblePageNumber = 1;
-
-    bool[] areSelectedMyGames;
-    bool[] areSelectedOtherGames;
-
     List<int> myGamesIds = new List<int>();
     List<int> otherGamesIds = new List<int>();
-
     bool isPickup;
     bool isDelivery;
 
@@ -199,9 +193,6 @@ else
         myGames = mine.ToArray();
         var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
         otherGames = other.ToArray();
-
-        areSelectedMyGames = new bool[myGames.Count()];
-        areSelectedOtherGames = new bool[otherGames.Count()];
         exchange = new ExchangeDto();
     }
 
@@ -219,9 +210,6 @@ else
     {
         string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
         string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
-
-        Console.WriteLine(offering);
-        Console.WriteLine(others);
         await Http.PostJsonAsync("http://localhost:5000/api/users/exchanges", exchange);
         MoveToNext();
     }
@@ -236,20 +224,7 @@ else
 
     private void SetUpGames()
     {
-        //var myGamesIndexes = new List<string>();
-        //for (int i = 0; i < myGames.Count(); i++)
-        //{
-        //    if (areSelectedMyGames[i] == true) myGamesIndexes.Add(myGames[i].GameId.ToString());
-        //}
-        //exchange.MyGamesIds = myGamesIndexes.ToArray();
-        //var otherGamesIndexes = new List<string>();
-        //for (int i = 0; i < otherGames.Count(); i++)
-        //{
-        //    if (areSelectedOtherGames[i] == true) otherGamesIndexes.Add(otherGames[i].GameId.ToString());
-        //}
-        //exchange.OtherUserGamesIds = otherGamesIndexes.ToArray();
         exchange.MyGamesIds = myGamesIds.Select(g => g.ToString()).ToArray();
-        Console.WriteLine(myGamesIds);
         exchange.OtherUserGamesIds = otherGamesIds.Select(g => g.ToString()).ToArray();
     }
 
