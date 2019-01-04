@@ -8,7 +8,7 @@
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <h1>Add game for exchange</h1>
-
+<br/>
 
 <div class="row" style="padding:4px">
     <label for="gameTitle" class="col-sm-6">Game title:</label>
@@ -34,7 +34,7 @@
                 </select>
             </div>
             <div class="col-sm-3">
-                <button type="button" class="btn btn-light" onclick=@(() => AddNewGame())>Add new game</button>
+                <button type="button" class="btn btn-light btn-block" onclick=@(() => AddNewGame())>Add new game</button>
             </div>
         </div>
     }
@@ -43,7 +43,7 @@
         <div class="row" style="padding:4px">
             <label for="gameId" class="col-sm-6">Game with provided title wasn't found. </label>
             <div class="col-sm-3">
-                <button type="button" class="btn btn-light" onclick=@(() => AddNewGame())>Add new game</button>
+                <button type="button" class="btn btn-light btn-block" onclick=@(() => AddNewGame())>Add new game</button>
             </div>
         </div>
     }
