@@ -19,7 +19,7 @@
             <div class="row justify-content-center">
                 <p class="font-weight-bold">@gameOwner.Name @gameOwner.Surname</p>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-2">
                     <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
                 </div>
@@ -27,7 +27,7 @@
                     <p class="font-weight-normal">@gameOwner.Location</p>
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Exchanges made:</p>
                 </div>
@@ -35,7 +35,7 @@
                     @gameOwner.ExchangesCount
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Reviews:</p>
                 </div>
@@ -43,7 +43,7 @@
                     @gameOwner.ReviewsCount
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="row" style="padding:4px">
                 <div class="col-sm-9">
                     <p class="font-weight-normal">Average mark:</p>
                 </div>
@@ -56,7 +56,7 @@
             @if (contactDetailsVisible)
             {
                 <br />
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <div class="col-sm-2">
                         <span class="fas fa-phone" style="font-size: 24px"></span>
                     </div>
@@ -64,7 +64,7 @@
                         <input type="text" class="form-control" bind="@gameOwner.PhoneNumber" />
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="row" style="padding:4px">
                     <div class="col-sm-2">
                         <span class="fas fa-envelope" style="font-size: 24px"></span>
                     </div>
@@ -101,7 +101,7 @@
                         <div class="col-sm-4">
                             <p class="font-italic">@gameView.MinAgeRequired</p>
                         </div>
-                    </div>                    
+                    </div>
                     <div class="row">
                         <div class="col-sm-8">
                             <p class="font-weight-normal">Game time (in minutes): </p>
@@ -147,7 +147,7 @@
             <div class="row">
                 <div class="col-sm-8">
                     <form>
-                        <div class="form-group row">
+                        <div class="row" style="padding:4px">
                             <label for="shipment" class="col-sm-6 col-form-label"> Shipment type: </label>
                             <div class="col-sm-6">
                                 <select bind="@gameView.Shipment" class="form-control">
@@ -158,13 +158,13 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="row" style="padding:4px">
                             <label for="isComplete" class="col-sm-6 col-form-label"> Is this game complete: </label>
                             <div class="col-sm-6">
                                 <input type="checkbox" class="form-control" id="isComplete" placeholder="false" bind="@gameView.IsComplete" />
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="row" style="padding:4px">
                             <label for="gameState" class="col-sm-6 col-form-label"> Game state: </label>
                             <div class="col-sm-6">
                                 <select bind="@gameView.State" class="form-control">
@@ -175,7 +175,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="row" style="padding:4px">
                             <label for="stateDescription" class="col-sm-6 col-form-label"> State description: </label>
                             <div class="col-sm-6">
                                 <input type="text" class="form-control" id="stateDescription" placeholder="Description of game state" bind="@gameView.UserGameDescription" />
@@ -190,49 +190,49 @@
 </div>
 
 @functions {
-    [Parameter]
-    string UserGameId { get; set; }
-    UserGameView gameView { get; set; } = new UserGameView();
-    UserView gameOwner { get; set; } = new UserView();
-    bool contactDetailsVisible = false;
-    string contactDetailsButton = "Show contact details";
+[Parameter]
+string UserGameId { get; set; }
+UserGameView gameView { get; set; } = new UserGameView();
+UserView gameOwner { get; set; } = new UserView();
+bool contactDetailsVisible = false;
+string contactDetailsButton = "Show contact details";
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
+    gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
+    if (gameOwner.UserId != gameView.UserId)
     {
-        appState.TrySetAccessTokens();
-        gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
-        if(gameOwner.UserId != gameView.UserId)
-        {
-            UriHelper.NavigateTo("/gameeditfail");
-        }
+        UriHelper.NavigateTo("/gameeditfail");
     }
+}
 
-    private void ToogleContactDetails()
+private void ToogleContactDetails()
+{
+    if (contactDetailsVisible)
     {
-        if (contactDetailsVisible)
-        {
-            contactDetailsVisible = false;
-            contactDetailsButton = "Show contact details";
-        }
-        else
-        {
-            contactDetailsVisible = true;
-            contactDetailsButton = "Hide contact details";
-        }
+        contactDetailsVisible = false;
+        contactDetailsButton = "Show contact details";
     }
+    else
+    {
+        contactDetailsVisible = true;
+        contactDetailsButton = "Hide contact details";
+    }
+}
 
-    private async Task UpdateUserGameDetails()
+private async Task UpdateUserGameDetails()
+{
+    UserGameDto updatedUserGame = new UserGameDto
     {
-        UserGameDto updatedUserGame = new UserGameDto
-        {
-            State = gameView.State,
-            IsComplete = gameView.IsComplete,
-            Shipment = gameView.Shipment,
-            UserGameDescription = gameView.UserGameDescription
-        };
-        await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
-        UriHelper.NavigateTo("/gameupdatedsuccess");
-    }
+        State = gameView.State,
+        IsComplete = gameView.IsComplete,
+        Shipment = gameView.Shipment,
+        UserGameDescription = gameView.UserGameDescription
+    };
+    await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
+    UriHelper.NavigateTo("/gameupdatedsuccess");
+}
 
 }
