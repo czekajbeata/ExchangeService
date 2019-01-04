@@ -19,6 +19,7 @@ namespace ExchangeService.Core
         User GetUserProfile(int userId);
         int GetNormalizedId(string innerId);
         IEnumerable<Exchange> GetUserExchanges(int userId);
+        Exchange GetExchange(int exchangeId);
         Exchange AddExchange(Exchange newExchange);
         bool DeleteUserGame(int userGameId);
         bool DeleteUserSearch(int userSearchId);

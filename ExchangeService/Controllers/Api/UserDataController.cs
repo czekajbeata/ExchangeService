@@ -74,5 +74,18 @@ namespace ExchangeService.Controllers.Api
         {
             return userDataService.GetUserExchanges(id);
         }
+
+        [HttpGet("api/users/exchange/{ExchangeId?}")]
+        public ShortenedExchangeView GetExchange(int ExchangeId)
+        {
+            return userDataService.GetExchange(ExchangeId);
+        }
+
+        [HttpPut("api/users/exchanges/decline")]
+        public IActionResult AbandonExchange([FromBody] ShortenedExchangeView exchange)
+        {
+            var result =  userDataService.AbandonExchange(exchange.ExchangeId);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
     }
 }

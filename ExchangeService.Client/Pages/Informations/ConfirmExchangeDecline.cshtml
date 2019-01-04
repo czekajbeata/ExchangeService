@@ -1,0 +1,43 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Shared.Enums;
+@using ExchangeService.Client.Services;
+@page "/exchangedecline/{ExchangeId}"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject AppState appState
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+@if (Exchange == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<h5>Do you want to abandon an exchange?</h5>
+<br/>
+<a href="/myexchanges" type="button" class="btn btn-primary">Return </a>
+<button type="button" class="btn btn-danger" onclick="@(async () => await Abandon())">Remove</button>
+}
+
+@functions{
+    [Parameter]
+    string ExchangeId { get; set; }
+    ShortenedExchangeView Exchange { get; set; }
+
+    protected override async Task OnInitAsync()
+    {
+        appState.TrySetAccessTokens();
+        Exchange = await Http.GetJsonAsync<ShortenedExchangeView>("http://localhost:5000/api/users/exchange/" + ExchangeId);
+
+        var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
+        if ((Exchange.FirstUserId != loggedUserId && Exchange.SecondUserId != loggedUserId )||
+            (Exchange.State != ExchangeState.Waiting) )
+            UriHelper.NavigateTo("/exchangedeclinefail");
+    }
+
+    private async Task Abandon()
+    {
+        await Http.PutJsonAsync("http://localhost:5000/api/users/exchanges/decline", Exchange);
+        UriHelper.NavigateTo("/exchangedeclinesuccess");
+    }
+}

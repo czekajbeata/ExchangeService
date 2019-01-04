@@ -116,5 +116,10 @@ namespace ExchangeService.Data.Persistance
         {
             return context.UserSearchGames.SingleOrDefault(u => u.UserSearchGameId == userSearchId);
         }
+
+        public Exchange GetExchange(int exchangeId)
+        {
+            return context.Exchanges.SingleOrDefault(e => e.ExchangeId == exchangeId);
+        }
     }
 }

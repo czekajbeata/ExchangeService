@@ -80,6 +80,29 @@ namespace ExchangeService.Controllers.Logic
             return commentDtos;
         }
 
+        public bool AbandonExchange(int exchangeId)
+        {
+            var existingExchange = userProfiles.GetExchange(exchangeId);
+            if (existingExchange == null)
+                return false;
+            existingExchange.State = ExchangeState.Declined;
+            unitOfWork.CompleteWork();
+            return true;
+        }
+
+        internal ShortenedExchangeView GetExchange(int exchangeId)
+        {
+            var exchange = userProfiles.GetExchange(exchangeId);
+            var newExchangeView = new ShortenedExchangeView()
+            {
+                ExchangeId = exchange.ExchangeId,
+                State = exchange.State,
+                FirstUserId = exchange.OfferingUserId,
+                SecondUserId = exchange.OtherUserId
+            };
+            return newExchangeView;
+        }
+
         public IEnumerable<MatchView> GetMatches(int userId)
         {
             var usersSearchedGamesIds = userProfiles.GetUserSearchGames(userId).Select(g => g.GameId);

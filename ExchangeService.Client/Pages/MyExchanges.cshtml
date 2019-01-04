@@ -5,6 +5,7 @@
 @inject HttpClient Http
 @inject TokenService tokenService
 @inject AppState appState
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <h1>My exchanges</h1>
 <br />
@@ -93,43 +94,41 @@ else
 
 @functions {
 
-ExchangeView[] myExchanges;
-// add another array - waiting for approval
+    ExchangeView[] myExchanges;
+    // add another array - waiting for approval
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeView>>("http://localhost:5000/api/users/myexchanges");
-    myExchanges = exchanges.ToArray();
-}
+    protected override async Task OnInitAsync()
+    {
+        appState.TrySetAccessTokens();
+        var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeView>>("http://localhost:5000/api/users/myexchanges");
+        myExchanges = exchanges.ToArray();
+    }
 
-private void DeclineADeal(ExchangeView exchange)
-{
-    //confirmation page
-    //change status to declined
+    private void DeclineADeal(ExchangeView exchange)
+    {
+        UriHelper.NavigateTo("/exchangedecline/" + exchange.ExchangeId);
+    }
 
-}
+    private void FinalizeADeal(ExchangeView exchange)
+    {
+        // ask if you got the game
+        // add propery to db to check if any user finalized
+        // if you are the second then change to finalize
+        // if not set the property
+        // add comment
+        // visible when is finalized - another table - pending comments with exchange id - when second user finalizes and adds coment both are transfered to regular comments?
+    }
 
-private void FinalizeADeal(ExchangeView exchange)
-{
-    // ask if you got the game
-    // add propery to db to check if any user finalized
-    // if you are the second then change to finalize
-    // if not set the property
-    // add comment
-    // visible when is finalized - another table - pending comments with exchange id - when second user finalizes and adds coment both are transfered to regular comments? 
-}
+    private void AcceptADeal(ExchangeView exchange)
+    {
+        // add your contact info
+        // change to inprogress
 
-private void AcceptADeal(ExchangeView exchange)
-{
-    // add your contact info
-    // change to inprogress
+    }
 
-}
-
-private void SeeDetails(ExchangeView exchange)
-{
-    // redirect
-    // page like summary but with both users contact details - if accepted
-}
+    private void SeeDetails(ExchangeView exchange)
+    {
+        // redirect
+        // page like summary but with both users contact details - if accepted
+    }
 }
