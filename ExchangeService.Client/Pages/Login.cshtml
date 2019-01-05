@@ -25,6 +25,14 @@
     public string Email { get; set; } = "";
     public string Password { get; set; } = "";
 
+    protected override void OnInit()
+    {
+        if (appState.IsUserLoggedIn)
+        {
+            UriHelper.NavigateTo($"/alreadylogged");
+        }
+    }
+
     private async Task SubmitForm()
     {
         var tokenvm = new TokenViewModel

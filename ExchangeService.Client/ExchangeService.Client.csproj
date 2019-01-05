@@ -36,6 +36,9 @@
     <Content Update="Pages\Informations\ConfirmExchangeDecline.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Informations\Info - AlreadyLogged.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Informations\Unauthorized.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
