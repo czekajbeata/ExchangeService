@@ -10,13 +10,16 @@
 <h1>My exchanges</h1>
 <br />
 
-@if (myExchanges == null)
+@if (finishedExchanges == null && pendingExchanges == null && inProgressExchanges == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    @if (myExchanges.Count() > 0)
+
+    <h3>Exchanges waiting for approval</h3>
+    <br />
+    @if (pendingExchanges.Count() > 0)
     {
         <table class="table table-striped">
             <thead>
@@ -30,7 +33,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var exchange in myExchanges)
+                @foreach (var exchange in pendingExchanges)
                 {
                     <tr>
                         <td>
@@ -56,10 +59,11 @@ else
                             }
                         </td>
                         <td>@exchange.Shipment</td>
-                        <td>@exchange.State
-                            @if(exchange.State == ExchangeState.InProgress && exchange.HaveIFinalized)
+                        <td>
+                            @exchange.State
+                            @if (exchange.State == ExchangeState.Waiting && exchange.AmIOffering)
                             {
-                                <p class="font-italic" style="font-size: small">Waiting for other user to finalize.</p>
+                                <p class="font-italic" style="font-size: small">...for other user to accept.</p>
                             }
                         </td>
                         <td>
@@ -68,13 +72,6 @@ else
                                     @if (exchange.State == ExchangeState.Waiting && !exchange.AmIOffering)
                                     {
                                         <button type="button" class="btn btn-primary btn-block" style="margin:4px" onclick="@(() => AcceptADeal(exchange))">Accept</button>
-                                    }
-                                </div>
-                                <div class="row">
-                                    @if (exchange.State == ExchangeState.InProgress && !exchange.HaveIFinalized)
-                                    {
-                                        <button type="button" class="btn btn-outline-primary btn-block" style="margin:4px" onclick="@(() => SeeDetails(exchange))">Details</button>
-                                        <button type="button" class="btn btn-success btn-block" style="margin:4px" onclick="@(() => FinalizeADeal(exchange))">Finalize</button>
                                     }
                                 </div>
                                 <div class="row">
@@ -90,7 +87,124 @@ else
             </tbody>
         </table>
     }
-    else
+    <br /><br />
+    <h3>Exchanges in progress</h3><br />
+    @if (inProgressExchanges.Count() > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 15%">Exchanger</th>
+                    <th style="width: 20%">You're getting</th>
+                    <th style="width: 20%">You're giving</th>
+                    <th style="width: 12%">Shippment</th>
+                    <th style="width: 13%">State</th>
+                    <th style="width: 20%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var exchange in inProgressExchanges)
+                {
+                    <tr>
+                        <td>
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <img src="@exchange.UserImage" width="100" height="100">
+                                </div>
+                                <div class="row justify-content-center">
+                                    <p class="font-weight-bold">@exchange.OtherUserName</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @foreach (var game in @exchange.OtherUserGames)
+                            {
+                                <p>@game</p>
+                            }
+                        </td>
+                        <td>
+                            @foreach (var game in @exchange.MyGames)
+                            {
+                                <p>@game</p>
+                            }
+                        </td>
+                        <td>@exchange.Shipment</td>
+                        <td>
+                            @exchange.State
+                            @if (exchange.State == ExchangeState.InProgress && exchange.HaveIFinalized)
+                            {
+                                <p class="font-italic" style="font-size: small">Waiting for other user to finalize.</p>
+                            }
+                        </td>
+                        <td>
+                            <div class="container">
+                                <div class="row">
+                                    @if (exchange.State == ExchangeState.InProgress && !exchange.HaveIFinalized)
+                                    {
+                                        <button type="button" class="btn btn-outline-primary btn-block" style="margin:4px" onclick="@(() => SeeDetails(exchange))">Details</button>
+                                        <button type="button" class="btn btn-success btn-block" style="margin:4px" onclick="@(() => FinalizeADeal(exchange))">Finalize</button>
+                                    }
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <br /><br />
+    <h3>Finished exchanges</h3><br />
+    @if (finishedExchanges.Count() > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 15%">Exchanger</th>
+                    <th style="width: 20%">You're getting</th>
+                    <th style="width: 20%">You're giving</th>
+                    <th style="width: 12%">Shippment</th>
+                    <th style="width: 13%">State</th>
+                    <th style="width: 20%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var exchange in finishedExchanges)
+                {
+                    <tr>
+                        <td>
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <img src="@exchange.UserImage" width="100" height="100">
+                                </div>
+                                <div class="row justify-content-center">
+                                    <p class="font-weight-bold">@exchange.OtherUserName</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @foreach (var game in @exchange.OtherUserGames)
+                            {
+                                <p>@game</p>
+                            }
+                        </td>
+                        <td>
+                            @foreach (var game in @exchange.MyGames)
+                            {
+                                <p>@game</p>
+                            }
+                        </td>
+                        <td>@exchange.Shipment</td>
+                        <td> @exchange.State </td>
+                        <td/>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if(finishedExchanges.Count() == 0
+      && pendingExchanges.Count() == 0
+      && inProgressExchanges.Count() == 0)
     {
         <p>You have no exchanges</p>
     }
@@ -99,45 +213,42 @@ else
 
 @functions {
 
-    ExchangeView[] myExchanges;
-    ExchangeView[] pendingExchanges;
+ExchangeView[] finishedExchanges;
+ExchangeView[] pendingExchanges;
+ExchangeView[] inProgressExchanges;
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    if (!appState.IsUserLoggedIn)
     {
-        appState.TrySetAccessTokens();
-        if (!appState.IsUserLoggedIn)
-        {
-            UriHelper.NavigateTo("/unauthorized");
-        }
-        var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeView>>("http://localhost:5000/api/users/myexchanges");
-
-        var exchangeList = exchanges.ToList();
-        exchangeList.Reverse();
-        Console.WriteLine(exchangeList.Count());
-        pendingExchanges = exchangeList.Where(e => e.State == ExchangeState.Waiting && !e.AmIOffering).ToArray();
-        Console.WriteLine(pendingExchanges.Count());
-        myExchanges = exchangeList.Where(e => !pendingExchanges.Contains(e)).ToArray();
-        Console.WriteLine(myExchanges.Count());
-        //myExchanges = exchangeList.ToArray();
+        UriHelper.NavigateTo("/unauthorized");
     }
+    var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeView>>("http://localhost:5000/api/users/myexchanges");
+    var exchangeList = exchanges.ToList();
+    exchangeList.Reverse();
+    pendingExchanges = exchangeList.Where(e => e.State == ExchangeState.Waiting).ToArray();
+    inProgressExchanges = exchangeList.Where(e => e.State == ExchangeState.InProgress).ToArray();
+    finishedExchanges = exchangeList.Where(e => e.State == ExchangeState.Finalized || e.State == ExchangeState.Declined).ToArray();
+}
 
-    private void DeclineADeal(ExchangeView exchange)
-    {
-        UriHelper.NavigateTo("/exchangedecline/" + exchange.ExchangeId);
-    }
+private void DeclineADeal(ExchangeView exchange)
+{
+    UriHelper.NavigateTo("/exchangedecline/" + exchange.ExchangeId);
+}
 
-    private void FinalizeADeal(ExchangeView exchange)
-    {
-        UriHelper.NavigateTo("/exchangefinalize/" + exchange.ExchangeId);
-    }
+private void FinalizeADeal(ExchangeView exchange)
+{
+    UriHelper.NavigateTo("/exchangefinalize/" + exchange.ExchangeId);
+}
 
-    private void AcceptADeal(ExchangeView exchange)
-    {
-        UriHelper.NavigateTo("/exchangeaccpet/" + exchange.ExchangeId);
-    }
+private void AcceptADeal(ExchangeView exchange)
+{
+    UriHelper.NavigateTo("/exchangeaccpet/" + exchange.ExchangeId);
+}
 
-    private void SeeDetails(ExchangeView exchange)
-    {
-        UriHelper.NavigateTo("/exchangedetails/" + exchange.ExchangeId);
-    }
+private void SeeDetails(ExchangeView exchange)
+{
+    UriHelper.NavigateTo("/exchangedetails/" + exchange.ExchangeId);
+}
 }
