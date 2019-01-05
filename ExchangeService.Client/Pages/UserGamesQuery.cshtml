@@ -107,11 +107,18 @@ else
     {
         appState.TrySetAccessTokens();
         var usergames = await Http.GetJsonAsync<IEnumerable<GameAndUserView>>("http://localhost:5000/api/usergames/" + GameId);
+        if (appState.IsUserLoggedIn)
+        {
+            var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
+            usergames = usergames.Where(g => g.UserId != loggedUserId);
+        }
         userGames = usergames.ToArray();
-        if(userGames == null || !(userGames.Count() > 0))
+        if (userGames == null || !(userGames.Count() > 0))
         {
             UriHelper.NavigateTo($"/usergamesfail");
         }
+
+
     }
 
     private void GetDetails(GameAndUserView row)
