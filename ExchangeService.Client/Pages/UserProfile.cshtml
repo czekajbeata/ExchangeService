@@ -179,66 +179,68 @@ else
 
 
 @functions {
-[Parameter]
-string UserId { get; set; }
+    [Parameter]
+    string UserId { get; set; }
 
-UserView profileOwner;
-CommentDto[] comments = new CommentDto[] { };
-List<UserView> comentators = new List<UserView>() { };
-UserGameView[] userGames = new UserGameView[] { };
-UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
-bool contactDetailsVisible = false;
-string contactDetailsButton = "Show contact details";
+    UserView profileOwner;
+    CommentDto[] comments = new CommentDto[] { };
+    List<UserView> comentators = new List<UserView>() { };
+    UserGameView[] userGames = new UserGameView[] { };
+    UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
 
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    var myProfile = await appState.GetMyProfile();
-
-    int profileOwnersId = Int32.Parse(UserId);
-    profileOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + profileOwnersId);
-
-    if (myProfile.UserId == profileOwner.UserId)
+    protected override async Task OnInitAsync()
     {
-        UriHelper.NavigateTo("/myprofile");
+        appState.TrySetAccessTokens();
+        var myProfile = await appState.GetMyProfile();
+
+        int profileOwnersId = Int32.Parse(UserId);
+        profileOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + profileOwnersId);
+
+        if (myProfile.UserId == profileOwner.UserId)
+        {
+            UriHelper.NavigateTo("/myprofile");
+        }
+
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
+        if (result.Count() > 0) await FillComents(result);
+
+        var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + profileOwnersId);
+        userGames = toExchange.ToArray();
+        var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + profileOwnersId);
+        userSearchGames = forSearch.ToArray();
     }
 
-    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
-    if (result.Count() > 0) await FillComents(result.ToArray());
-
-    var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + profileOwnersId);
-    userGames = toExchange.ToArray();
-    var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + profileOwnersId);
-    userSearchGames = forSearch.ToArray();
-}
-
-private async Task FillComents(CommentDto[] dbComments)
-{
-    comments = dbComments;
-    foreach (var comment in comments)
+    private async Task FillComents(IEnumerable<CommentDto> dbComments)
     {
-        comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
+        var commentList = dbComments.ToList();
+        commentList.Reverse();
+        comments = commentList.ToArray();
+        foreach (var comment in comments)
+        {
+            comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
+        }
     }
-}
 
-private void ToogleContactDetails()
-{
-    if (contactDetailsVisible)
+    private void ToogleContactDetails()
     {
-        contactDetailsVisible = false;
-        contactDetailsButton = "Show contact details";
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
     }
-    else
-    {
-        contactDetailsVisible = true;
-        contactDetailsButton = "Hide contact details";
-    }
-}
 
-private void OfferDeal()
-{
-    UriHelper.NavigateTo($"/offerdeal/{profileOwner.UserId}");
-}
+    private void OfferDeal()
+    {
+        UriHelper.NavigateTo($"/offerdeal/{profileOwner.UserId}");
+    }
 
 }
