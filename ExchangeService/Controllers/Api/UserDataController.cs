@@ -85,6 +85,7 @@ namespace ExchangeService.Controllers.Api
             return userDataService.GetExchange(ExchangeId, normalizedId);
         }
 
+        [Authorize]
         [HttpPut("api/users/exchanges/decline")]
         public IActionResult AbandonExchange([FromBody] ShortenedExchangeView exchange)
         {
@@ -92,6 +93,7 @@ namespace ExchangeService.Controllers.Api
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
+        [Authorize]
         [HttpPut("api/users/exchanges/accept")]
         public IActionResult AcceptExchange([FromBody] ExchangeDto exchange)
         {
@@ -99,6 +101,7 @@ namespace ExchangeService.Controllers.Api
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
+        [Authorize]
         [HttpPut("api/users/exchanges/finalize")]
         public IActionResult FinalizeExchange([FromBody] ExchangeDto exchange)
         {

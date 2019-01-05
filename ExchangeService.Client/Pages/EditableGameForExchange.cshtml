@@ -193,49 +193,53 @@
 </div>
 
 @functions {
-[Parameter]
-string UserGameId { get; set; }
-UserGameView gameView { get; set; } = new UserGameView();
-UserView gameOwner { get; set; } = new UserView();
-bool contactDetailsVisible = false;
-string contactDetailsButton = "Show contact details";
+    [Parameter]
+    string UserGameId { get; set; }
+    UserGameView gameView { get; set; } = new UserGameView();
+    UserView gameOwner { get; set; } = new UserView();
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-    gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
-    if (gameOwner.UserId != gameView.UserId)
+    protected override async Task OnInitAsync()
     {
-        UriHelper.NavigateTo("/gameeditfail");
+        appState.TrySetAccessTokens();
+        if (!appState.IsUserLoggedIn)
+        {
+            UriHelper.NavigateTo("/unauthorized");
+        }
+        gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
+        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
+        if (gameOwner.UserId != gameView.UserId)
+        {
+            UriHelper.NavigateTo("/gameeditfail");
+        }
     }
-}
 
-private void ToogleContactDetails()
-{
-    if (contactDetailsVisible)
+    private void ToogleContactDetails()
     {
-        contactDetailsVisible = false;
-        contactDetailsButton = "Show contact details";
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
     }
-    else
-    {
-        contactDetailsVisible = true;
-        contactDetailsButton = "Hide contact details";
-    }
-}
 
-private async Task UpdateUserGameDetails()
-{
-    UserGameDto updatedUserGame = new UserGameDto
+    private async Task UpdateUserGameDetails()
     {
-        State = gameView.State,
-        IsComplete = gameView.IsComplete,
-        Shipment = gameView.Shipment,
-        UserGameDescription = gameView.UserGameDescription
-    };
-    await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
-    UriHelper.NavigateTo("/gameupdatedsuccess");
-}
+        UserGameDto updatedUserGame = new UserGameDto
+        {
+            State = gameView.State,
+            IsComplete = gameView.IsComplete,
+            Shipment = gameView.Shipment,
+            UserGameDescription = gameView.UserGameDescription
+        };
+        await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
+        UriHelper.NavigateTo("/gameupdatedsuccess");
+    }
 
 }

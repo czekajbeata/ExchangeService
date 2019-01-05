@@ -194,16 +194,17 @@ else
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
-        var myProfile = await appState.GetMyProfile();
-
         int profileOwnersId = Int32.Parse(UserId);
         profileOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + profileOwnersId);
-
-        if (myProfile.UserId == profileOwner.UserId)
+        if (appState.IsUserLoggedIn)
         {
-            UriHelper.NavigateTo("/myprofile");
+            var myProfile = await appState.GetMyProfile();
+            if (myProfile.UserId == profileOwner.UserId)
+            {
+                UriHelper.NavigateTo("/myprofile");
+            }
         }
-
+        
         var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
         if (result.Count() > 0) await FillComents(result);
 

@@ -202,6 +202,10 @@ else
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
+        if (!appState.IsUserLoggedIn)
+        {
+            UriHelper.NavigateTo("/unauthorized");
+        }
         myProfile = await appState.GetMyProfile();
         var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + myProfile.UserId);
         if (result.Count() > 0) await FillComents(result);

@@ -80,6 +80,10 @@
     protected override void OnInit()
     {
         appState.TrySetAccessTokens();
+        if (!appState.IsUserLoggedIn)
+        {
+            UriHelper.NavigateTo("/unauthorized");
+        }
     }
 
     private async Task SubmitForm()

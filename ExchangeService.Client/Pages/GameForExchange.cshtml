@@ -190,46 +190,49 @@
 </div>
 
 @functions {
-[Parameter]
-string UserGameId { get; set; }
-UserGameView gameView { get; set; } = new UserGameView();
-UserView gameOwner { get; set; } = new UserView();
-bool contactDetailsVisible = false;
-string contactDetailsButton = "Show contact details";
+    [Parameter]
+    string UserGameId { get; set; }
+    UserGameView gameView { get; set; } = new UserGameView();
+    UserView gameOwner { get; set; } = new UserView();
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-
-    var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
-    if (gameView.UserId == loggedUserId)
-        UriHelper.NavigateTo($"/editableexchangegame/{UserGameId}");
-
-    gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + gameView.UserId);
-}
-
-private void ToogleContactDetails()
-{
-    if (contactDetailsVisible)
+    protected override async Task OnInitAsync()
     {
-        contactDetailsVisible = false;
-        contactDetailsButton = "Show contact details";
+        appState.TrySetAccessTokens();
+        gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
+
+        if(appState.IsUserLoggedIn)
+        {
+            var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
+            if (gameView.UserId == loggedUserId)
+                UriHelper.NavigateTo($"/editableexchangegame/{UserGameId}");
+        }
+
+        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + gameView.UserId);
     }
-    else
+
+    private void ToogleContactDetails()
     {
-        contactDetailsVisible = true;
-        contactDetailsButton = "Hide contact details";
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
     }
-}
 
-private void OfferDeal()
-{
-    UriHelper.NavigateTo($"/offerdeal/{gameOwner.UserId}");
-}
+    private void OfferDeal()
+    {
+        UriHelper.NavigateTo($"/offerdeal/{gameOwner.UserId}");
+    }
 
-private void VisitProfile()
-{
-    UriHelper.NavigateTo($"/profile/{gameOwner.UserId}");
-}
+    private void VisitProfile()
+    {
+        UriHelper.NavigateTo($"/profile/{gameOwner.UserId}");
+    }
 }
