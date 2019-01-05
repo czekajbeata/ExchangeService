@@ -123,7 +123,7 @@ namespace ExchangeService.Controllers.Logic
             if (existingExchange == null)
                 return false;
             existingExchange.State = ExchangeState.InProgress;
-            existingExchange.OtherUserContactInfo = exchange.OtherUserContactInfo;
+            existingExchange.OtherUserContactInfo = exchange.MyContactInfo;
             userProfiles.RemoveExchangeGames(existingExchange.OfferingUserId, existingExchange.OfferingUsersGames);
             userProfiles.RemoveExchangeGames(existingExchange.OtherUserId, existingExchange.OtherUsersGames);
             unitOfWork.CompleteWork();

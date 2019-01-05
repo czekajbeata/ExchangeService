@@ -75,6 +75,7 @@ else
         }
         else
         {
+            Exchange.MyContactInfo = ContactDetails;
             await Http.PutJsonAsync("http://localhost:5000/api/users/exchanges/accept", Exchange);
             UriHelper.NavigateTo("/exchangeacceptsuccess");
         }
