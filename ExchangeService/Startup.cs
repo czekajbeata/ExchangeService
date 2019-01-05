@@ -120,6 +120,7 @@ namespace ExchangeService
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseStatusCodePages();
 
             app.UseAuthentication();
             app.UseMvc(routes =>
