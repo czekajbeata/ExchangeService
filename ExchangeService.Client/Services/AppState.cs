@@ -31,11 +31,15 @@ namespace ExchangeService.Client.Services
                 TrySetAccessTokens();
                 SetMyProfile();
             }
+            else
+            {
+                IsUserLoggedIn = false;
+            }
         }
 
         public async Task<UserView> GetMyProfile()
         {
-            if (localStorage.GetItem<bool>("isUserLoggedIn"))
+            if (IsUserLoggedIn)
             {                
                 if (userProfile == null)
                 {
@@ -49,7 +53,7 @@ namespace ExchangeService.Client.Services
 
         public void TrySetAccessTokens()
         {
-            if (localStorage.GetItem<bool>("isUserLoggedIn"))
+            if (IsUserLoggedIn)
             {
                 if (!http.DefaultRequestHeaders.Contains("Authorization"))
                     http.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0} ", Token));

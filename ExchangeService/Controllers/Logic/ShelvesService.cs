@@ -291,6 +291,7 @@ namespace ExchangeService.Controllers.Logic
                 var comments = userProfiles.GetComments(game.UserId);
                 var avgMark = userProfiles.GetComments(game.UserId).Select(c => c.Mark).Sum() / comments.Count();
                 if (!(avgMark > 0)) avgMark = 0;
+                else avgMark = Math.Round(avgMark, 2);
                 gameViews.Add(new GameAndUserView()
                 {
                     UserGameId = game.UserGameId,
