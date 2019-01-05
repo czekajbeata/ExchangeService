@@ -100,7 +100,7 @@ else
 @functions {
 
     ExchangeView[] myExchanges;
-    // add another array - waiting for approval
+    ExchangeView[] pendingExchanges;
 
     protected override async Task OnInitAsync()
     {
@@ -110,7 +110,15 @@ else
             UriHelper.NavigateTo("/unauthorized");
         }
         var exchanges = await Http.GetJsonAsync<IEnumerable<ExchangeView>>("http://localhost:5000/api/users/myexchanges");
-        myExchanges = exchanges.ToArray();
+
+        var exchangeList = exchanges.ToList();
+        exchangeList.Reverse();
+        Console.WriteLine(exchangeList.Count());
+        pendingExchanges = exchangeList.Where(e => e.State == ExchangeState.Waiting && !e.AmIOffering).ToArray();
+        Console.WriteLine(pendingExchanges.Count());
+        myExchanges = exchangeList.Where(e => !pendingExchanges.Contains(e)).ToArray();
+        Console.WriteLine(myExchanges.Count());
+        //myExchanges = exchangeList.ToArray();
     }
 
     private void DeclineADeal(ExchangeView exchange)
