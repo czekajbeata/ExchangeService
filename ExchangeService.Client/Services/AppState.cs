@@ -40,7 +40,7 @@ namespace ExchangeService.Client.Services
         public async Task<UserView> GetMyProfile()
         {
             if (IsUserLoggedIn)
-            {                
+            {
                 if (userProfile == null)
                 {
                     await SetMyProfile();
@@ -48,7 +48,7 @@ namespace ExchangeService.Client.Services
                 NotifyStateChanged();
                 return userProfile;
             }
-            else return new UserView();
+            else return null;
         }
 
         public void TrySetAccessTokens()

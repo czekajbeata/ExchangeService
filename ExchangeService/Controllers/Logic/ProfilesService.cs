@@ -66,5 +66,25 @@ namespace ExchangeService.Controllers.Logic
                 ReviewsCount = comments.Count()
             };
         }
+
+        public bool DoesProfileExist(string innerId)
+        {
+            return userProfiles.GetUserByInnerId(innerId) != null;
+        }
+
+        public bool UpdateUserProfile(UserView user)
+        {
+            var existingProfile = userProfiles.GetUserProfile(user.UserId);
+            if (existingProfile == null)
+                return false;
+            existingProfile.ImageUrl = user.ImageUrl;
+            existingProfile.Location = user.Location;
+            existingProfile.Name = user.Name;
+            existingProfile.Surname = user.Surname;
+            existingProfile.PhoneNumber = String.IsNullOrEmpty(user.PhoneNumber) ? "not given" : user.PhoneNumber;
+            existingProfile.ContactEmail = String.IsNullOrEmpty(user.ContactEmail) ? "not given" : user.ContactEmail;
+            unitOfWork.CompleteWork();
+            return true;
+        }
     }
 }

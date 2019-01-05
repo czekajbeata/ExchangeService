@@ -30,14 +30,13 @@ namespace ExchangeService.Controllers.Api
             this.signInManager = signInManager;
         }
 
-        [HttpPost("api/users/profile")]
-        public IActionResult AddUserProfile([FromBody] UserView user)
+        [Route("api/token")]
+        public string GenerateToken(string email)
         {
-            var id = User.Claims.Single(c => c.Type == "Id").Value;
-            var result = profilesService.AddUserProfile(user, id);
-            return result ? (IActionResult)Ok() : BadRequest();
+            var token = tokenService.BuildToken(email);
+            return token;
         }
-
+        
         [HttpGet("api/users/{id?}")]
         public UserView GetUserProfile(int id)
         {
@@ -61,11 +60,19 @@ namespace ExchangeService.Controllers.Api
             return profilesService.GetUserProfile(normalizedId);
         }
 
-        [Route("api/token")]
-        public string GenerateToken(string email)
+        [HttpGet("api/users/profile")]
+        public bool CheckIfUserProfileExists()
         {
-            var token = tokenService.BuildToken(email);
-            return token;
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            return profilesService.DoesProfileExist(id);
+        }
+
+        [HttpPost("api/users/profile")]
+        public IActionResult AddUserProfile([FromBody] UserView user)
+        {
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var result = profilesService.AddUserProfile(user, id);
+            return result ? (IActionResult)Ok() : BadRequest();
         }
 
         [HttpPost("api/token/register")]
@@ -108,6 +115,15 @@ namespace ExchangeService.Controllers.Api
             }
 
             return Ok(new { token = GenerateToken(tokenvm.Email) });
+        }
+
+
+        [Authorize]
+        [HttpPut("api/users/profile")]
+        public IActionResult UpdateProfile([FromBody] UserView user)
+        {
+            var result = profilesService.UpdateUserProfile(user);
+            return result ? (IActionResult)Ok() : BadRequest();
         }
     }
 }

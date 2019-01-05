@@ -1,80 +1,77 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
 @using System.Text.RegularExpressions;
-@page "/fillprofile"
+@page "/edit"
 @inject HttpClient Http
 @inject TokenService tokenService
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 
-<h2>Thank you for registering!</h2>
-<h3>Plese provide additional details before you get started:</h3>
+<h3>Edit profile:</h3>
 <br />
 
 <form>
     <div class="form-group row">
         <label for="picture" class="col-sm-3 col-form-label">Profile picture url</label>
         <div class="col-sm-4">
-            <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@PictureUrl" />
+            <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@myProfile.ImageUrl" />
         </div>
     </div>
     <div class="form-group row">
         <label for="name" class="col-sm-3 col-form-label">Name</label>
         <div class="col-sm-4">
-            <input type="text" name="name" placeholder="Name" class="form-control" bind="@Name" />
+            <input type="text" name="name" placeholder="Name" class="form-control" bind="@myProfile.Name" />
         </div>
     </div>
     <div class="form-group row">
         <label for="surname" class="col-sm-3 col-form-label">Surname</label>
         <div class="col-sm-4">
-            <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@Surname" />
+            <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@myProfile.Surname" />
         </div>
     </div>
     <div class="form-group row">
         <label for="location" class="col-sm-3 col-form-label">Location</label>
         <div class="col-sm-4">
-            <input type="text" name="location" placeholder="Location" class="form-control" bind="@Location" />
+            <input type="text" name="location" placeholder="Location" class="form-control" bind="@myProfile.Location" />
         </div>
     </div>
     <div class="form-group row">
         <label for="email" class="col-sm-3 col-form-label">Contact email</label>
         <div class="col-sm-4">
-            <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@ContactEmail" />
+            <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@myProfile.ContactEmail" />
         </div>
     </div>
     <div class="form-group row">
         <label for="number" class="col-sm-3 col-form-label">Phone number</label>
         <div class="col-sm-4">
-            <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@PhoneNumber" />
+            <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@myProfile.PhoneNumber" />
         </div>
     </div>
 
     @if (errors.Count() > 0)
     {
+    <br />
+    <div class="alert alert-danger" role="alert">
         <br />
-        <div class="alert alert-danger" role="alert">
-            <br />
-            @foreach (var error in errors)
+        @foreach (var error in errors)
             {
-                <p class="font-italic">@error</p>
+        <p class="font-italic">@error</p>
             }
-        </div>
+    </div>
     }
     <div class="form-group row">
         <div class="col-sm-3">
-            <button type="button" class="btn btn-primary btn-block" onclick="@SubmitForm">Create profile</button>
+            <button type="button" class="btn btn-secondary btn-block" onclick="@Back">Back to profile</button>
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-primary btn-block" onclick="@SubmitForm">Update profile</button>
         </div>
     </div>
 </form>
 
 @functions{
-    public string Location { get; set; }
-    public string PictureUrl { get; set; }
-    public string ContactEmail { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Name { get; set; }
-    public string Surname { get; set; }
+    UserView myProfile = new UserView();
     public List<string> errors = new List<string>();
     public bool isValid = false;
 
@@ -87,11 +84,7 @@
         }
         else
         {
-            var profileExists = await Http.GetJsonAsync<bool>("http://localhost:5000/api/users/profile");
-            if (profileExists)
-            {
-                UriHelper.NavigateTo("/edit");
-            }
+            myProfile = await appState.GetMyProfile();
         }
     }
 
@@ -101,52 +94,53 @@
         ValidateInputs();
         if (isValid)
         {
-            if (PictureUrl == null)
-                PictureUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
+            if (myProfile.ImageUrl == null)
+                myProfile.ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
 
             UserView userView = new UserView()
             {
-                Location = Location,
-                Name = Name,
-                Surname = Surname,
-                ImageUrl = PictureUrl,
-                PhoneNumber = PhoneNumber,
-                ContactEmail = ContactEmail
+                Location = myProfile.Location,
+                Name = myProfile.Name,
+                Surname = myProfile.Surname,
+                ImageUrl = myProfile.ImageUrl,
+                PhoneNumber = myProfile.PhoneNumber,
+                ContactEmail = myProfile.ContactEmail
             };
-            await Http.PostJsonAsync("http://localhost:5000/api/users/profile", userView);
-            if (await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile") != null)
-            {
-                UriHelper.NavigateTo("/myprofile");
-            }
+            await Http.PutJsonAsync("http://localhost:5000/api/users/profile", userView);
+            UriHelper.NavigateTo("/profileupdatesuccess");
         }
+    }
+
+    private void Back()
+    {
+        UriHelper.NavigateTo("/myprofile");
     }
 
     private void ValidateInputs()
     {
-        if (string.IsNullOrEmpty(Name))
+        if (string.IsNullOrEmpty(myProfile.Name))
             errors.Add("Please fill your name.");
-        if (string.IsNullOrEmpty(Location))
+        if (string.IsNullOrEmpty(myProfile.Location))
             errors.Add("Please fill your location.");
 
-        if (string.IsNullOrEmpty(PhoneNumber) && string.IsNullOrEmpty(ContactEmail))
+        if (string.IsNullOrEmpty(myProfile.PhoneNumber) && string.IsNullOrEmpty(myProfile.ContactEmail))
             errors.Add("Please fill at least one contact detail.");
         else
         {
-            if (!string.IsNullOrEmpty(PhoneNumber))
+            if (!string.IsNullOrEmpty(myProfile.PhoneNumber))
             {
                 string phonePattern = @"\d{3}-? *\d{3}-? *-?\d{3}";
                 Regex rgx = new Regex(phonePattern);
-                if (!rgx.IsMatch(PhoneNumber))
+                if (!rgx.IsMatch(myProfile.PhoneNumber))
                     errors.Add("Phone number has invalid format.");
             }
-            if (!string.IsNullOrEmpty(ContactEmail))
+            if (!string.IsNullOrEmpty(myProfile.ContactEmail))
             {
-                if (!ContactEmail.Contains("@"))
+                if (!myProfile.ContactEmail.Contains("@"))
                     errors.Add("Email has invalid format.");
             }
         }
         isValid = errors.Count() == 0;
         StateHasChanged();
     }
-
 }

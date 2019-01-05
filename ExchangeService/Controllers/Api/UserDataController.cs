@@ -23,24 +23,6 @@ namespace ExchangeService.Controllers.Api
             this.profilesService = profilesService;
         }
 
-        [Authorize]
-        [HttpPost("api/users/comments")]
-        public IActionResult AddComment([FromBody] CommentDto comment)
-        {
-            var result = userDataService.AddComment(comment);
-            return result ? (IActionResult)Ok() : BadRequest();
-        }
-
-        [Authorize]
-        [HttpPost("api/users/exchanges")]
-        public IActionResult AddExchange([FromBody] ExchangeDto exchange)
-        {
-            var id = User.Claims.Single(c => c.Type == "Id").Value;
-            var normalizedId = profilesService.ToNormalizedId(id);
-            var result = userDataService.AddExchange(exchange, normalizedId);
-            return result ? (IActionResult)Ok() : BadRequest();
-        }
-
         [HttpGet("api/users/comments/{id?}")]
         public IEnumerable<CommentDto> GetComments(int id)
         {
@@ -108,6 +90,24 @@ namespace ExchangeService.Controllers.Api
             var id = User.Claims.Single(c => c.Type == "Id").Value;
             var normalizedId = profilesService.ToNormalizedId(id);
             var result = userDataService.FinalizeExchange(exchange, normalizedId);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
+        [Authorize]
+        [HttpPost("api/users/comments")]
+        public IActionResult AddComment([FromBody] CommentDto comment)
+        {
+            var result = userDataService.AddComment(comment);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
+        [Authorize]
+        [HttpPost("api/users/exchanges")]
+        public IActionResult AddExchange([FromBody] ExchangeDto exchange)
+        {
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
+            var result = userDataService.AddExchange(exchange, normalizedId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
     }
