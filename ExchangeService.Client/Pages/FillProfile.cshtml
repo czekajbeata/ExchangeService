@@ -1,5 +1,6 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
+@using System.Text.RegularExpressions;
 @page "/fillprofile"
 @inject HttpClient Http
 @inject TokenService tokenService
@@ -9,7 +10,7 @@
 
 <h2>Thank you for registering!</h2>
 <h3>Plese provide additional details before you get started:</h3>
-<br/>
+<br />
 
 <form>
     <div class="form-group row">
@@ -36,18 +37,6 @@
             <input type="text" name="location" placeholder="Location" class="form-control" bind="@Location" />
         </div>
     </div>
-    <div class="form-group row" style="text-align:left">
-        <label for="delivery" class="col-sm-3 col-form-label">Accepting delivery</label>
-        <div class="col-sm-1">
-            <input type="checkbox" name="delivery" placeholder="false" class="form-control" bind="@Delivery" />
-        </div>
-    </div>
-    <div class="form-group row" style="text-align:left">
-        <label for="pickup" class="col-sm-3 col-form-label">Accepting pickup</label>
-        <div class="col-sm-1">
-            <input type="checkbox" name="pickup" placeholder="false" class="form-control" bind="@PickUp" />
-        </div>
-    </div>
     <div class="form-group row">
         <label for="email" class="col-sm-3 col-form-label">Contact email</label>
         <div class="col-sm-4">
@@ -60,6 +49,17 @@
             <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@PhoneNumber" />
         </div>
     </div>
+
+    @if (errors.Count() > 0)
+    {
+        <br />
+        <div class="alert alert-danger" role="alert">
+            @foreach (var error in errors)
+            {
+                <p class="font-italic">@error</p>
+            }
+        </div>
+    }
     <div class="form-group row">
         <div class="col-sm-3">
             <button type="button" class="btn btn-primary btn-block" onclick="@SubmitForm">Create profile</button>
@@ -68,14 +68,14 @@
 </form>
 
 @functions{
-    public bool PickUp { get; set; }
-    public bool Delivery { get; set; }
     public string Location { get; set; }
     public string PictureUrl { get; set; }
     public string ContactEmail { get; set; }
     public string PhoneNumber { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }
+    public List<string> errors = new List<string>();
+    public bool isValid = false;
 
     protected override void OnInit()
     {
@@ -84,23 +84,61 @@
         {
             UriHelper.NavigateTo("/unauthorized");
         }
+        // check if profile already exists
     }
 
     private async Task SubmitForm()
     {
-        UserView userView = new UserView()
+        errors.Clear();
+        ValidateInputs();
+        if (isValid)
         {
-            Location = Location,
-            Name = Name,
-            Surname = Surname,
-            ImageUrl = PictureUrl,
-            PhoneNumber = PhoneNumber,
-            ContactEmail = ContactEmail
-        };
-        await Http.PostJsonAsync("http://localhost:5000/api/users/profile", userView);
-        if (await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile") != null)
-        {
-            UriHelper.NavigateTo("/myprofile");
+            if (PictureUrl == null)
+                PictureUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
+
+            UserView userView = new UserView()
+            {
+                Location = Location,
+                Name = Name,
+                Surname = Surname,
+                ImageUrl = PictureUrl,
+                PhoneNumber = PhoneNumber,
+                ContactEmail = ContactEmail
+            };
+            await Http.PostJsonAsync("http://localhost:5000/api/users/profile", userView);
+            if (await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile") != null)
+            {
+                UriHelper.NavigateTo("/myprofile");
+            }
         }
     }
+
+    private void ValidateInputs()
+    {
+        if (string.IsNullOrEmpty(Name))
+            errors.Add("Please fill your name.");
+        if (string.IsNullOrEmpty(Location))
+            errors.Add("Please fill your location.");
+
+        if (string.IsNullOrEmpty(PhoneNumber) && string.IsNullOrEmpty(ContactEmail))
+            errors.Add("Please fill at least one contact detail.");
+        else
+        {
+            if (!string.IsNullOrEmpty(PhoneNumber))
+            {
+                string phonePattern = @"\d{3}-? *\d{3}-? *-?\d{3}";
+                Regex rgx = new Regex(phonePattern);
+                if (!rgx.IsMatch(PhoneNumber))
+                    errors.Add("Phone number has invalid format.");
+            }
+            if (!string.IsNullOrEmpty(ContactEmail))
+            {
+                if (!ContactEmail.Contains("@"))
+                    errors.Add("Email has invalid format.");
+            }
+        }
+        isValid = errors.Count() == 0;
+        StateHasChanged();
+    }
+
 }
