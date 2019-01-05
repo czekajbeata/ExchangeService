@@ -51,6 +51,7 @@ namespace ExchangeService.Controllers.Logic
             var comments = userProfiles.GetComments(userId);
             var avgMark = comments.Select(c => c.Mark).Sum() / comments.Count();
             if (!(avgMark > 0)) avgMark = 0;
+            else avgMark = Math.Round(avgMark, 2);
             return new UserView()
             {
                 UserId = user.UserId,
