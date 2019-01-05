@@ -66,7 +66,7 @@ namespace ExchangeService.Controllers.Logic
                 OtherUsersGames = others,
                 Shipment = exchange.Shipment,
                 State = exchange.State,
-                OfferingUserContactInfo = exchange.MyContactInfo,
+                OfferingUserContactInfo = exchange.MyContactInfo ?? string.Empty,
                 OtherUserContactInfo = exchange.OtherUserContactInfo ?? string.Empty,
                 OfferingUserFinalizeTime = exchange.MyFinalizeTime,
                 OtherUserFinalizeTime = exchange.OtherUserFinalizeTime
@@ -124,6 +124,8 @@ namespace ExchangeService.Controllers.Logic
                 return false;
             existingExchange.State = ExchangeState.InProgress;
             existingExchange.OtherUserContactInfo = exchange.OtherUserContactInfo;
+            userProfiles.RemoveExchangeGames(existingExchange.OfferingUserId, existingExchange.OfferingUsersGames);
+            userProfiles.RemoveExchangeGames(existingExchange.OtherUserId, existingExchange.OtherUsersGames);
             unitOfWork.CompleteWork();
             return true;
         }

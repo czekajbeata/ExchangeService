@@ -25,5 +25,6 @@ namespace ExchangeService.Core
         bool DeleteUserSearch(int userSearchId);
         UserSearchGame GetUserSearch(int userGameId);
         Comment GetCommentByExchange(int exchangeId, int receivingUserId);
+        void RemoveExchangeGames(int otherUserId, string otherUsersGames);
     }
 }

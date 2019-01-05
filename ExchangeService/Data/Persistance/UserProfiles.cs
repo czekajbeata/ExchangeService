@@ -1,5 +1,6 @@
 ﻿using ExchangeService.Core;
 using ExchangeService.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -125,6 +126,17 @@ namespace ExchangeService.Data.Persistance
         public Comment GetCommentByExchange(int exchangeId, int leavingUserId)
         {
             return context.Comments.SingleOrDefault(c => c.ConnectedExchangeId == exchangeId && c.LeavingUserId == leavingUserId);
+        }
+
+        public void RemoveExchangeGames(int userId, string usersGames)
+        {
+            int[] gameIds = usersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+            foreach(var gameId in gameIds)
+            {
+                var game = context.UserGames.FirstOrDefault(g => g.GameId == gameId && g.UserId == userId);
+                if (game != null)
+                    context.UserGames.Remove(game);
+            }
         }
     }
 }
