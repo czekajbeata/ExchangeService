@@ -174,6 +174,18 @@ else
             <br />
             <br />
             <div class="row">
+                @if (!string.IsNullOrEmpty(contactDetailsError))
+                {
+                    <div class="col-sm-12">
+                        <div class="alert alert-danger" role="alert">
+                            <br />
+                            <p class="font-italic">@contactDetailsError</p>
+                        </div>
+                    </div>
+                    <br /><br />
+                }
+            </div>
+            <div class="row">
                 <div class="col-sm-3">
                     <button type="button" class="btn btn-primary btn-block" onclick=@(() => MoveToPrevious())>Previous</button>
                 </div>
@@ -244,14 +256,14 @@ else
                                 }
                             </div>
                             <div class="col-sm-6">
-                                <p class="font-weight-bold"> Games you get: </p>                                
+                                <p class="font-weight-bold"> Games you get: </p>
                                 @foreach (var gameId in exchange.OtherUserGamesIds)
                                 {
                                     <p>@otherGames.SingleOrDefault(g => g.GameId == Int32.Parse(gameId)).Title</p>
                                 }
                             </div>
                         </div>
-                        <br/><br />
+                        <br /><br />
                         <div class="row justify-content-center">
                             <div class="col-sm-6">
                                 <p class="font-weight-bold">Type of exchange: </p>
@@ -271,49 +283,49 @@ else
                         </div>
                     </div>
                 </div>
-                    <div class="col-sm-3">
-                        <div class="alert alert-secondary" role="alert">
-                            <div class="row justify-content-center">
-                                <img src="@otherUser.ImageUrl" width="150" height="150">
+                <div class="col-sm-3">
+                    <div class="alert alert-secondary" role="alert">
+                        <div class="row justify-content-center">
+                            <img src="@otherUser.ImageUrl" width="150" height="150">
+                        </div>
+                        <div class="row justify-content-center">
+                            <p class="font-weight-bold">@otherUser.Name @otherUser.Surname</p>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-2">
+                                <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
                             </div>
-                            <div class="row justify-content-center">
-                                <p class="font-weight-bold">@otherUser.Name @otherUser.Surname</p>
+                            <div class="col-sm-10">
+                                <p class="font-weight-normal">@otherUser.Location</p>
                             </div>
-                            <div class="row" style="padding:4px">
-                                <div class="col-sm-2">
-                                    <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
-                                </div>
-                                <div class="col-sm-10">
-                                    <p class="font-weight-normal">@otherUser.Location</p>
-                                </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Exchanges made:</p>
                             </div>
-                            <div class="row" style="padding:4px">
-                                <div class="col-sm-9">
-                                    <p class="font-weight-normal">Exchanges made:</p>
-                                </div>
-                                <div class="col-sm-3">
-                                    @otherUser.ExchangesCount
-                                </div>
+                            <div class="col-sm-3">
+                                @otherUser.ExchangesCount
                             </div>
-                            <div class="row" style="padding:4px">
-                                <div class="col-sm-9">
-                                    <p class="font-weight-normal">Reviews:</p>
-                                </div>
-                                <div class="col-sm-3">
-                                    @otherUser.ReviewsCount
-                                </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Reviews:</p>
                             </div>
-                            <div class="row" style="padding:4px">
-                                <div class="col-sm-9">
-                                    <p class="font-weight-normal">Average mark:</p>
-                                </div>
-                                <div class="col-sm-3">
-                                    @otherUser.AvgMark
-                                </div>
+                            <div class="col-sm-3">
+                                @otherUser.ReviewsCount
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-9">
+                                <p class="font-weight-normal">Average mark:</p>
+                            </div>
+                            <div class="col-sm-3">
+                                @otherUser.AvgMark
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
             <br /><br />
             <div class="row">
                 <div class="col-sm-3">
@@ -332,102 +344,111 @@ else
 }
 
 @functions {
-    [Parameter]
-    string UserId { get; set; }
+[Parameter]
+string UserId { get; set; }
 
-    ExchangeDto exchange;
-    UserView myProfile;
-    UserView otherUser;
-    UserGameView[] myGames;
-    UserGameView[] otherGames;
-    int visiblePageNumber = 1;
-    List<int> myGamesIds = new List<int>();
-    List<int> otherGamesIds = new List<int>();
-    bool isPickup;
-    bool isDelivery;
+ExchangeDto exchange;
+UserView myProfile;
+UserView otherUser;
+UserGameView[] myGames;
+UserGameView[] otherGames;
+int visiblePageNumber = 1;
+List<int> myGamesIds = new List<int>();
+List<int> otherGamesIds = new List<int>();
+bool isPickup;
+bool isDelivery;
+string contactDetailsError = "";
 
-    string firstUserContactInfo;
+string firstUserContactInfo;
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    if (!appState.IsUserLoggedIn)
     {
-        appState.TrySetAccessTokens();
-        if (!appState.IsUserLoggedIn)
-        {
-            UriHelper.NavigateTo("/unauthorized");
-        }
-        myProfile = await appState.GetMyProfile();
-        int otherUserId = Int32.Parse(UserId);
-        otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
-
-        var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
-        myGames = mine.ToArray();
-        var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
-        otherGames = other.ToArray();
-        exchange = new ExchangeDto();
+        UriHelper.NavigateTo("/unauthorized");
     }
+    myProfile = await appState.GetMyProfile();
+    int otherUserId = Int32.Parse(UserId);
+    otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + otherUserId);
 
-    private void MoveToNext()
+    var mine = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + myProfile.UserId);
+    myGames = mine.ToArray();
+    var other = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + otherUser.UserId);
+    otherGames = other.ToArray();
+    exchange = new ExchangeDto();
+}
+
+private void MoveToNext()
+{
+    visiblePageNumber++;
+}
+
+private void MoveToPrevious()
+{
+    visiblePageNumber--;
+}
+
+private async Task OfferAnExchange()
+{
+    string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
+    string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
+    await Http.PostJsonAsync("http://localhost:5000/api/users/exchanges", exchange);
+    UriHelper.NavigateTo("/exchangeoffersuccess");
+}
+
+private void AbandonExchange()
+{
+    UriHelper.NavigateTo("/exchangeofferabandon");
+}
+
+private void ShowSummary()
+{
+    contactDetailsError = string.Empty;
+    if (string.IsNullOrEmpty(firstUserContactInfo))
     {
-        visiblePageNumber++;
+        contactDetailsError = "Please provide details for other user.";
     }
-
-    private void MoveToPrevious()
-    {
-        visiblePageNumber--;
-    }
-
-    private async Task OfferAnExchange()
-    {
-        string offering = exchange.MyGamesIds.Count() > 1 ? string.Join(",", exchange.MyGamesIds) : exchange.MyGamesIds[0].ToString();
-        string others = exchange.OtherUserGamesIds.Count() > 1 ? string.Join(",", exchange.OtherUserGamesIds) : exchange.OtherUserGamesIds[0].ToString();
-        await Http.PostJsonAsync("http://localhost:5000/api/users/exchanges", exchange);
-        UriHelper.NavigateTo("/exchangeoffersuccess");
-    }
-
-    private void AbandonExchange()
-    {
-        UriHelper.NavigateTo("/exchangeofferabandon");
-    }
-
-    private void ShowSummary()
+    else
     {
         exchange.OtherUserId = Int32.Parse(UserId);
         MoveToNext();
         SetUpGames();
         SetUpShippment();
     }
+}
 
-    private void SetUpGames()
-    {
-        exchange.MyGamesIds = myGamesIds.Select(g => g.ToString()).ToArray();
-        exchange.OtherUserGamesIds = otherGamesIds.Select(g => g.ToString()).ToArray();
-    }
+private void SetUpGames()
+{
+    exchange.MyGamesIds = myGamesIds.Select(g => g.ToString()).ToArray();
+    exchange.OtherUserGamesIds = otherGamesIds.Select(g => g.ToString()).ToArray();
+}
 
-    private void SetUpShippment()
-    {
-        if (isPickup)
-            exchange.Shipment = Shipment.Pickup;
-        else
-            exchange.Shipment = Shipment.Delivery;
-        exchange.MyContactInfo = firstUserContactInfo;
-    }
+private void SetUpShippment()
+{
+    if (isPickup)
+        exchange.Shipment = Shipment.Pickup;
+    else
+        exchange.Shipment = Shipment.Delivery;
+    exchange.MyContactInfo = firstUserContactInfo;
+}
 
-    private void ToogleMyGamesForExchange(UserGameView game)
-    {
-        if (myGamesIds.Contains(game.GameId))
-            myGamesIds.Remove(game.GameId);
-        else
-            myGamesIds.Add(game.GameId);
-        StateHasChanged();
-    }
+private void ToogleMyGamesForExchange(UserGameView game)
+{
+    if (myGamesIds.Contains(game.GameId))
+        myGamesIds.Remove(game.GameId);
+    else
+        myGamesIds.Add(game.GameId);
+    StateHasChanged();
+}
 
-    private void ToogleOtherGamesForExchange(UserGameView game)
-    {
-        if (otherGamesIds.Contains(game.GameId))
-            otherGamesIds.Remove(game.GameId);
-        else
-            otherGamesIds.Add(game.GameId);
-        StateHasChanged();
-    }
+private void ToogleOtherGamesForExchange(UserGameView game)
+{
+    if (otherGamesIds.Contains(game.GameId))
+        otherGamesIds.Remove(game.GameId);
+    else
+        otherGamesIds.Add(game.GameId);
+    StateHasChanged();
+}
 }
 

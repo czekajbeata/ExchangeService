@@ -17,10 +17,10 @@
 else
 {
 
-    <h3>Exchanges waiting for approval</h3>
-    <br />
     @if (pendingExchanges.Count() > 0)
     {
+        <h3>Exchanges waiting for approval</h3>
+        <br />
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -86,11 +86,11 @@ else
                 }
             </tbody>
         </table>
+        <br /><br />
     }
-    <br /><br />
-    <h3>Exchanges in progress</h3><br />
     @if (inProgressExchanges.Count() > 0)
     {
+        <h3>Exchanges in progress</h3><br />
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -151,11 +151,11 @@ else
                 }
             </tbody>
         </table>
+        <br /><br />
     }
-    <br /><br />
-    <h3>Finished exchanges</h3><br />
     @if (finishedExchanges.Count() > 0)
     {
+        <h3>Finished exchanges</h3><br />
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -195,16 +195,16 @@ else
                         </td>
                         <td>@exchange.Shipment</td>
                         <td> @exchange.State </td>
-                        <td/>
+                        <td />
                     </tr>
                 }
             </tbody>
         </table>
     }
 
-    @if(finishedExchanges.Count() == 0
-      && pendingExchanges.Count() == 0
-      && inProgressExchanges.Count() == 0)
+    @if (finishedExchanges.Count() == 0
+ && pendingExchanges.Count() == 0
+ && inProgressExchanges.Count() == 0)
     {
         <p>You have no exchanges</p>
     }
