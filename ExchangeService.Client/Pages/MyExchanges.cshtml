@@ -56,7 +56,12 @@ else
                             }
                         </td>
                         <td>@exchange.Shipment</td>
-                        <td>@exchange.State</td>
+                        <td>@exchange.State
+                            @if(exchange.State == ExchangeState.InProgress && exchange.HaveIFinalized)
+                            {
+                                <p class="font-italic" style="font-size: small">Waiting for other user to finalize.</p>
+                            }
+                        </td>
                         <td>
                             <div class="container">
                                 <div class="row">
@@ -66,7 +71,7 @@ else
                                     }
                                 </div>
                                 <div class="row">
-                                    @if (exchange.State == ExchangeState.InProgress)
+                                    @if (exchange.State == ExchangeState.InProgress && !exchange.HaveIFinalized)
                                     {
                                         <button type="button" class="btn btn-outline-primary btn-block" style="margin:4px" onclick="@(() => SeeDetails(exchange))">Details</button>
                                         <button type="button" class="btn btn-success btn-block" style="margin:4px" onclick="@(() => FinalizeADeal(exchange))">Finalize</button>
@@ -111,18 +116,12 @@ else
 
     private void FinalizeADeal(ExchangeView exchange)
     {
-        // ask if you got the game
-        // add propery to db to check if any user finalized
-        // if you are the second then change to finalize
-        // if not set the property
-        // add comment
-        // visible when is finalized - another table - pending comments with exchange id - when second user finalizes and adds coment both are transfered to regular comments?
+        UriHelper.NavigateTo("/exchangefinalize/" + exchange.ExchangeId);
     }
 
     private void AcceptADeal(ExchangeView exchange)
     {
         UriHelper.NavigateTo("/exchangeaccpet/" + exchange.ExchangeId);
-
     }
 
     private void SeeDetails(ExchangeView exchange)

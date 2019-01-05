@@ -121,5 +121,10 @@ namespace ExchangeService.Data.Persistance
         {
             return context.Exchanges.SingleOrDefault(e => e.ExchangeId == exchangeId);
         }
+
+        public Comment GetCommentByExchange(int exchangeId, int leavingUserId)
+        {
+            return context.Comments.SingleOrDefault(c => c.ConnectedExchangeId == exchangeId && c.LeavingUserId == leavingUserId);
+        }
     }
 }

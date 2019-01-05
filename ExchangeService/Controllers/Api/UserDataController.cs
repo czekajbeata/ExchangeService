@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ExchangeService.Controllers.Logic;
+using ExchangeService.Shared.Enums;
 using ExchangeService.Shared.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,12 +27,7 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/comments")]
         public IActionResult AddComment([FromBody] CommentDto comment)
         {
-            var id = User.Claims.Single(c => c.Type == "Id").Value;
-            var normalizedId = profilesService.ToNormalizedId(id);
-            comment.LeavingUserId = normalizedId;
-            int receivingUserId = 2;
-
-            var result = userDataService.AddComment(comment, receivingUserId);
+            var result = userDataService.AddComment(comment);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
@@ -100,6 +96,15 @@ namespace ExchangeService.Controllers.Api
         public IActionResult AcceptExchange([FromBody] ExchangeDto exchange)
         {
             var result = userDataService.AcceptExchange(exchange);
+            return result ? (IActionResult)Ok() : BadRequest();
+        }
+
+        [HttpPut("api/users/exchanges/finalize")]
+        public IActionResult FinalizeExchange([FromBody] ExchangeDto exchange)
+        {
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
+            var result = userDataService.FinalizeExchange(exchange, normalizedId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
     }

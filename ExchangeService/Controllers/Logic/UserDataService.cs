@@ -21,18 +21,33 @@ namespace ExchangeService.Controllers.Logic
             this.games = games;
         }
 
-        public bool AddComment(CommentDto comment, int receivingUserId)
+        public bool AddComment(CommentDto comment)
         {
+            var connectedExchange = GetShortenedExchange(comment.ConnectedExchangeId);
+            int receivingUserId;
+            if (comment.LeavingUserId == connectedExchange.FirstUserId)
+                receivingUserId = connectedExchange.SecondUserId;
+            else
+                receivingUserId = connectedExchange.FirstUserId;
+
             Comment newComment = new Comment()
             {
                 ReceivingUserId = receivingUserId,
                 LeavingUserId = comment.LeavingUserId,
-                CommentDate = DateTime.Today,
+                CommentDate = DateTime.Now,
                 Mark = comment.Mark,
                 Text = comment.Text,
-                IsVisible = comment.IsVisible,
-                ConnectedExchangeId = comment.ConnectedExchangeId
+                ConnectedExchangeId = comment.ConnectedExchangeId,
+                IsVisible = false
             };
+
+            if (connectedExchange.State == ExchangeState.Finalized)
+            {
+                Comment secondComment = userProfiles.GetCommentByExchange(connectedExchange.ExchangeId, receivingUserId);
+                if(secondComment != null)
+                    secondComment.IsVisible = true;
+                newComment.IsVisible = true;
+            }
             userProfiles.AddComment(newComment);
             unitOfWork.CompleteWork();
             return newComment.CommentId != 0;
@@ -109,6 +124,25 @@ namespace ExchangeService.Controllers.Logic
                 return false;
             existingExchange.State = ExchangeState.InProgress;
             existingExchange.OtherUserContactInfo = exchange.OtherUserContactInfo;
+            unitOfWork.CompleteWork();
+            return true;
+        }
+
+        public bool FinalizeExchange(ExchangeDto exchange, int myUserId)
+        {
+            var existingExchange = userProfiles.GetExchange(exchange.ExchangeId);
+            if (existingExchange == null)
+                return false;
+
+            if (existingExchange.OfferingUserId == myUserId)
+                existingExchange.OfferingUserFinalizeTime = DateTime.Now;
+            else          
+                existingExchange.OtherUserFinalizeTime = DateTime.Now;
+
+            if (existingExchange.OtherUserFinalizeTime.Year >= 2018
+                && existingExchange.OfferingUserFinalizeTime.Year >= 2018)
+                existingExchange.State = ExchangeState.Finalized;
+
             unitOfWork.CompleteWork();
             return true;
         }
@@ -295,6 +329,10 @@ namespace ExchangeService.Controllers.Logic
                     newExchangeView.OtherUserGames = otherUserGames;
                     newExchangeView.MyFinalizeTime = exchange.OtherUserFinalizeTime;
                     newExchangeView.OtherUserFinalizeTime = exchange.OfferingUserFinalizeTime;
+                }
+                if (newExchangeView.MyFinalizeTime.Year >= 2018)
+                {
+                    newExchangeView.HaveIFinalized = true;
                 }
                 exchanges.Add(newExchangeView);
             }

@@ -1,0 +1,98 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Shared.Enums;
+@using ExchangeService.Client.Services;
+@page "/exchangefinalize/{ExchangeId}"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject AppState appState
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+@if (Exchange == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<div class="container">
+    <div class="row">
+        <h3>Have you received your games?</h3>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-3" />
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-secondary btn-block" onclick=@(() => BackToExchagnes())>Not yet</button>
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-success btn-block" onclick=@(() => Confirm())>Yes, I have</button>
+        </div>
+    </div>
+
+    @if(gamesReceived)
+    {
+    <br />
+    <br />
+    <h3>Fill comment about exchange:</h3>
+    <p class="font-italic">Comment will be visible after both users finalize exchange.</p>
+    <br />
+
+    <h4>How would you mark this exchange [1-5]?</h4>
+    <input class="form-control  input-lg" type="number" placeholder="Exchange mark..." bind="@CommentMark" />
+    <br />
+
+    <h4>Describe contact with user, consistence of received games with desription etc.</h4>
+    <input class="form-control  input-lg" type="text" placeholder="Exchange details..." bind="@Comment" />
+
+    <div class="row">
+        <div class="col-sm-3" />
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-success btn-block" onclick=@(() => Finalize())>Finalize exchange</button>
+        </div>
+    </div>
+    }
+
+</div>
+}
+
+@functions{
+    [Parameter]
+    string ExchangeId { get; set; }
+    ExchangeDto Exchange { get; set; }
+    bool gamesReceived = false;
+    string Comment {get; set;}
+    double CommentMark {get;set;}
+
+    protected override async Task OnInitAsync()
+    {
+        appState.TrySetAccessTokens();
+        Exchange = await Http.GetJsonAsync<ExchangeDto>("http://localhost:5000/api/users/exchange/" + ExchangeId);
+    }
+
+    private async Task Finalize()
+    {
+        await Http.PutJsonAsync("http://localhost:5000/api/users/exchanges/finalize", Exchange);
+
+        var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
+        var commentDto = new CommentDto()
+        {
+            LeavingUserId = loggedUserId,
+            Text = Comment,
+            Mark = CommentMark,
+            ConnectedExchangeId = Int32.Parse(ExchangeId)
+        };
+        await Http.PostJsonAsync("http://localhost:5000/api/users/comments/", commentDto);
+
+        UriHelper.NavigateTo("/exchangefinalizesuccess");
+    }
+
+    private void BackToExchagnes()
+    {
+        UriHelper.NavigateTo("/myexchanges");
+    }
+
+    private void Confirm()
+    {
+        gamesReceived = true;
+        StateHasChanged();
+    }
+}

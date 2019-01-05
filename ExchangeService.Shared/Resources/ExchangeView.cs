@@ -13,6 +13,7 @@ namespace ExchangeService.Shared.Resources
         public Shipment Shipment { get; set; }
         public ExchangeState State { get; set; }
         public bool AmIOffering { get; set; }
+        public bool HaveIFinalized { get; set; }
         public DateTime MyFinalizeTime { get; set; }
         public DateTime OtherUserFinalizeTime { get; set; }
 
