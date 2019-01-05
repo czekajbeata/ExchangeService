@@ -184,6 +184,17 @@
                                 <input type="text" class="form-control" id="stateDescription" placeholder="Description of game state" bind="@gameView.UserGameDescription" />
                             </div>
                         </div>
+                        @if (errorsUsergame.Count() > 0)
+                        {
+                            <br />
+                            <div class="alert alert-danger" role="alert">
+                                <br />
+                                @foreach (var error in errorsUsergame)
+                                {
+                                    <p class="font-italic">@error</p>
+                                }
+                            </div>
+                        }
                         <button type="button" class="btn btn-primary" onclick=@(async () => await UpdateUserGameDetails())>Update details</button>
                     </form>
                 </div>
@@ -199,6 +210,9 @@
     UserView gameOwner { get; set; } = new UserView();
     bool contactDetailsVisible = false;
     string contactDetailsButton = "Show contact details";
+    public bool isValidUsergame = false;
+    public List<string> errorsUsergame = new List<string>();
+
 
     protected override async Task OnInitAsync()
     {
@@ -231,15 +245,28 @@
 
     private async Task UpdateUserGameDetails()
     {
-        UserGameDto updatedUserGame = new UserGameDto
+        errorsUsergame.Clear();
+        ValidateInputsUsergame();
+        if (isValidUsergame)
         {
-            State = gameView.State,
-            IsComplete = gameView.IsComplete,
-            Shipment = gameView.Shipment,
-            UserGameDescription = gameView.UserGameDescription
-        };
-        await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
-        UriHelper.NavigateTo("/gameupdatedsuccess");
+            UserGameDto updatedUserGame = new UserGameDto
+            {
+                State = gameView.State,
+                IsComplete = gameView.IsComplete,
+                Shipment = gameView.Shipment,
+                UserGameDescription = gameView.UserGameDescription
+            };
+            await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
+            UriHelper.NavigateTo("/gameupdatedsuccess");
+        }
     }
 
+    private void ValidateInputsUsergame()
+    {
+        if (string.IsNullOrEmpty(gameView.UserGameDescription))
+            errorsUsergame.Add("Please fill game state description.");
+
+        isValidUsergame = errorsUsergame.Count() == 0;
+        StateHasChanged();
+    }
 }
