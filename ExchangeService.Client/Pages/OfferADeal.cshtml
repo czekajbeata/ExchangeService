@@ -331,16 +331,17 @@ else
                 <div class="col-sm-3">
                     <button type="button" class="btn btn-primary btn-block" onclick=@(() => MoveToPrevious())>Previous</button>
                 </div>
-                <div class="col-sm-3" />
-                <div class="col-sm-3">
-                    <button type="button" class="btn btn-danger btn-block" onclick=@(() => AbandonExchange())>Abandon</button>
-                </div>
+                <div class="col-sm-6" />
                 <div class="col-sm-3">
                     <button type="button" class="btn btn-success btn-block" onclick=@(async () => await OfferAnExchange())>Offer an exchange</button>
                 </div>
             </div>
         </div>
     }
+    <br/>
+    <div class="col-sm-3">
+        <button type="button" class="btn btn-outline-danger btn-block" onclick=@(() => AbandonExchange())>Abandon exchange</button>
+    </div>
 }
 
 @functions {
