@@ -124,6 +124,13 @@ private async Task FillGames()
     appState.TrySetAccessTokens();
     var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameDto>>("http://localhost:5000/api/" + Query);
     games = gamesByQuery.ToArray();
+    foreach(var game in games)
+    {
+        if(game.Description.Length > 110)
+        {
+            game.Description = game.Description.Substring(0,84) + "...";
+        }
+    }
     StateHasChanged();
 }
 
