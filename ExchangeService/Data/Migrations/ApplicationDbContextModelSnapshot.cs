@@ -103,8 +103,6 @@ namespace ExchangeService.Data.Migrations
 
                     b.Property<int?>("MinPlayerCount");
 
-                    b.Property<DateTime?>("PublishDate");
-
                     b.Property<string>("Publisher")
                         .HasMaxLength(64);
 

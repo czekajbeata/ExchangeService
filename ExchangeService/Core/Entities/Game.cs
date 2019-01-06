@@ -15,7 +15,6 @@ namespace ExchangeService.Core.Entities
         public string ImageUrl { get; set; }
         [StringLength(64)]
         public string Publisher { get; set; }
-        public DateTime? PublishDate { get; set; }
         public int? GenreId { get; set; }
         [Range(1, int.MaxValue)]
         public int? MinPlayerCount { get; set; }

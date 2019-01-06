@@ -52,7 +52,6 @@ namespace ExchangeService.Controllers.Logic
                     ImageUrl = game.ImageUrl,
                     PlayerCount = playerCount,
                     MinAgeRequired = game.MinAgeRequired.ToString(),
-                    PublishDate = game.PublishDate,
                     Publisher = game.Publisher,
                     Title = game.Title,
                     GameTimeInMin = game.GameTimeInMin.ToString()
@@ -71,7 +70,6 @@ namespace ExchangeService.Controllers.Logic
                 MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
                 MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
                 MinAgeRequired = game.MinAgeRequired != null ? Int32.Parse(game.MinAgeRequired) : (int?)null,
-                PublishDate = game.PublishDate,
                 Publisher = game.Publisher ?? String.Empty,
                 Title = game.Title ?? String.Empty,
                 GameTimeInMin = game.GameTimeInMin != null ?  Int32.Parse(game.GameTimeInMin) : (int?)null
@@ -112,7 +110,6 @@ namespace ExchangeService.Controllers.Logic
                 IsComplete = usergame.IsComplete,
                 MinAgeRequired = game.MinAgeRequired.ToString() ?? String.Empty,
                 PlayerCount = playerCount ?? String.Empty,
-                PublishDate = game.PublishDate,
                 Publisher = game.Publisher ?? String.Empty,
                 Shipment = usergame.Shipment,
                 State = usergame.State,
@@ -138,7 +135,6 @@ namespace ExchangeService.Controllers.Logic
                 IsComplete = usergame.IsComplete,
                 MinAgeRequired = game.MinAgeRequired.ToString() ?? String.Empty,
                 PlayerCount = playerCount ?? String.Empty,
-                PublishDate = game.PublishDate,
                 Publisher = game.Publisher ?? String.Empty,
                 Shipment = usergame.Shipment,
                 State = usergame.State,
@@ -189,7 +185,6 @@ namespace ExchangeService.Controllers.Logic
                 ImageUrl = game.ImageUrl,
                 PlayerCount = playerCount,
                 MinAgeRequired = game.MinAgeRequired.ToString(),
-                PublishDate = game.PublishDate,
                 Publisher = game.Publisher,
                 Title = game.Title,
                 GameTimeInMin = game.GameTimeInMin.ToString()
@@ -208,7 +203,6 @@ namespace ExchangeService.Controllers.Logic
             existingGame.MaxPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item2;
             existingGame.MinPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item1;
             existingGame.MinAgeRequired = Int32.Parse(updatedGame.MinAgeRequired);
-            existingGame.PublishDate = updatedGame.PublishDate;
             existingGame.Publisher = updatedGame.Publisher;
             existingGame.Title = updatedGame.Title;
             existingGame.GameTimeInMin = Int32.Parse(updatedGame.GameTimeInMin);
@@ -267,7 +261,6 @@ namespace ExchangeService.Controllers.Logic
                     UserGameDescription = game.UserGameDescription,
                     ImageUrl = gameCopy.ImageUrl,
                     Publisher = gameCopy.Publisher,
-                    PublishDate = gameCopy.PublishDate,
                     GenreName = gameCopy.GenreName,
                     PlayerCount = gameCopy.PlayerCount,
                     MinAgeRequired = gameCopy.MinAgeRequired,
