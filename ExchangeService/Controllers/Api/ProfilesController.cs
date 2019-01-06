@@ -51,6 +51,14 @@ namespace ExchangeService.Controllers.Api
             return profilesService.ToNormalizedId(id);
         }
 
+        [HttpGet("api/users/exists/{email?}")]
+        public async Task<bool> CheckIfUserExists(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user != null) return true;
+            return false;
+        }
+
         [Authorize]
         [HttpGet("api/users/myprofile")]
         public UserView GetMyUserProfile()

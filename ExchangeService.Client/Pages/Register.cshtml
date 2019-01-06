@@ -11,6 +11,10 @@
     <div class="form-group">
         <label for="email">Email</label>
         <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
+        @if(!isEmailValid)
+        {
+            <p class="font-italic" style="color: red">User with that e-mail is already registered.</p>
+        }
     </div>
     <div class="form-group">
         <label for="password">Password</label>
@@ -39,6 +43,7 @@
     public List<string> errors = new List<string>();
     const int MIN_LENGTH = 8;
     const int MAX_LENGTH = 15;
+    bool isEmailValid = true;
 
     protected override void OnInit()
     {
@@ -52,7 +57,8 @@
     {
         errors.Clear();
         ValidateInputs();
-        if (isValid)
+        await IsEmailUnique();
+        if (isValid && isEmailValid)
         {
             var tokenvm = new TokenViewModel
             {
@@ -67,7 +73,7 @@
             {
                 UriHelper.NavigateTo("/fillprofile");
             }
-        }
+        }        
     }
 
     private void ValidateInputs()
@@ -99,6 +105,14 @@
 
         isValid = errors.Count() == 0;
         StateHasChanged();
+    }
+
+    private async Task<bool> IsEmailUnique()
+    {
+        Console.WriteLine("check email");   
+        var userExists = await Http.GetJsonAsync<bool>("http://localhost:5000/api/users/exists/" + Email);
+        isEmailValid = userExists ? false : true;
+        return isEmailValid;
     }
 
     private class TokenResponse
