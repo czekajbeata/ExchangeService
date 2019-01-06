@@ -73,6 +73,7 @@
     private void SearchGames()
     {
         StateHasChanged();
-        UriHelper.NavigateTo($"/{Search}"); 
+        UriHelper.NavigateTo($"/{Search}");
+        Search = string.Empty;
     }
 }
