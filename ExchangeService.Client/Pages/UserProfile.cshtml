@@ -95,10 +95,10 @@ else
             <div class="row" style="padding:4px">
                 @for (int i = 0; i < userGames.Count(); i++)
                 {
-                    <div class="col-sm-2">
-                        <div><img src="@userGames[i].ImageUrl" width="100" height="100" /></div>
-                        <div>@userGames[i].Title</div>
-                    </div>
+                <div class="col-sm-2">
+                    <div><img src="@userGames[i].ImageUrl" width="100" height="100" /></div>
+                    <div><a href="/exchangegame/@userGames[i].UserGameId">@userGames[i].Title</a></div>
+                </div>
                 }
             </div>
             <br />
@@ -116,7 +116,7 @@ else
                 {
                     <div class="col-sm-2">
                         <div><img src="@userSearchGames[i].ImageUrl" width="100" height="100" /></div>
-                        <div>@userSearchGames[i].Title</div>
+                    <div><a href="/game/@userSearchGames[i].GameId">@userSearchGames[i].Title</a></div>
                     </div>
                 }
             </div>

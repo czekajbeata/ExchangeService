@@ -98,10 +98,10 @@ else
             <div class="row">
                 @foreach (var userGame in userGames)
                 {
-                    <div class="col-sm-2">
-                        <div><img src="@userGame.ImageUrl" width="100" height="100" /></div>
-                        <div>@userGame.Title</div>
-                    </div>
+                <div class="col-sm-2">
+                    <div><img src="@userGame.ImageUrl" width="100" height="100" /></div>
+                    <div><a href="/editableexchangegame/@userGame.UserGameId">@userGame.Title</a></div>
+                </div>
                     <div class="col-sm-1">
                         <i onclick="@(() => EditGame(userGame))" class="fas fa-edit"></i>
                         <i onclick="@(() => DeleteGameForExchange(userGame))" class="fas fa-trash-alt"></i>
@@ -126,7 +126,7 @@ else
                 {
                     <div class="col-sm-2">
                         <div><img src="@userSearch.ImageUrl" width="100" height="100" /></div>
-                        <div>@userSearch.Title</div>
+                        <div><a href="/game/@userSearch.GameId">@userSearch.Title</a></div>
                     </div>
                     <div class="col-sm-1">
                         <i onclick="@(() => DeleteGameSearch(userSearch))" class="fas fa-trash-alt"></i>
