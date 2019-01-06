@@ -48,6 +48,7 @@ namespace ExchangeService.Controllers.Logic
         {
             var user = userProfiles.GetUserProfile(userId);
             var exchanges = userProfiles.GetUserExchanges(userId);
+            exchanges = exchanges.Where(e => e.State != ExchangeState.Declined).ToArray();
             var comments = userProfiles.GetComments(userId);
             var avgMark = comments.Select(c => c.Mark).Sum() / comments.Count();
             if (!(avgMark > 0)) avgMark = 0;
