@@ -13,3 +13,7 @@ wasmHelper.getAccessToken = function () {
 wasmHelper.removeAccessToken = function () {
     return localStorage.removeItem(wasmHelper.ACCESS_TOKEN_KEY);
 };
+
+wasmHelper.reloadPage = function () {
+    return location.reload(true);
+};

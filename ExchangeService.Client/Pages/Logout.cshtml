@@ -4,6 +4,7 @@
 @inject HttpClient Http
 @inject TokenService tokenService
 @inject AppState appState
+@inject ReloadService reloadService
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <form>
@@ -17,8 +18,9 @@
     {
         await tokenService.RemoveAccessToken();
         appState.LogOutUser();
-        if(await tokenService.GetAccessToken() == null)
+        if (await tokenService.GetAccessToken() == null)
         {
+            reloadService.ReloadPage();
             UriHelper.NavigateTo("/logoutsuccess");
         }
     }

@@ -4,6 +4,7 @@
 @page "/fillprofile"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject ReloadService reloadService
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
@@ -116,6 +117,7 @@
             await Http.PostJsonAsync("http://localhost:5000/api/users/profile", userView);
             if (await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile") != null)
             {
+                reloadService.ReloadPage();
                 UriHelper.NavigateTo("/myprofile");
             }
         }

@@ -11,7 +11,7 @@
     <div class="form-group">
         <label for="email">Email</label>
         <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
-        @if(!isEmailValid)
+        @if (!isEmailValid)
         {
             <p class="font-italic" style="color: red">User with that e-mail is already registered.</p>
         }
@@ -25,8 +25,8 @@
     {
         <br />
         <div class="alert alert-danger" role="alert">
-            <br/>
-            @foreach(var error in errors)
+            <br />
+            @foreach (var error in errors)
             {
                 <p class="font-italic">@error</p>
             }
@@ -73,7 +73,7 @@
             {
                 UriHelper.NavigateTo("/fillprofile");
             }
-        }        
+        }
     }
 
     private void ValidateInputs()
@@ -109,7 +109,7 @@
 
     private async Task<bool> IsEmailUnique()
     {
-        Console.WriteLine("check email");   
+        Console.WriteLine("check email");
         var userExists = await Http.GetJsonAsync<bool>("http://localhost:5000/api/users/exists/" + Email);
         isEmailValid = userExists ? false : true;
         return isEmailValid;

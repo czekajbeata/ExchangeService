@@ -10,6 +10,7 @@ namespace ExchangeService.Client
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<TokenService>();
+            services.AddSingleton<ReloadService>();
             services.AddSingleton<AppState>();
             services.AddStorage();
         }
