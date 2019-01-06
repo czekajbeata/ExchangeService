@@ -7,6 +7,7 @@ namespace ExchangeService.Shared.Resources
     {
         public int ExchangeId { get; set; }
         public string UserImage { get; set; }
+        public int OtherUserId { get; set; }
         public string OtherUserName { get; set; }
         public string[] MyGames { get; set; }
         public string[] OtherUserGames { get; set; }

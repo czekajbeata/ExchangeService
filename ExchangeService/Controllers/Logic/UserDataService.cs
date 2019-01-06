@@ -296,6 +296,7 @@ namespace ExchangeService.Controllers.Logic
                     var user = userProfiles.GetUserProfile(exchange.OtherUserId);
                     newExchangeView.OtherUserName = user.Name + " " + user.Surname;
                     newExchangeView.UserImage = user.ImageUrl;
+                    newExchangeView.OtherUserId = exchange.OtherUserId;
                     var myGames = exchange.OfferingUsersGames.Split(',').ToArray();
                     var otherUserGames = exchange.OtherUsersGames.Split(',').ToArray();
                     for (int i = 0; i < myGames.Count(); i++)
@@ -317,6 +318,7 @@ namespace ExchangeService.Controllers.Logic
                     var user = userProfiles.GetUserProfile(exchange.OfferingUserId);
                     newExchangeView.OtherUserName = user.Name + " " + user.Surname;
                     newExchangeView.UserImage = user.ImageUrl;
+                    newExchangeView.OtherUserId = exchange.OfferingUserId;
                     var myGames = exchange.OtherUsersGames.Split(',').ToArray();
                     var otherUserGames = exchange.OfferingUsersGames.Split(',').ToArray();
                     for (int i = 0; i < myGames.Count(); i++)
