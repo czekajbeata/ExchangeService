@@ -50,6 +50,17 @@ namespace ExchangeService.Controllers.Api
             return NotFound();
         }
 
+        [HttpGet("api/games/getview/{id}")]
+        public IActionResult GetGameView(int id)
+        {
+            var game = shelvesService.GetGameView(id);
+
+            if (game != null)
+                return Ok(game);
+
+            return NotFound();
+        }
+
         [HttpGet("api/users/searches/{id}")]
         public IEnumerable<UserSearchGameView> GetUserGameSearches(int id)
         {

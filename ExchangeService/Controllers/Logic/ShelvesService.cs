@@ -188,6 +188,26 @@ namespace ExchangeService.Controllers.Logic
             };
         }
 
+        public GameView GetGameView(int id)
+        {
+            var game = games.GetGame(id);
+            if (game is null)
+                return null;
+            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
+            return new GameView()
+            {
+                Description = game.Description,
+                GameId = game.GameId,
+                GenreName = games.GetGenre(game.GenreId).Name,
+                ImageUrl = game.ImageUrl,
+                PlayerCount = playerCount,
+                MinAgeRequired = game.MinAgeRequired.ToString(),
+                Publisher = game.Publisher,
+                Title = game.Title,
+                GameTimeInMin = game.GameTimeInMin.ToString()
+            };
+        }
+
         public bool UpdateGame(GameDto updatedGame)
         {
             var existingGame = games.GetGame(updatedGame.GameId);

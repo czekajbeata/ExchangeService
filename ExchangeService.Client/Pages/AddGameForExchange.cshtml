@@ -1,6 +1,7 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Shared.Enums;
 @using ExchangeService.Client.Services;
+@using System.Linq;
 @page "/addexchangegame"
 @inject HttpClient Http
 @inject TokenService tokenService
@@ -51,60 +52,134 @@
     <br />
     @if (gameDetails != null)
     {
-        <div class="row" style="padding:4px">
-            <label for="gameTitle" class="col-sm-6">Game title: </label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="gameTitle" placeholder="Title" bind="@gameDetails.Title" />
+        @if (gameDoesntExist)
+        {
+            <div class="row" style="padding:4px">
+                <label for="gameTitle" class="col-sm-6">Game title: </label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="gameTitle" placeholder="Title" bind="@gameDetails.Title" />
+                </div>
             </div>
-        </div>
-        <div class="row" style="padding:4px">
-            <label for="picture" class="col-sm-6">Game picture url: </label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="picture" placeholder="Game picture url" bind="@gameDetails.ImageUrl" />
+            <div class="row" style="padding:4px">
+                <label for="picture" class="col-sm-6">Game picture url: </label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="picture" placeholder="Game picture url" bind="@gameDetails.ImageUrl" />
+                </div>
             </div>
-        </div>
-        <div class="row" style="padding:4px">
-            <label for="description" class="col-sm-6">Description: </label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="description" placeholder="Description" bind="@gameDetails.Description" />
+            <div class="row" style="padding:4px">
+                <label for="description" class="col-sm-6">Description: </label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="description" placeholder="Description" bind="@gameDetails.Description" />
+                </div>
             </div>
-        </div>
-        <div class="row" style="padding:4px">
-            <label for="publisher" class="col-sm-6">Publisher: </label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="publisher" placeholder="Publisher" bind="@gameDetails.Publisher" />
+            <div class="row" style="padding:4px">
+                <label for="publisher" class="col-sm-6">Publisher: </label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="publisher" placeholder="Publisher" bind="@gameDetails.Publisher" />
+                </div>
             </div>
-        </div>
-        <div class="row" style="padding:4px">
-            <label for="genre" class="col-sm-6">Genre: </label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="publisher" placeholder="Publisher" bind="@gameDetails.Publisher" />
-                @*<select bind="@gameDetails.GenreId" class="form-control">
-            @foreach (var genre in genres)
-            {
-                <option value="@genre.Id">@genre.Name</option>
-            }
-        </select>*@
+            <div class="row" style="padding:4px">
+                <label for="genre" class="col-sm-6">Genre: </label>
+                <div class="col-sm-6">
+                    <select bind="@gameDetails.GenreId" class="form-control">
+                        @foreach (var genre in genres)
+                        {
+                            <option value="@genre.Id">@genre.Name</option>
+                        }
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="row" style="padding:4px">
-            <label for="playerCount" class="col-sm-6">Player count: </label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="playerCount" placeholder="Min-max" bind="@gameDetails.PlayerCount" />
+            <div class="row" style="padding:4px">
+                <label for="playerCount" class="col-sm-6">Player count: </label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="playerCount" placeholder="Min-max" bind="@gameDetails.PlayerCount" />
+                </div>
             </div>
-        </div>
-        <div class="row" style="padding:4px">
-            <label for="ageRequired" class="col-sm-6"> Age required: </label>
-            <div class="col-sm-6">
-                <input type="number" class="form-control" id="ageRequired" placeholder="Age required" bind="@gameDetails.MinAgeRequired" />
+            <div class="row" style="padding:4px">
+                <label for="ageRequired" class="col-sm-6"> Age required: </label>
+                <div class="col-sm-6">
+                    <input type="number" class="form-control" id="ageRequired" placeholder="Age required" bind="@gameDetails.MinAgeRequired" />
+                </div>
             </div>
-        </div>
-        <div class="row" style="padding:4px">
-            <label for="gameTime" class="col-sm-6"> Game time (in minutes): </label>
-            <div class="col-sm-6">
-                <input type="number" class="form-control" id="gameTime" placeholder="Game time" bind="@gameDetails.GameTimeInMin" />
+            <div class="row" style="padding:4px">
+                <label for="gameTime" class="col-sm-6"> Game time (in minutes): </label>
+                <div class="col-sm-6">
+                    <input type="number" class="form-control" id="gameTime" placeholder="Game time" bind="@gameDetails.GameTimeInMin" />
+                </div>
             </div>
-        </div>
+
+        }
+        else
+        {
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <p class="font-weight-normal">Genre: </p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="font-italic">@genre</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <p class="font-weight-normal">Player count: </p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="font-italic">@gameDetails.PlayerCount</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <p class="font-weight-normal">Age required: </p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="font-italic">@gameDetails.MinAgeRequired</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <p class="font-weight-normal">Game time (in minutes): </p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="font-italic">@gameDetails.GameTimeInMin</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <p class="font-weight-normal">Publisher: </p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="font-italic">@gameDetails.Publisher</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <p class="font-weight-normal">Description: </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <p class="font-italic">@gameDetails.Description</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="row justify-content-center">
+                                    <img src="@gameDetails.ImageUrl" width="200" height="200">
+                                </div>
+                                <div class="row justify-content-center">
+                                    <p class="font-weight-bold">@gameDetails.Title</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
         @if (errorsGame.Count() > 0)
         {
@@ -178,153 +253,144 @@
 @functions {
 DropDownItem[] response;
 DropDownItem[] genres;
+string genre;
 bool gameWasSearched = false;
 bool gameDoesntExist = true;
 GameDto gameDetails = null;
 UserGameDto newUserGame = null;
 string gameID;
 public bool isValidGame = false;
-public List<string>
-    errorsGame = new List<string>
-        ();
-        public bool isValidUsergame = false;
-        public List<string>
-            errorsUsergame = new List<string>
-                ();
+public List<string> errorsGame = new List<string>();
+public bool isValidUsergame = false;
+public List<string> errorsUsergame = new List<string>();
 
-                string gameTitle = null;
-                public string GameTitle
-                {
-                get => gameTitle;
-                set
-                {
-                gameTitle = value;
-                if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
-                StateHasChanged();
-                }
-                }
+string gameTitle = null;
+public string GameTitle
+{
+    get => gameTitle;
+    set
+    {
+        gameTitle = value;
+        if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
+        StateHasChanged();
+    }
+}
 
-                string selectedId = null;
-                public string SelectedId
-                {
-                get => selectedId;
-                set
-                {
-                selectedId = value;
-                if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
-                }
-                }
-                protected override void OnInit()
-                {
-                appState.TrySetAccessTokens();
-                if (!appState.IsUserLoggedIn)
-                {
-                UriHelper.NavigateTo("/unauthorized");
-                }
-                }
+string selectedId = null;
+public string SelectedId
+{
+    get => selectedId;
+    set
+    {
+        selectedId = value;
+        if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
+    }
+}
+protected override void OnInit()
+{
+    appState.TrySetAccessTokens();
+    if (!appState.IsUserLoggedIn)
+    {
+        UriHelper.NavigateTo("/unauthorized");
+    }
+}
 
-                private async Task FillAutoComplete()
-                {
-                response = await Http.GetJsonAsync<DropDownItem[]>
-                    ("http://localhost:5000/api/games/" + GameTitle);
-                    SelectedId = null;
-                    gameWasSearched = true;
-                    gameDetails = null;
-                    newUserGame = null;
-                    StateHasChanged();
-                    }
+private async Task FillAutoComplete()
+{
+    response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
+    SelectedId = null;
+    gameWasSearched = true;
+    gameDetails = null;
+    newUserGame = null;
+    StateHasChanged();
+}
 
-                    private void AddNewGame()
-                    {
-                    gameDetails = new GameDto();
-                    gameDetails.Title = GameTitle;
-                    genres = await Http.GetJsonAsync<DropDownItem[]>
-                        ("http://localhost:5000/api/genres");
+private async Task AddNewGame()
+{
+    gameDetails = new GameDto();
+    gameDetails.Title = GameTitle;
+    genres = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/genres");
+    SelectedId = string.Empty;
+    GameTitle = string.Empty;
+    gameDoesntExist = true;
+    newUserGame = null;
+}
 
-                        SelectedId = string.Empty;
-                        GameTitle = string.Empty;
-                        gameDoesntExist = true;
-                        newUserGame = null;
-                        }
+private async Task GetGameDetails()
+{
+    gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
+    gameDoesntExist = false;
+    GameTitle = string.Empty;
+    newUserGame = null;
+    gameID = gameDetails.GameId.ToString();
+    genre = genres.FirstOrDefault(g => g.Id == gameDetails.GenreId).Name;
+    StateHasChanged();
+}
 
-                        private async Task GetGameDetails()
-                        {
-                        gameDetails = await Http.GetJsonAsync<GameDto>
-                            ("http://localhost:5000/api/games/get/" + SelectedId);
-                            gameDoesntExist = false;
-                            GameTitle = string.Empty;
-                            newUserGame = null;
-                            gameID = gameDetails.GameId.ToString();
-                            StateHasChanged();
-                            }
+private async Task SaveGameDetails()
+{
+    errorsGame.Clear();
+    ValidateInputsGame();
+    if (isValidGame)
+    {
+        if (gameDoesntExist)
+            await AddGameToDB();
+        else
+            await UpdateGameInDB();
 
-                            private async Task SaveGameDetails()
-                            {
-                            errorsGame.Clear();
-                            ValidateInputsGame();
-                            if (isValidGame)
-                            {
-                            if (gameDoesntExist)
-                            await AddGameToDB();
-                            else
-                            await UpdateGameInDB();
+        newUserGame = new UserGameDto()
+        {
+            GameId = Int32.Parse(gameID)
+        };
+    }
+}
 
-                            newUserGame = new UserGameDto()
-                            {
-                            GameId = Int32.Parse(gameID)
-                            };
-                            }
-                            }
+private async Task AddGameToDB()
+{
+    await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
+    gameID = games[0].Id.ToString();
+}
 
-                            private async Task AddGameToDB()
-                            {
-                            await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
-                            var games = await Http.GetJsonAsync<DropDownItem[]>
-                                ("http://localhost:5000/api/games/" + gameDetails.Title);
-                                gameID = games[0].Id.ToString();
-                                }
+private async Task UpdateGameInDB()
+{
+    await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
+}
 
-                                private async Task UpdateGameInDB()
-                                {
-                                await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
-                                }
+private async Task AddUserGameToDB()
+{
+    errorsUsergame.Clear();
+    ValidateInputsUsergame();
+    if (isValidUsergame)
+    {
+        await Http.PostJsonAsync("http://localhost:5000/api/users/games/", newUserGame);
+        UriHelper.NavigateTo("/gameexchangesuccess");
+    }
+}
 
-                                private async Task AddUserGameToDB()
-                                {
-                                errorsUsergame.Clear();
-                                ValidateInputsUsergame();
-                                if (isValidUsergame)
-                                {
-                                await Http.PostJsonAsync("http://localhost:5000/api/users/games/", newUserGame);
-                                UriHelper.NavigateTo("/gameexchangesuccess");
-                                }
-                                }
+private void ValidateInputsGame()
+{
+    if (string.IsNullOrEmpty(gameDetails.Title))
+        errorsGame.Add("Please fill game title.");
+    if (string.IsNullOrEmpty(gameDetails.ImageUrl))
+        errorsGame.Add("Please provide url for game picture.");
+    if (string.IsNullOrEmpty(gameDetails.PlayerCount))
+        errorsGame.Add("Please fill players count.");
+    if (string.IsNullOrEmpty(gameDetails.MinAgeRequired))
+        errorsGame.Add("Please fill minimal age.");
+    if (string.IsNullOrEmpty(gameDetails.GameTimeInMin))
+        errorsGame.Add("Please fill game time.");
 
-                                private void ValidateInputsGame()
-                                {
-                                if (string.IsNullOrEmpty(gameDetails.Title))
-                                errorsGame.Add("Please fill game title.");
-                                if (string.IsNullOrEmpty(gameDetails.ImageUrl))
-                                errorsGame.Add("Please provide url for game picture.");
-                                if (string.IsNullOrEmpty(gameDetails.GenreName))
-                                errorsGame.Add("Please fill game genre.");
-                                if (string.IsNullOrEmpty(gameDetails.PlayerCount))
-                                errorsGame.Add("Please fill players count.");
-                                if (string.IsNullOrEmpty(gameDetails.MinAgeRequired))
-                                errorsGame.Add("Please fill minimal age.");
-                                if (string.IsNullOrEmpty(gameDetails.GameTimeInMin))
-                                errorsGame.Add("Please fill game time.");
+    isValidGame = errorsGame.Count() == 0;
+    StateHasChanged();
+}
 
-                                isValidGame = errorsGame.Count() == 0;
-                                StateHasChanged();
-                                }
+private void ValidateInputsUsergame()
+{
+    if (string.IsNullOrEmpty(newUserGame.UserGameDescription))
+        errorsUsergame.Add("Please fill game state description.");
 
-                                private void ValidateInputsUsergame()
-                                {
-                                if (string.IsNullOrEmpty(newUserGame.UserGameDescription))
-                                errorsUsergame.Add("Please fill game state description.");
-
-                                isValidUsergame = errorsUsergame.Count() == 0;
-                                StateHasChanged();
-                                }
-                                }
+    isValidUsergame = errorsUsergame.Count() == 0;
+    StateHasChanged();
+}
+}

@@ -81,11 +81,11 @@
 @functions {
     [Parameter]
     string GameId { get; set; }
-    GameDto gameView {get;set;} = new GameDto();
+    GameView gameView {get;set;} = new GameView();
 
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
-        gameView = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + GameId);
+        gameView = await Http.GetJsonAsync<GameView>("http://localhost:5000/api/games/getview/" + GameId);
     }
 }
