@@ -9,7 +9,7 @@ namespace ExchangeService.Shared.Resources
         public string Description { get; set; }
         public string ImageUrl { get; set; }
         public string Publisher { get; set; }
-        public string GenreName { get; set; }
+        public int GenreId { get; set; }
         public string PlayerCount { get; set; }
         public string MinAgeRequired { get; set; }
         public string GameTimeInMin { get; set; }

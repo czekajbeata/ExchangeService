@@ -78,7 +78,13 @@
             <div class="row" style="padding:4px">
                 <label for="genre" class="col-sm-6">Genre: </label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" id="genre" placeholder="Genre" bind="@gameDetails.GenreName" />
+                    <input type="text" class="form-control" id="publisher" placeholder="Publisher" bind="@gameDetails.Publisher" />
+                    @*<select bind="@gameDetails.GenreId" class="form-control">
+            @foreach (var genre in genres)
+            {
+                <option value="@genre.Id">@genre.Name</option>
+            }
+        </select>*@
                 </div>
             </div>
             <div class="row" style="padding:4px">
@@ -112,7 +118,7 @@
                                         <p class="font-weight-normal">Genre: </p>
                                     </div>
                                     <div class="col-sm-4">
-                                        <p class="font-italic">@gameDetails.GenreName</p>
+                                        <p class="font-italic">@gameDetails.GenreId</p>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -190,6 +196,8 @@
 
 @functions {
 DropDownItem[] response;
+DropDownItem[] genres;
+string genre;
 bool gameWasSearched = false;
 bool gameDoesntExist = true;
 GameDto gameDetails = null;
@@ -197,45 +205,47 @@ string gameID;
 public bool isValidGame = false;
 public List<string>
     errorsGame = new List<string>
-    ();
+        ();
 
-    string gameTitle = null;
-    public string GameTitle
-    {
-    get => gameTitle;
-    set
-    {
-    gameTitle = value;
-    if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
-    StateHasChanged();
-    }
-    }
+        string gameTitle = null;
+        public string GameTitle
+        {
+        get => gameTitle;
+        set
+        {
+        gameTitle = value;
+        if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
+        StateHasChanged();
+        }
+        }
 
-    string selectedId = null;
-    public string SelectedId
-    {
-    get => selectedId;
-    set
-    {
-    selectedId = value;
-    if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false); gameDoesntExist = false;
-    }
-    }
+        string selectedId = null;
+        public string SelectedId
+        {
+        get => selectedId;
+        set
+        {
+        selectedId = value;
+        if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false); gameDoesntExist = false;
+        }
+        }
 
-    protected override void OnInit()
-    {
-    appState.TrySetAccessTokens();
-    if (!appState.IsUserLoggedIn)
-    {
-    UriHelper.NavigateTo("/unauthorized");
-    }
-    }
+        protected override void OnInit()
+        {
+        appState.TrySetAccessTokens();
+        if (!appState.IsUserLoggedIn)
+        {
+        UriHelper.NavigateTo("/unauthorized");
+        }
+        }
 
 
-    private async Task FillAutoComplete()
-    {
-    response = await Http.GetJsonAsync<DropDownItem[]>
-        ("http://localhost:5000/api/games/" + GameTitle);
+        private async Task FillAutoComplete()
+        {
+        response = await Http.GetJsonAsync<DropDownItem[]>
+    ("http://localhost:5000/api/games/" + GameTitle);
+    genres = await Http.GetJsonAsync<DropDownItem[]>
+        ("http://localhost:5000/api/genres");
         SelectedId = null;
         gameWasSearched = true;
         gameDetails = null;
@@ -258,6 +268,7 @@ public List<string>
             gameDoesntExist = false;
             GameTitle = string.Empty;
             gameID = gameDetails.GameId.ToString();
+            //genre = genres.Where(g => g.Id == gameDetails.GenreId);
             StateHasChanged();
             }
 

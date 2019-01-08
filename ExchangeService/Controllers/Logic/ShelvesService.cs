@@ -42,13 +42,12 @@ namespace ExchangeService.Controllers.Logic
             List<GameDto> gameDtos = new List<GameDto>();
             foreach(var game in gamesDetails)
             {
-                var genreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name : null;
                 var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
                 gameDtos.Add(new GameDto()
                 {
                     Description = game.Description,
                     GameId = game.GameId,
-                    GenreName = genreName,
+                    GenreId = game.GenreId,
                     ImageUrl = game.ImageUrl,
                     PlayerCount = playerCount,
                     MinAgeRequired = game.MinAgeRequired.ToString(),
@@ -65,14 +64,14 @@ namespace ExchangeService.Controllers.Logic
             Game newGame = new Game()
             {
                 Description = game.Description ?? String.Empty,
-                GenreId =  game.GenreName != null ? games.GetGenreByName(game.GenreName).GenreId : (int?)null,
+                GenreId =  game.GenreId,
                 ImageUrl = game.ImageUrl ?? null,
                 MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
                 MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
-                MinAgeRequired = game.MinAgeRequired != null ? Int32.Parse(game.MinAgeRequired) : (int?)null,
+                MinAgeRequired = Int32.Parse(game.MinAgeRequired),
                 Publisher = game.Publisher ?? String.Empty,
-                Title = game.Title ?? String.Empty,
-                GameTimeInMin = game.GameTimeInMin != null ?  Int32.Parse(game.GameTimeInMin) : (int?)null
+                Title = game.Title,
+                GameTimeInMin = Int32.Parse(game.GameTimeInMin)
             };
             games.AddGame(newGame);
             unitOfWork.CompleteWork();
@@ -103,18 +102,18 @@ namespace ExchangeService.Controllers.Logic
                 UserGameId = usergame.UserGameId,
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
-                GameTimeInMin = game.GameTimeInMin.ToString() ?? String.Empty,
+                GameTimeInMin = game.GameTimeInMin.ToString(),
                 Description = game.Description,
-                GenreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name ?? String.Empty : String.Empty,
-                ImageUrl = game.ImageUrl ?? String.Empty,
+                GenreName = games.GetGenre(game.GenreId).Name,
+                ImageUrl = game.ImageUrl,
                 IsComplete = usergame.IsComplete,
-                MinAgeRequired = game.MinAgeRequired.ToString() ?? String.Empty,
-                PlayerCount = playerCount ?? String.Empty,
+                MinAgeRequired = game.MinAgeRequired.ToString(),
+                PlayerCount = playerCount,
                 Publisher = game.Publisher ?? String.Empty,
                 Shipment = usergame.Shipment,
                 State = usergame.State,
                 Title = game.Title,
-                UserGameDescription = usergame.UserGameDescription ?? String.Empty
+                UserGameDescription = usergame.UserGameDescription
             };
         }
 
@@ -128,18 +127,18 @@ namespace ExchangeService.Controllers.Logic
                 UserGameId = usergame.UserGameId,
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
-                GameTimeInMin = game.GameTimeInMin.ToString() ?? String.Empty,
+                GameTimeInMin = game.GameTimeInMin.ToString(),
                 Description = game.Description,
-                GenreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name ?? String.Empty : String.Empty,
-                ImageUrl = game.ImageUrl ?? String.Empty,
+                GenreName = games.GetGenre(game.GenreId).Name,
+                ImageUrl = game.ImageUrl,
                 IsComplete = usergame.IsComplete,
-                MinAgeRequired = game.MinAgeRequired.ToString() ?? String.Empty,
-                PlayerCount = playerCount ?? String.Empty,
+                MinAgeRequired = game.MinAgeRequired.ToString(),
+                PlayerCount = playerCount,
                 Publisher = game.Publisher ?? String.Empty,
                 Shipment = usergame.Shipment,
                 State = usergame.State,
                 Title = game.Title,
-                UserGameDescription = usergame.UserGameDescription ?? String.Empty
+                UserGameDescription = usergame.UserGameDescription,
             };
         }
 
@@ -172,16 +171,14 @@ namespace ExchangeService.Controllers.Logic
         public GameDto GetGameDetails(int id)
         {
             var game = games.GetGame(id);
-
             if (game is null)
                 return null;
-            var genreName = game.GenreId != null ? games.GetGenre(game.GenreId).Name : null;
             var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
             return new GameDto()
             {
                 Description = game.Description,
                 GameId = game.GameId,
-                GenreName = genreName,
+                GenreId = game.GenreId,
                 ImageUrl = game.ImageUrl,
                 PlayerCount = playerCount,
                 MinAgeRequired = game.MinAgeRequired.ToString(),
@@ -198,7 +195,7 @@ namespace ExchangeService.Controllers.Logic
                 return false;
 
             existingGame.Description = updatedGame.Description;
-            existingGame.GenreId = updatedGame.GenreName != null ? games.GetGenreByName(updatedGame.GenreName).GenreId : (int?)null;
+            existingGame.GenreId = updatedGame.GenreId;
             existingGame.ImageUrl = updatedGame.ImageUrl;
             existingGame.MaxPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item2;
             existingGame.MinPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item1;
@@ -261,7 +258,7 @@ namespace ExchangeService.Controllers.Logic
                     UserGameDescription = game.UserGameDescription,
                     ImageUrl = gameCopy.ImageUrl,
                     Publisher = gameCopy.Publisher,
-                    GenreName = gameCopy.GenreName,
+                    GenreName = games.GetGenre(gameCopy.GenreId).Name,
                     PlayerCount = gameCopy.PlayerCount,
                     MinAgeRequired = gameCopy.MinAgeRequired,
                     State = game.State,

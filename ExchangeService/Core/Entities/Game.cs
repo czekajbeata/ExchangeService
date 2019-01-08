@@ -15,14 +15,14 @@ namespace ExchangeService.Core.Entities
         public string ImageUrl { get; set; }
         [StringLength(64)]
         public string Publisher { get; set; }
-        public int? GenreId { get; set; }
+        public int GenreId { get; set; }
         [Range(1, int.MaxValue)]
-        public int? MinPlayerCount { get; set; }
+        public int MinPlayerCount { get; set; }
         [Range(1, int.MaxValue)]
-        public int? MaxPlayerCount { get; set; }
+        public int MaxPlayerCount { get; set; }
         [Range(1, int.MaxValue)]
-        public int? MinAgeRequired { get; set; }
+        public int MinAgeRequired { get; set; }
         [Range(1, int.MaxValue)]
-        public int? GameTimeInMin { get; set; }
+        public int GameTimeInMin { get; set; }
     }
 }

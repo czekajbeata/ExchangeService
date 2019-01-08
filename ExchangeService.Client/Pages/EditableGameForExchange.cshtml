@@ -86,7 +86,13 @@
                             <p class="font-weight-normal">Genre: </p>
                         </div>
                         <div class="col-sm-4">
-                            <p class="font-italic">@gameView.GenreName</p>
+                            @*<select bind="@gameView.GenreName" class="form-control">
+            @foreach (var genre in genres)
+            {
+                <option value="@genre.Name">@genre.Name</option>
+            }
+        </select>*@
+                            <p class="font-italic">@gameView.PlayerCount</p>
                         </div>
                     </div>
                     <div class="row">
@@ -207,66 +213,74 @@
     [Parameter]
     string UserGameId { get; set; }
     UserGameView gameView { get; set; } = new UserGameView();
+    DropDownItem[] genres;
     UserView gameOwner { get; set; } = new UserView();
     bool contactDetailsVisible = false;
     string contactDetailsButton = "Show contact details";
     public bool isValidUsergame = false;
-    public List<string> errorsUsergame = new List<string>();
+    public List<string>
+    errorsUsergame = new List<string>
+        ();
 
 
-    protected override async Task OnInitAsync()
-    {
+        protected override async Task OnInitAsync()
+        {
         appState.TrySetAccessTokens();
         if (!appState.IsUserLoggedIn)
         {
-            UriHelper.NavigateTo("/unauthorized");
+        UriHelper.NavigateTo("/unauthorized");
         }
-        gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
-        if (gameOwner.UserId != gameView.UserId)
-        {
-            UriHelper.NavigateTo("/gameeditfail");
-        }
-    }
+        gameView = await Http.GetJsonAsync<UserGameView>
+    ("http://localhost:5000/api/users/game/" + UserGameId);
+    genres = await Http.GetJsonAsync<DropDownItem[]>
+        ("http://localhost:5000/api/genres");
 
-    private void ToogleContactDetails()
-    {
-        if (contactDetailsVisible)
-        {
+        gameOwner = await Http.GetJsonAsync<UserView>
+            ("http://localhost:5000/api/users/myprofile");
+            if (gameOwner.UserId != gameView.UserId)
+            {
+            UriHelper.NavigateTo("/gameeditfail");
+            }
+            }
+
+            private void ToogleContactDetails()
+            {
+            if (contactDetailsVisible)
+            {
             contactDetailsVisible = false;
             contactDetailsButton = "Show contact details";
-        }
-        else
-        {
+            }
+            else
+            {
             contactDetailsVisible = true;
             contactDetailsButton = "Hide contact details";
-        }
-    }
+            }
+            }
 
-    private async Task UpdateUserGameDetails()
-    {
-        errorsUsergame.Clear();
-        ValidateInputsUsergame();
-        if (isValidUsergame)
-        {
+            private async Task UpdateUserGameDetails()
+            {
+            errorsUsergame.Clear();
+            ValidateInputsUsergame();
+            if (isValidUsergame)
+            {
             UserGameDto updatedUserGame = new UserGameDto
             {
-                State = gameView.State,
-                IsComplete = gameView.IsComplete,
-                Shipment = gameView.Shipment,
-                UserGameDescription = gameView.UserGameDescription
+            State = gameView.State,
+            IsComplete = gameView.IsComplete,
+            Shipment = gameView.Shipment,
+            UserGameDescription = gameView.UserGameDescription
             };
             await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
             UriHelper.NavigateTo("/gameupdatedsuccess");
-        }
-    }
+            }
+            }
 
-    private void ValidateInputsUsergame()
-    {
-        if (string.IsNullOrEmpty(gameView.UserGameDescription))
+            private void ValidateInputsUsergame()
+            {
+            if (string.IsNullOrEmpty(gameView.UserGameDescription))
             errorsUsergame.Add("Please fill game state description.");
 
-        isValidUsergame = errorsUsergame.Count() == 0;
-        StateHasChanged();
-    }
-}
+            isValidUsergame = errorsUsergame.Count() == 0;
+            StateHasChanged();
+            }
+            }
