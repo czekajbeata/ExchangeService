@@ -28,7 +28,7 @@ namespace ExchangeService.Controllers.Api
         }
 
         [HttpGet("api/{query?}")]
-        public IEnumerable<GameDto> GetAllGames(string query)
+        public IEnumerable<GameView> GetAllGames(string query)
         {
             return shelvesService.GetAllGames(query);
         }

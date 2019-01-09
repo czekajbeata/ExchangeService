@@ -36,18 +36,18 @@ namespace ExchangeService.Controllers.Logic
             return newUserGame.GameId != 0;
         }
 
-        public IEnumerable<GameDto> GetAllGames(string query)
+        public IEnumerable<GameView> GetAllGames(string query)
         {
             var gamesDetails = games.GetGames(query);
-            List<GameDto> gameDtos = new List<GameDto>();
+            List<GameView> gameDtos = new List<GameView>();
             foreach(var game in gamesDetails)
             {
                 var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
-                gameDtos.Add(new GameDto()
+                gameDtos.Add(new GameView()
                 {
                     Description = game.Description,
                     GameId = game.GameId,
-                    GenreId = game.GenreId,
+                    GenreName = games.GetGenre(game.GenreId).Name,
                     ImageUrl = game.ImageUrl,
                     PlayerCount = playerCount,
                     MinAgeRequired = game.MinAgeRequired.ToString(),
