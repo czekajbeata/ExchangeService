@@ -12,6 +12,7 @@ namespace ExchangeService.Shared.Resources
         public string Description { get; set; }
         public string UserGameDescription { get; set; }
         public string ImageUrl { get; set; }
+        public string[] UserImages { get; set; }
         public string Publisher { get; set; }
         public string GameTimeInMin { get; set; }
         public string GenreName { get; set; }
