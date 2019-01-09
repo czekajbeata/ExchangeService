@@ -12,8 +12,22 @@
 }
 else
 {
-    <h5>Do you want to remove search for @GameSearch.Title from your profile?</h5>
-    <button type="button" class="btn btn-danger" onclick="@(async () => await Remove())">Remove</button>
+    <div class="container">
+        <br />
+        <div class="row">
+            <h3>Do you want to remove search for @GameSearch.Title from your profile?</h3>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-3" />
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-secondary btn-block" onclick=@(() => Return())>Return</button>
+            </div>
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-danger btn-block" onclick=@(() => Remove())>Remove</button>
+            </div>
+        </div>
+    </div>
 }
 
 @functions{
@@ -35,5 +49,10 @@ else
     {
         await Http.DeleteAsync("http://localhost:5000/api/users/searches/" + SearchId);
         UriHelper.NavigateTo("/gamedeletesuccess");
+    }
+
+    private void Return()
+    {
+        UriHelper.NavigateTo("/myprofile");
     }
 }

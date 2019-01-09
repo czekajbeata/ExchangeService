@@ -15,15 +15,17 @@ else
 {
     <div class="container">
         <div class="row">
-
+            <br />
             @if (Exchange.Shipment == Shipment.Delivery)
             {
                 <h3>Provide address for package delivery</h3>
+                <br />
                 <input class="form-control  input-lg" type="text" placeholder="Delivery details..." bind="@ContactDetails" />
             }
             else
             {
                 <h3>Provide contact details to discuss the pickup</h3>
+                <br />
                 <input class="form-control" type="text" placeholder="Contact details..." bind="@ContactDetails" />
             }
         </div>

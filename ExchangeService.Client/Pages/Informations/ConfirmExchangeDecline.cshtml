@@ -9,15 +9,27 @@
 
 @if (Exchange == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
-<h5>Do you want to abandon an exchange?</h5>
-<br/>
-<a href="/myexchanges" type="button" class="btn btn-primary">Return </a>
-<button type="button" class="btn btn-danger" onclick="@(async () => await Abandon())">Remove</button>
-}
+    <div class="container">
+        <br />
+        <div class="row">
+            <h3>Do you want to abandon an exchange?</h3>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-3" />
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-secondary btn-block" onclick="@(() => Return())">Return</button>
+            </div>
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-danger btn-block" onclick="@(async () => await Abandon())">Remove</button>
+            </div>
+        </div>
+    </div>    
+   }
 
 @functions{
     [Parameter]
@@ -30,8 +42,8 @@ else
         Exchange = await Http.GetJsonAsync<ShortenedExchangeView>("http://localhost:5000/api/users/shortendexchange/" + ExchangeId);
 
         var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
-        if ((Exchange.FirstUserId != loggedUserId && Exchange.SecondUserId != loggedUserId )||
-            (Exchange.State != ExchangeState.Waiting) )
+        if ((Exchange.FirstUserId != loggedUserId && Exchange.SecondUserId != loggedUserId) ||
+            (Exchange.State != ExchangeState.Waiting))
             UriHelper.NavigateTo("/exchangedeclinefail");
     }
 
@@ -39,5 +51,10 @@ else
     {
         await Http.PutJsonAsync("http://localhost:5000/api/users/exchanges/decline", Exchange);
         UriHelper.NavigateTo("/exchangedeclinesuccess");
+    }
+
+    private void Return()
+    {
+        UriHelper.NavigateTo("/myexchanges");
     }
 }

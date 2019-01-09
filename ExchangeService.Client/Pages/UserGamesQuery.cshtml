@@ -198,7 +198,6 @@ else
     private void FilterGames()
     {
         var filtered = userGames;
-        Console.WriteLine(selectedStates.Count());
         if (selectedStates.Count > 0)
         {
             filtered = filtered.Where(g => selectedStates.Contains(g.State.ToString())).ToArray();
