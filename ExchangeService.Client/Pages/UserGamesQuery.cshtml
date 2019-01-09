@@ -1,4 +1,5 @@
 ﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Shared.Enums;
 @using ExchangeService.Client.Services;
 @page "/games/{GameId}"
 @inject HttpClient Http
@@ -14,87 +15,124 @@ else
 {
     <h1>Users games for @userGames[0].Title</h1>
     <br />
-
     <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="alert alert-secondary" role="alert">
+                    <div class="row">
+                        <p>Game states: </p>
+                    </div>
+                    @foreach (var state in gameStates)
+                    {
+                        <div class="row">
+                            <input type="checkbox" checked="@(selectedStates.Contains(state))" onchange="@(() => ToogleStateSelect(state))" />@state
+                        </div>
+                    }
+                    <br />
+                    <div class="row">
+                        <p>Shipment type: </p>
+                    </div>
+                    @foreach (var shipment in shimpments)
+                    {
+                        <div class="row">
+                            <input type="radio" checked="@(gameShipment == shipment)" onclick="@(() => gameShipment = gameShipment == shipment ? "" : shipment)" />@shipment
+                        </div>
+                    }
+                    <br />
+                    <div class="row">
+                        <p>Game completeness: </p>
+                    </div>
+                    @foreach (var complete in completeness)
+                    {
+                        <div class="row">
+                            <input type="radio" checked="@(isComplete == complete)" onclick="@(() => isComplete = isComplete == complete ? "" : complete)" />@complete
+                        </div>
+                    }
+                    <button class="btn btn-outline-primary btn-block" onclick="@(() => FilterGames())">Filter games</button>
+                    <button class="btn btn-outline-primary btn-block" onclick="@(() => ResetFilters())">Reset filters</button>
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">Game</th>
+                            <th style="width: 13%">State</th>
+                            <th style="width: 13%">Is complete</th>
+                            <th style="width: 13%">Shipment</th>
+                            <th style="width: 26%">User</th>
+                            <th style="width: 10%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var gameRow in filteredUserGames)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-5">
+                                            <img src="@gameRow.ImageUrl" width="80" height="80" />
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <i class="fas fa-users"></i>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @gameRow.PlayerCount
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <i class="fas fa-clock"></i>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @gameRow.GameTimeInMin min
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <i class="fas fa-user-friends"></i>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @gameRow.MinAgeRequired +
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@gameRow.State</td>
+                                <td>@gameRow.IsComplete</td>
+                                <td>@gameRow.Shipment</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <img src="@gameRow.UserImageUrl" width="80" height="80" />
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="row">
+                                                @gameRow.Name @gameRow.Surname
+                                            </div>
+                                            <div class="row">
+                                                <i class="fas fa-map-marker-alt" /> @gameRow.Location
+                                            </div>
+                                            <div class="row">
+                                                Avg mark: @gameRow.AvgMark
+                                            </div>
+                                        </div>
+                                    </div>
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th style="width: 20%">Game</th>
-                    <th style="width: 13%">State</th>
-                    <th style="width: 13%">Is complete</th>
-                    <th style="width: 13%">Shipment</th>
-                    <th style="width: 26%">User</th>
-                    <th style="width: 10%"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var gameRow in userGames)
-                {
-                    <tr>
-                        <td>
-                            <div class="row">
-                                <div class="col-sm-5">
-                                    <img src="@gameRow.ImageUrl" width="80" height="80" />
-                                </div>
-                                <div class="col-sm-7">
-                                    <div class="row">
-                                        <div class="col-sm-2">
-                                            <i class="fas fa-users"></i>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            @gameRow.PlayerCount
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-2">
-                                            <i class="fas fa-clock"></i>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            @gameRow.GameTimeInMin min
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-2">
-                                            <i class="fas fa-user-friends"></i>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            @gameRow.MinAgeRequired +
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>@gameRow.State</td>
-                        <td>@gameRow.IsComplete</td>
-                        <td>@gameRow.Shipment</td>
-                        <td>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <img src="@gameRow.UserImageUrl" width="80" height="80" />
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="row">
-                                        @gameRow.Name @gameRow.Surname
-                                    </div>
-                                    <div class="row">
-                                        <i class="fas fa-map-marker-alt" /> @gameRow.Location
-                                    </div>
-                                    <div class="row">
-                                        Avg mark: @gameRow.AvgMark
-                                    </div>
-                                </div>
-                            </div>
-
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-block" onclick="@(() => GetDetails(gameRow))">Details</button>
-                            <button type="button" class="btn btn-primary btn-block" onclick="@(() => OfferDeal(gameRow))">Offer a deal</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => GetDetails(gameRow))">Details</button>
+                                    <button type="button" class="btn btn-primary btn-block" onclick="@(() => OfferDeal(gameRow))">Offer a deal</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 }
 
@@ -102,6 +140,15 @@ else
     [Parameter]
     string GameId { get; set; }
     GameAndUserView[] userGames;
+    GameAndUserView[] filteredUserGames;
+
+    string[] gameStates = new string[] { };
+    string[] shimpments = new string[] { };
+    string[] completeness = new string[] { };
+
+    List<string> selectedStates = new List<string>();
+    string gameShipment;
+    string isComplete;
 
     protected override async Task OnInitAsync()
     {
@@ -117,8 +164,16 @@ else
         {
             UriHelper.NavigateTo($"/usergamesfail");
         }
-
-
+        filteredUserGames = userGames;
+        gameStates = usergames.Select(u => u.State.ToString()).ToArray();
+        shimpments = usergames.Select(u => u.Shipment.ToString()).ToArray();
+        var shipmentList = shimpments.ToList();
+        if(shipmentList.Contains(Shipment.Delivery.ToString()) && shipmentList.Contains(Shipment.Pickup.ToString()) && !shipmentList.Contains(Shipment.Any.ToString()))
+        {
+            shipmentList.Add("Any");
+            shimpments = shipmentList.ToArray();
+        }
+        completeness = usergames.Select(u => u.IsComplete.ToString()).ToArray();
     }
 
     private void GetDetails(GameAndUserView row)
@@ -131,4 +186,41 @@ else
         UriHelper.NavigateTo($"/offerdeal/{row.UserId}");
     }
 
+    private void ToogleStateSelect(string state)
+    {
+        if (selectedStates.Contains(state))
+            selectedStates.Remove(state);
+        else
+            selectedStates.Add(state);
+        StateHasChanged();
+    }
+
+    private void FilterGames()
+    {
+        var filtered = userGames;
+        Console.WriteLine(selectedStates.Count());
+        if (selectedStates.Count > 0)
+        {
+            filtered = filtered.Where(g => selectedStates.Contains(g.State.ToString())).ToArray();
+        }
+        if (!string.IsNullOrEmpty(isComplete))
+        {
+            filtered = filtered.Where(g => g.IsComplete.ToString() == isComplete).ToArray();
+        }
+        if (!string.IsNullOrEmpty(gameShipment) && gameShipment != "Any")
+        {
+            filtered = filtered.Where(g => g.Shipment.ToString() == gameShipment).ToArray();
+        }
+        filteredUserGames = filtered;
+        StateHasChanged();
+    }
+
+    private void ResetFilters()
+    {
+        filteredUserGames = userGames;
+        selectedStates.Clear();
+        isComplete = string.Empty;
+        gameShipment = string.Empty;
+        StateHasChanged();
+    }
 }
