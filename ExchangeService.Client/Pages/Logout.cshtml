@@ -7,10 +7,24 @@
 @inject ReloadService reloadService
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<form>
-    <h5>Do you want to log out?</h5>
-    <button type="button" class="btn btn-danger" onclick="@LogOut">Confirm</button>
-</form>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-2" />
+        <div class="col-sm-8">
+                <h3>Do you want to log out?</h3>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-3" />
+        <div class="col-sm-3">
+            <a role="button" class="btn btn-secondary btn-block" href="/myprofile">Back to profile</a>
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-danger btn-block" onclick="@LogOut">Confirm</button>
+        </div>
+    </div>
+</div>
 
 @functions{
 
