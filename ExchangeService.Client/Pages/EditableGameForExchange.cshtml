@@ -173,6 +173,34 @@
                                 <input type="text" class="form-control" id="stateDescription" placeholder="Description of game state" bind="@gameView.UserGameDescription" />
                             </div>
                         </div>
+                        <div class="row" style="padding:4px">
+                            <label for="gamePictures" class="col-sm-6"> Game pictures: </label>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-6">
+                                @foreach (var picture in gamePictures)
+                                {
+                                    <div class="row">
+                                        <div class="col-sm-10">
+                                            <img class="d-block w-100" src="@picture">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <i onclick="@(() => DeletePicture(picture))" class="fas fa-trash-alt"></i>
+                                        </div>
+                                    </div>
+                                    <br />
+                                }
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="pictureUrl" placeholder="Url for game picture" bind="@newPictureUrl" />
+                                <br />
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <button type="button" class="btn btn-light btn-block" onclick="@(() => AddNewPicture())">Add picture</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @if (errorsUsergame.Count() > 0)
                         {
                             <br />
@@ -201,76 +229,95 @@
 </div>
 
 @functions {
-[Parameter]
-string UserGameId { get; set; }
-UserGameView gameView { get; set; } = new UserGameView();
-DropDownItem[] genres;
-UserView gameOwner { get; set; } = new UserView();
-bool contactDetailsVisible = false;
-string contactDetailsButton = "Show contact details";
-public bool isValidUsergame = false;
-public List<string>
-errorsUsergame = new List<string>
-    ();
+    [Parameter]
+    string UserGameId { get; set; }
+    UserGameView gameView { get; set; } = new UserGameView();
+    DropDownItem[] genres;
+    UserView gameOwner { get; set; } = new UserView();
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
+    public bool isValidUsergame = false;
+    public List<string>
+    errorsUsergame = new List<string>();
+    public string newPictureUrl = "";
+    List<string> gamePictures = new List<string>();
 
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    if (!appState.IsUserLoggedIn)
+    protected override async Task OnInitAsync()
     {
-        UriHelper.NavigateTo("/unauthorized");
-    }
-    gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-    genres = await Http.GetJsonAsync<DropDownItem[]>
-        ("http://localhost:5000/api/genres");
-
-    gameOwner = await Http.GetJsonAsync<UserView>
-        ("http://localhost:5000/api/users/myprofile");
-    if (gameOwner.UserId != gameView.UserId)
-    {
-        UriHelper.NavigateTo("/gameeditfail");
-    }
-}
-
-private void ToogleContactDetails()
-{
-    if (contactDetailsVisible)
-    {
-        contactDetailsVisible = false;
-        contactDetailsButton = "Show contact details";
-    }
-    else
-    {
-        contactDetailsVisible = true;
-        contactDetailsButton = "Hide contact details";
-    }
-}
-
-private async Task UpdateUserGameDetails()
-{
-    errorsUsergame.Clear();
-    ValidateInputsUsergame();
-    if (isValidUsergame)
-    {
-        UserGameDto updatedUserGame = new UserGameDto
+        appState.TrySetAccessTokens();
+        if (!appState.IsUserLoggedIn)
         {
-            State = gameView.State,
-            IsComplete = gameView.IsComplete,
-            Shipment = gameView.Shipment,
-            UserGameDescription = gameView.UserGameDescription
-        };
-        await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
-        UriHelper.NavigateTo("/gameupdatedsuccess");
+            UriHelper.NavigateTo("/unauthorized");
+        }
+        gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
+        genres = await Http.GetJsonAsync<DropDownItem[]>
+            ("http://localhost:5000/api/genres");
+
+        gameOwner = await Http.GetJsonAsync<UserView>
+            ("http://localhost:5000/api/users/myprofile");
+        gamePictures = gameView.UserImages.ToList();
+        if (gameOwner.UserId != gameView.UserId)
+        {
+            UriHelper.NavigateTo("/gameeditfail");
+        }
+        Console.WriteLine(gamePictures);
     }
-}
 
-private void ValidateInputsUsergame()
-{
-    if (string.IsNullOrEmpty(gameView.UserGameDescription))
-        errorsUsergame.Add("Please fill game state description.");
+    private void ToogleContactDetails()
+    {
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
+    }
 
-    isValidUsergame = errorsUsergame.Count() == 0;
-    StateHasChanged();
-}
+    private async Task UpdateUserGameDetails()
+    {
+        errorsUsergame.Clear();
+        ValidateInputsUsergame();
+        if (isValidUsergame)
+        {
+            Console.WriteLine(string.Join(",", gamePictures));
+            UserGameDto updatedUserGame = new UserGameDto
+            {
+                GameId = gameView.GameId,
+                State = gameView.State,
+                IsComplete = gameView.IsComplete,
+                Shipment = gameView.Shipment,
+                UserGameDescription = gameView.UserGameDescription,
+                UserImages = gamePictures.ToArray()
+            };
+            await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
+            UriHelper.NavigateTo("/gameupdatedsuccess");
+        }
+    }
+
+    private void ValidateInputsUsergame()
+    {
+        if (string.IsNullOrEmpty(gameView.UserGameDescription))
+            errorsUsergame.Add("Please fill game state description.");
+
+        isValidUsergame = errorsUsergame.Count() == 0;
+        StateHasChanged();
+    }
+
+    private void AddNewPicture()
+    {
+        gamePictures.Add(newPictureUrl);
+        newPictureUrl = string.Empty;
+        StateHasChanged();
+    }
+
+    private void DeletePicture(string picture)
+    {
+        gamePictures.Remove(picture);
+        StateHasChanged();
+    }
 }
