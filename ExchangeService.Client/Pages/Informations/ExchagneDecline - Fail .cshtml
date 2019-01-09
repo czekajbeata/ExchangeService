@@ -5,18 +5,29 @@
 @inject TokenService tokenService
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-
-<div class="col-sm-7">
-    <div class="alert alert-danger" role="alert">
-        You can not abandon this exchange!
-        <br />
-        <div class="row">
-            <div class="col-sm-6">
-                <a role="button" class="btn btn-light btn-block" href="/myprofile">Back to profile</a>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-2" />
+        <div class="col-sm-8">
+            <div class="alert alert-danger" style="text-align:center" role="alert">
+                <br />
+                <div class="row justify-content-center">
+                    <i class="fas fa-times" style="font-size: 60px"></i>
+                </div>
+                <br />
+                You can not abandon this exchange!
+                <br />
             </div>
-            <div class="col-sm-6">
-                <a role="button" class="btn btn-light btn-block" href="/myexchanges">My exchanges</a>
-            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-3" />
+        <div class="col-sm-3">
+            <a role="button" class="btn btn-secondary btn-block" href="/myprofile">Back to profile</a>
+        </div>
+        <div class="col-sm-3">
+            <a role="button" class="btn btn-secondary btn-block" href="/myexchanges">My exchanges</a>
         </div>
     </div>
 </div>
