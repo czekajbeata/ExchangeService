@@ -48,6 +48,7 @@ else
                             <input type="radio" checked="@(isComplete == complete)" onclick="@(() => isComplete = isComplete == complete ? "" : complete)" />@complete
                         </div>
                     }
+                    <br/>
                     <button class="btn btn-outline-primary btn-block" onclick="@(() => FilterGames())">Filter games</button>
                     <button class="btn btn-outline-primary btn-block" onclick="@(() => ResetFilters())">Reset filters</button>
                 </div>

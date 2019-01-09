@@ -53,6 +53,7 @@
                             <input type="radio" checked="@(minAgeRequired == age)" onclick="@(() => minAgeRequired = minAgeRequired == age ? "" : age)" />@age
                         </div>
                     }
+                    <br/>
                     <button class="btn btn-outline-primary btn-block" onclick="@(() => FilterGames())">Filter games</button>
                     <button class="btn btn-outline-primary btn-block" onclick="@(() => ResetFilters())">Reset filters</button>
                 </div>
