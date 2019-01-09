@@ -7,7 +7,7 @@
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<h1>Edit game for exchange</h1>
+<h3>Edit game: @gameView.Title</h3>
 <br />
 
 <div class="container">
@@ -86,13 +86,7 @@
                             <p class="font-weight-normal">Genre: </p>
                         </div>
                         <div class="col-sm-4">
-                            @*<select bind="@gameView.GenreName" class="form-control">
-            @foreach (var genre in genres)
-            {
-                <option value="@genre.Name">@genre.Name</option>
-            }
-        </select>*@
-                            <p class="font-italic">@gameView.PlayerCount</p>
+                            <p class="font-italic">@gameView.GenreName</p>
                         </div>
                     </div>
                     <div class="row">
@@ -139,9 +133,6 @@
                 <div class="col-sm-4">
                     <div class="row justify-content-center">
                         <img src="@gameView.ImageUrl" width="200" height="200">
-                    </div>
-                    <div class="row justify-content-center">
-                        <p class="font-weight-bold">@gameView.Title</p>
                     </div>
                 </div>
             </div>
