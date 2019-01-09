@@ -22,6 +22,11 @@ namespace ExchangeService.Controllers.Logic
 
         public bool AddUserGame(UserGameDto newUserGameDto, int userId)
         {
+            string images = newUserGameDto.UserImages.Count() > 1
+                ? string.Join(",", newUserGameDto.UserImages)
+                : newUserGameDto.UserImages.Count() == 0
+                ? string.Empty
+                : newUserGameDto.UserImages[0];
             UserGame newUserGame = new UserGame()
             {
                 UserId = userId,
@@ -29,7 +34,8 @@ namespace ExchangeService.Controllers.Logic
                 IsComplete = newUserGameDto.IsComplete,
                 Shipment = newUserGameDto.Shipment,
                 State = newUserGameDto.State,
-                UserGameDescription = newUserGameDto.UserGameDescription
+                UserGameDescription = newUserGameDto.UserGameDescription,
+                UserGameImages = images
             };
             userProfiles.AddGame(newUserGame);
             unitOfWork.CompleteWork();
@@ -40,7 +46,7 @@ namespace ExchangeService.Controllers.Logic
         {
             var gamesDetails = games.GetGames(query);
             List<GameView> gameDtos = new List<GameView>();
-            foreach(var game in gamesDetails)
+            foreach (var game in gamesDetails)
             {
                 var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
                 gameDtos.Add(new GameView()
@@ -64,7 +70,7 @@ namespace ExchangeService.Controllers.Logic
             Game newGame = new Game()
             {
                 Description = game.Description ?? String.Empty,
-                GenreId =  game.GenreId,
+                GenreId = game.GenreId,
                 ImageUrl = game.ImageUrl ?? null,
                 MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
                 MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
@@ -97,31 +103,10 @@ namespace ExchangeService.Controllers.Logic
             var usergame = userProfiles.GetUserGame(userGameId);
             var game = games.GetGame(usergame.GameId);
             var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
-            return new UserGameView()
-            {
-                UserGameId = usergame.UserGameId,
-                GameId = usergame.GameId,
-                UserId = usergame.UserId,
-                GameTimeInMin = game.GameTimeInMin.ToString(),
-                Description = game.Description,
-                GenreName = games.GetGenre(game.GenreId).Name,
-                ImageUrl = game.ImageUrl,
-                IsComplete = usergame.IsComplete,
-                MinAgeRequired = game.MinAgeRequired.ToString(),
-                PlayerCount = playerCount,
-                Publisher = game.Publisher ?? String.Empty,
-                Shipment = usergame.Shipment,
-                State = usergame.State,
-                Title = game.Title,
-                UserGameDescription = usergame.UserGameDescription
-            };
-        }
-
-        public UserGameView GetUserGame(int gameId, int userId)
-        {
-            var usergame = userProfiles.GetUserGame(gameId, userId);
-            var game = games.GetGame(usergame.GameId);
-            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
+            string[] images = usergame.UserGameImages.Contains(',')
+            ? usergame.UserGameImages.Split(',')
+            : string.IsNullOrEmpty(usergame.UserGameImages)
+            ? null : new string[] { usergame.UserGameImages };
             return new UserGameView()
             {
                 UserGameId = usergame.UserGameId,
@@ -139,6 +124,37 @@ namespace ExchangeService.Controllers.Logic
                 State = usergame.State,
                 Title = game.Title,
                 UserGameDescription = usergame.UserGameDescription,
+                UserImages = images
+            };
+        }
+
+        public UserGameView GetUserGame(int gameId, int userId)
+        {
+            var usergame = userProfiles.GetUserGame(gameId, userId);
+            var game = games.GetGame(usergame.GameId);
+            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
+            string[] images = usergame.UserGameImages.Contains(',')
+                ? usergame.UserGameImages.Split(',')
+                : string.IsNullOrEmpty(usergame.UserGameImages)
+                ? null : new string[] { usergame.UserGameImages };
+            return new UserGameView()
+            {
+                UserGameId = usergame.UserGameId,
+                GameId = usergame.GameId,
+                UserId = usergame.UserId,
+                GameTimeInMin = game.GameTimeInMin.ToString(),
+                Description = game.Description,
+                GenreName = games.GetGenre(game.GenreId).Name,
+                ImageUrl = game.ImageUrl,
+                IsComplete = usergame.IsComplete,
+                MinAgeRequired = game.MinAgeRequired.ToString(),
+                PlayerCount = playerCount,
+                Publisher = game.Publisher ?? String.Empty,
+                Shipment = usergame.Shipment,
+                State = usergame.State,
+                Title = game.Title,
+                UserGameDescription = usergame.UserGameDescription,
+                UserImages = images
             };
         }
 
@@ -238,6 +254,12 @@ namespace ExchangeService.Controllers.Logic
             existingGame.IsComplete = updatedGame.IsComplete;
             existingGame.Shipment = updatedGame.Shipment;
             existingGame.UserGameDescription = updatedGame.UserGameDescription;
+            string images = updatedGame.UserImages.Count() > 1
+            ? string.Join(",", updatedGame.UserImages)
+            : updatedGame.UserImages.Count() == 0
+            ? string.Empty
+            : updatedGame.UserImages[0];
+            existingGame.UserGameImages = images;
 
             unitOfWork.CompleteWork();
             return true;
@@ -247,7 +269,7 @@ namespace ExchangeService.Controllers.Logic
         {
             var searchedGames = userProfiles.GetUserSearchGames(userId);
             List<UserSearchGameView> searchedGameViews = new List<UserSearchGameView>();
-            foreach(var game in searchedGames)
+            foreach (var game in searchedGames)
             {
                 var gamePiece = GetGameDetails(game.GameId);
                 searchedGameViews.Add(new UserSearchGameView()
@@ -268,6 +290,10 @@ namespace ExchangeService.Controllers.Logic
             foreach (var game in gamePieces)
             {
                 var gameCopy = GetGameDetails(game.GameId);
+                string[] images = game.UserGameImages.Contains(',')
+                    ? game.UserGameImages.Split(',')
+                    : string.IsNullOrEmpty(game.UserGameImages)
+                    ? null : new string[] { game.UserGameImages };
                 gameViews.Add(new UserGameView()
                 {
                     UserGameId = game.UserGameId,
@@ -284,7 +310,8 @@ namespace ExchangeService.Controllers.Logic
                     State = game.State,
                     IsComplete = game.IsComplete,
                     Shipment = game.Shipment,
-                    GameTimeInMin = gameCopy.GameTimeInMin
+                    GameTimeInMin = gameCopy.GameTimeInMin,
+                    UserImages = images
                 });
             }
             return gameViews;
@@ -324,6 +351,6 @@ namespace ExchangeService.Controllers.Logic
             }
             return gameViews;
         }
-        
+
     }
 }
