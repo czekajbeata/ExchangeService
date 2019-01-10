@@ -33,10 +33,10 @@
                     @loggedUserName
                 </a>
                 <div class="dropdown-menu @(isDropdownOpen ? "show" : string.Empty)" aria-labelledby="myProfile">
-                    <a class="dropdown-item" href="/myprofile">Profile page</a>
-                    <a class="dropdown-item" href="/myexchanges">My exchanges</a>
-                    <a class="dropdown-item" href="#">My matches</a>
-                    <a class="dropdown-item" href="/logout">Log out</a>
+                    <a class="dropdown-item" onclick="@ToggleNavDropdown" href="/myprofile">Profile page</a>
+                    <a class="dropdown-item" onclick="@ToggleNavDropdown" href="/myexchanges">My exchanges</a>
+                    <a class="dropdown-item" onclick="@ToggleNavDropdown" href="/mymatches">My matches</a>
+                    <a class="dropdown-item" onclick="@ToggleNavDropdown" href="/logout">Log out</a>
                 </div>
             </li>
         }
