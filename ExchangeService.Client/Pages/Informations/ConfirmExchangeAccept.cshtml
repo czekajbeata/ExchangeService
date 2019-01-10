@@ -30,6 +30,10 @@ else
             }
         </div>
         <br />
+        <div class="row">
+            <div class="col-sm-1">  <input class="form-control" type="checkbox" bind="@isFinal" /> </div>
+            <div class="col-sm-11"> <p class="font-italic">I am aware that accepting an exchange is final and I won't be able to change my decission later</p></div>
+        </div>
         <br />
         <div class="row">
             @if (!string.IsNullOrEmpty(contactDetailsError))
@@ -61,6 +65,7 @@ else
     ExchangeDto Exchange { get; set; }
     string ContactDetails { get; set; }
     string contactDetailsError = "";
+    bool isFinal = false;
 
     protected override async Task OnInitAsync()
     {
@@ -75,7 +80,11 @@ else
         {
             contactDetailsError = "Please provide details for other user.";
         }
-        else
+        if(!isFinal)
+        {
+            contactDetailsError += "\nPlease confirm that you agree with exchanges policy.";
+        }
+        if(!string.IsNullOrEmpty(ContactDetails) && isFinal)
         {
             Exchange.MyContactInfo = ContactDetails;
             await Http.PutJsonAsync("http://localhost:5000/api/users/exchanges/accept", Exchange);
