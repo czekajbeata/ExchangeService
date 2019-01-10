@@ -2,9 +2,22 @@
 
 <div class="container-fluid">
     <div class="main">
-        <NavMenu />
-        <div class="content px-4 w-75 ml-auto mr-auto">
-            @Body
+        <NavMenu bind-isDropdownOpen="@ParentDropdown" />
+        <div onclick="@CloseNavDropdown">
+            <div class="content px-4 w-75 ml-auto mr-auto">
+                @Body
+            </div>
         </div>
     </div>
 </div>
+
+@functions {
+
+    [Parameter]
+    private bool ParentDropdown { get; set; } = false;
+
+    void CloseNavDropdown()
+    {
+        ParentDropdown = false;
+    }
+}

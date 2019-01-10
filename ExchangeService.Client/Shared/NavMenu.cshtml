@@ -27,16 +27,16 @@
         }
         else
         {
-            <li class="nav-item dropdown @(isDropdownOpen ? "show" : string.Empty)">
-                <a class="nav-link dropdown-toggle" id="myProfile" data-toggle="dropdown" onclick="@ToggleNavDropdown" aria-haspopup="true" aria-expanded="@(isDropdownOpen ? "true" : "false")">
+            <li class="nav-item dropdown @(IsDropdownOpen ? "show" : string.Empty)">
+                <a class="nav-link dropdown-toggle" id="myProfile" data-toggle="dropdown" onclick="@ToggleNavDropdown" aria-haspopup="true" aria-expanded="@(IsDropdownOpen ? "true" : "false")">
                     <i class="fas fa-user"></i>
                     @loggedUserName
                 </a>
-                <div class="dropdown-menu @(isDropdownOpen ? "show" : string.Empty)" aria-labelledby="myProfile">
-                    <a class="dropdown-item" onclick="@ToggleNavDropdown" href="/myprofile">Profile page</a>
-                    <a class="dropdown-item" onclick="@ToggleNavDropdown" href="/myexchanges">My exchanges</a>
-                    <a class="dropdown-item" onclick="@ToggleNavDropdown" href="/mymatches">My matches</a>
-                    <a class="dropdown-item" onclick="@ToggleNavDropdown" href="/logout">Log out</a>
+                <div class="dropdown-menu @(IsDropdownOpen ? "show" : string.Empty)" aria-labelledby="myProfile">
+                    <a class="dropdown-item" href="/myprofile" onclick="@CloseNavDropdown">Profile page</a>
+                    <a class="dropdown-item" href="/myexchanges" onclick="@CloseNavDropdown">My exchanges</a>
+                    <a class="dropdown-item" href="/mymatches" onclick="@CloseNavDropdown">My matches</a>
+                    <a class="dropdown-item" href="/logout" onclick="@CloseNavDropdown">Log out</a>
                 </div>
             </li>
         }
@@ -45,30 +45,41 @@
 
 
 @functions {
-bool isDropdownOpen = false;
-bool isUserLogged = false;
-string loggedUserName = "";
-string Search { get; set; } = "";
+    [Parameter]
+    bool IsDropdownOpen { get; set; }  = false;
+    [Parameter]
+    private Action<bool> IsDropdownOpenChanged { get; set; }
 
-void ToggleNavDropdown()
-{
-    isDropdownOpen = !isDropdownOpen;
-}
+    bool isUserLogged = false;
+    string loggedUserName = "";
+    string Search { get; set; } = "";
 
-protected override async Task OnInitAsync()
-{
-    if (appState.IsUserLoggedIn)
+    void ToggleNavDropdown()
     {
-        var user = await appState.GetMyProfile();
-        loggedUserName = user.Name + " " + user.Surname;
-        isUserLogged = true;
+        IsDropdownOpen = !IsDropdownOpen;
     }
-}
 
-private void SearchGames()
-{
-    StateHasChanged();
-    UriHelper.NavigateTo($"/{Search}");
-    Search = string.Empty;
-}
+    void  CloseNavDropdown()
+    {
+        IsDropdownOpen = false;
+    }
+
+    protected override async Task OnInitAsync()
+    {
+        if (appState.IsUserLoggedIn)
+        {
+            var user = await appState.GetMyProfile();
+            loggedUserName = user.Name + " " + user.Surname;
+            isUserLogged = true;
+        }
+    }
+
+    private void SearchGames()
+    {
+        StateHasChanged();
+        UriHelper.NavigateTo($"/{Search}");
+        Search = string.Empty;
+    }
+
+
 }
