@@ -13,80 +13,130 @@
 
 @if (myMatches == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
 
-@if (myMatches.Count() > 0)
+    @if (myMatches.Count() > 0)
     {
-<br />
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th style="width: 25%">Other user</th>
-            <th style="width: 22%">They search</th>
-            <th style="width: 22%">They have</th>
-            <th style="width: 31%"></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var match in myMatches)
-                {
-        <tr>
-            <td>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <img src="@match.UserImageUrl" class="d-block w-100"  />
+        <br />
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="alert alert-secondary" role="alert">
+                        <div class="row">
+                            <p>Users locations: </p>
                         </div>
-                        <div class="col-sm-6">
+                        @foreach (var location in locations)
+                        {
                             <div class="row">
-                                @match.Name
+                                <input type="checkbox" checked="@(selectedLocations.Contains(location))" onchange="@(() => ToogleLocationSelect(location))" />@location
                             </div>
-                            <div class="row">
-                                <i class="fas fa-map-marker-alt" /> @match.Location
-                            </div>
-                            <div class="row">
-                                Avg mark: @match.AvgMark
-                            </div>
+                        }
+                        <br />
+                        <div class="row">
+                            <p>Games they have: </p>
                         </div>
+                        @foreach (var game in theyHave)
+                        {
+                            <div class="row">
+                                <input type="checkbox" checked="@(selectedTheyHave.Contains(game))" onchange="@(() => ToogleTheyHaveSelect(game))" />@game
+                            </div>
+                        }
+                        <br />
+                        <div class="row">
+                            <p>Games they search: </p>
+                        </div>
+                        @foreach (var game in theyWant)
+                        {
+                            <div class="row">
+                                <input type="checkbox" checked="@(selectedTheyWant.Contains(game))" onchange="@(() => ToogleTheyWantSelect(game))" />@game
+                            </div>
+                        }
+                        <br />
+                        <div class="row">
+                            <p>Average user mark: </p>
+                        </div>
+                        @foreach (var mark in marks)
+                        {
+                            <div class="row">
+                                <input type="radio" checked="@(selectedMinMark == mark)" onclick="@(() => selectedMinMark = selectedMinMark == mark ? "" : mark)" />@mark or more
+                            </div>
+                        }
+                        <br />
+                        <button class="btn btn-outline-primary btn-block" onclick="@(() => FilterMatches())">Filter matches</button>
+                        <button class="btn btn-outline-primary btn-block" onclick="@(() => ResetFilters())">Reset filters</button>
                     </div>
                 </div>
-            </td>
-            <td>
-                @foreach (var game in match.GamesTheyHave)
+                <div class="col-sm-10">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 27%">Other user</th>
+                                <th style="width: 24%">They have</th>
+                                <th style="width: 24%">They search</th>
+                                <th style="width: 25%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var match in filteredMatches)
                             {
-                <p>@game</p>
+                                <tr>
+                                    <td>
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <img src="@match.UserImageUrl" class="d-block w-100" />
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="row">
+                                                        @match.Name
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="fas fa-map-marker-alt" /> @match.Location
+                                                    </div>
+                                                    <div class="row">
+                                                        Avg mark: @match.AvgMark
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @foreach (var game in match.GamesTheyHave)
+                                        {
+                                            <p>@game</p>
+                                        }
+                                    </td>
+                                    <td>
+                                        @foreach (var game in match.GamesTheyWant)
+                                        {
+                                            <p>@game</p>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="container">
+                                            <div class="row" style="padding:4px">
+                                                <a role="button" class="btn btn-secondary btn-block" href="/profile/@match.OtherUserId">Visit profile</a>
+                                            </div>
+                                            <div class="row" style="padding:4px">
+                                                <a role="button" class="btn btn-primary btn-block" href="/offerdeal/@match.OtherUserId">Offer a deal</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-            </td>
-            <td>
-                @foreach (var game in match.GamesTheyWant)
-                            {
-                <p>@game</p>
-                            }
-            </td>
-            <td>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <a role="button" class="btn btn-secondary btn-block" href="/profile/@match.OtherUserId">Visit profile</a>
-                        </div>
-                        <div class="col-sm-6">
-                            <a role="button" class="btn btn-primary btn-block" href="/offerdeal/@match.OtherUserId">Offer a deal</a>
-                        </div>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
-            </td>
-        </tr>
-                }
-    </tbody>
-</table>
-<br /><br />
+            </div>
+        </div>
+        <br /><br />
     }
-else
+    else
     {
-<p>You have no automatic matches</p>
+        <p class="font-italic">You have no automatic matches.</p>
     }
 }
 
@@ -94,6 +144,17 @@ else
 @functions {
 
 MatchAndUserView[] myMatches;
+MatchAndUserView[] filteredMatches;
+
+string[] locations = new string[] { };
+string[] marks = new string[] { };
+string[] theyHave = new string[] { };
+string[] theyWant = new string[] { };
+
+List<string> selectedLocations = new List<string>();
+List<string> selectedTheyHave = new List<string>();
+List<string> selectedTheyWant = new List<string>();
+string selectedMinMark;
 
 protected override async Task OnInitAsync()
 {
@@ -104,9 +165,79 @@ protected override async Task OnInitAsync()
     }
 
     var matches = await Http.GetJsonAsync<IEnumerable<MatchAndUserView>>("http://localhost:5000/api/users/mymatches");
- var matchList = matches.ToList();
- matchList.Reverse();
- myMatches = matchList.ToArray();
+    var matchList = matches.ToList();
+    matchList.Reverse();
+    myMatches = matchList.ToArray();
+    filteredMatches = myMatches;
+    FillFilters();
 }
 
+private void FillFilters()
+{
+    locations = myMatches.Select(m => m.Location).Distinct().ToArray();
+    theyHave = myMatches.SelectMany(m => m.GamesTheyHave).Distinct().ToArray();
+    theyWant = myMatches.SelectMany(m => m.GamesTheyWant).Distinct().ToArray();
+    marks = myMatches.Select(m => Math.Floor(m.AvgMark).ToString()).Distinct().ToArray();
+}
+
+private void FilterMatches()
+{
+    var filtered = myMatches;
+
+    if (selectedLocations.Count > 0)
+    {
+        filtered = filtered.Where(m => selectedLocations.Contains(m.Location)).ToArray();
+    }
+    if (selectedTheyHave.Count > 0)
+    {
+        filtered = filtered.Where(m => selectedTheyHave.Any(m.GamesTheyHave.Contains)).ToArray();
+    }
+    if (selectedTheyWant.Count > 0)
+    {
+        filtered = filtered.Where(m => selectedTheyWant.Any(m.GamesTheyWant.Contains)).ToArray();
+    }
+    if (!string.IsNullOrEmpty(selectedMinMark))
+    {
+        filtered = filtered.Where(m => m.AvgMark >= Int32.Parse(selectedMinMark)).ToArray();
+    }
+    filteredMatches = filtered;
+    StateHasChanged();
+}
+
+private void ResetFilters()
+{
+    filteredMatches = myMatches;
+    selectedLocations.Clear();
+    selectedTheyHave.Clear();
+    selectedTheyWant.Clear();
+    selectedMinMark = string.Empty;
+    StateHasChanged();
+}
+
+private void ToogleLocationSelect(string location)
+{
+    if (selectedLocations.Contains(location))
+        selectedLocations.Remove(location);
+    else
+        selectedLocations.Add(location);
+    StateHasChanged();
+}
+
+private void ToogleTheyHaveSelect(string game)
+{
+    if (selectedTheyHave.Contains(game))
+        selectedTheyHave.Remove(game);
+    else
+        selectedTheyHave.Add(game);
+    StateHasChanged();
+}
+
+private void ToogleTheyWantSelect(string game)
+{
+    if (selectedTheyWant.Contains(game))
+        selectedTheyWant.Remove(game);
+    else
+        selectedTheyWant.Add(game);
+    StateHasChanged();
+}
 }
