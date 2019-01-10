@@ -292,13 +292,14 @@
             if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false);
         }
     }
-    protected override void OnInit()
+    protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
         if (!appState.IsUserLoggedIn)
         {
             UriHelper.NavigateTo("/unauthorized");
         }
+        genres = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/genres");
     }
 
     private async Task FillAutoComplete()
@@ -311,11 +312,10 @@
         StateHasChanged();
     }
 
-    private async Task AddNewGame()
+    private void AddNewGame()
     {
         gameDetails = new GameDto();
         gameDetails.Title = GameTitle;
-        genres = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/genres");
         SelectedId = string.Empty;
         GameTitle = string.Empty;
         gameDoesntExist = true;
@@ -327,7 +327,6 @@
         gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
         gameDoesntExist = false;
         GameTitle = string.Empty;
-        newUserGame = null;
         gameID = gameDetails.GameId.ToString();
         genre = genres.FirstOrDefault(g => g.Id == gameDetails.GenreId).Name;
         newUserGame = new UserGameDto()
@@ -364,6 +363,7 @@
         ValidateInputsUsergame();
         if (isValidUsergame)
         {
+            if (pictureUrls == null) pictureUrls = string.Empty;
             newUserGame.UserImages = pictureUrls.Contains(',') ? pictureUrls.Split(',') : new string[] { pictureUrls };
             await Http.PostJsonAsync("http://localhost:5000/api/users/games/", newUserGame);
             UriHelper.NavigateTo("/gameexchangesuccess");

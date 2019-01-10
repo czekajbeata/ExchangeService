@@ -278,8 +278,6 @@ private async Task AddToSearched()
     {
         if (gameDoesntExist)
             await AddGameToDB();
-        else
-            await UpdateGameInDB();
         await AddSearch();
     }
 }
@@ -310,8 +308,8 @@ private void ValidateInputsGame()
 {
     if (string.IsNullOrEmpty(gameDetails.Title))
         errorsGame.Add("Please fill game title.");
-    if (string.IsNullOrEmpty(gameDetails.ImageUrl)) ;
-    errorsGame.Add("Please fill game genre.");
+    if (string.IsNullOrEmpty(gameDetails.ImageUrl))
+    errorsGame.Add("Please provide url for game picture.");
     if (string.IsNullOrEmpty(gameDetails.PlayerCount))
         errorsGame.Add("Please fill players count.");
     if (string.IsNullOrEmpty(gameDetails.MinAgeRequired))
