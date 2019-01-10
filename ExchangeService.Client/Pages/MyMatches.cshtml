@@ -1,0 +1,112 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Shared.Enums;
+@using ExchangeService.Client.Services;
+@page "/mymatches"
+@inject HttpClient Http
+@inject TokenService tokenService
+@inject AppState appState
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+
+<br />
+<h1>My matches</h1>
+
+@if (myMatches == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+
+@if (myMatches.Count() > 0)
+    {
+<br />
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th style="width: 25%">Other user</th>
+            <th style="width: 22%">They search</th>
+            <th style="width: 22%">They have</th>
+            <th style="width: 31%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var match in myMatches)
+                {
+        <tr>
+            <td>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <img src="@match.UserImageUrl" class="d-block w-100"  />
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="row">
+                                @match.Name
+                            </div>
+                            <div class="row">
+                                <i class="fas fa-map-marker-alt" /> @match.Location
+                            </div>
+                            <div class="row">
+                                Avg mark: @match.AvgMark
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                @foreach (var game in match.GamesTheyHave)
+                            {
+                <p>@game</p>
+                            }
+            </td>
+            <td>
+                @foreach (var game in match.GamesTheyWant)
+                            {
+                <p>@game</p>
+                            }
+            </td>
+            <td>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <a role="button" class="btn btn-secondary btn-block" href="/profile/@match.OtherUserId">Visit profile</a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a role="button" class="btn btn-primary btn-block" href="/offerdeal/@match.OtherUserId">Offer a deal</a>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>
+<br /><br />
+    }
+else
+    {
+<p>You have no automatic matches</p>
+    }
+}
+
+
+@functions {
+
+MatchAndUserView[] myMatches;
+
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    if (!appState.IsUserLoggedIn)
+    {
+        UriHelper.NavigateTo("/unauthorized");
+    }
+
+    var matches = await Http.GetJsonAsync<IEnumerable<MatchAndUserView>>("http://localhost:5000/api/users/mymatches");
+ var matchList = matches.ToList();
+ matchList.Reverse();
+ myMatches = matchList.ToArray();
+}
+
+}

@@ -143,5 +143,20 @@ namespace ExchangeService.Data.Persistance
                     context.UserGames.Remove(game);
             }
         }
+
+        public IEnumerable<UserGame> GetAllUserGames()
+        {
+            return context.UserGames;
+        }
+
+        public IEnumerable<UserSearchGame> GetAllUserSearches()
+        {
+            return context.UserSearchGames;
+        }
+
+        public IEnumerable<User> GetAllUserProfiles()
+        {
+            return context.UserProfiles;
+        }
     }
 }

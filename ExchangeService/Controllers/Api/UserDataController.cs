@@ -31,7 +31,7 @@ namespace ExchangeService.Controllers.Api
 
         [Authorize]
         [HttpGet("api/users/mymatches")]
-        public IEnumerable<MatchView> GetMyMatches()
+        public IEnumerable<MatchAndUserView> GetMyMatches()
         {
             var id = User.Claims.Single(c => c.Type == "Id").Value;
             var normalizedId = profilesService.ToNormalizedId(id);

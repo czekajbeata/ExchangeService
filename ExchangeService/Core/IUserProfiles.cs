@@ -27,5 +27,8 @@ namespace ExchangeService.Core
         Comment GetCommentByExchange(int exchangeId, int receivingUserId);
         void RemoveExchangeGames(int otherUserId, string otherUsersGames);
         User GetUserByInnerId(string innerId);
+        IEnumerable<UserGame> GetAllUserGames();
+        IEnumerable<UserSearchGame> GetAllUserSearches();
+        IEnumerable<User> GetAllUserProfiles();
     }
 }

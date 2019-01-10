@@ -181,65 +181,6 @@ namespace ExchangeService.Controllers.Logic
             return newExchangeDto;
         }
 
-        public IEnumerable<MatchView> GetMatches(int userId)
-        {
-            var usersSearchedGamesIds = userProfiles.GetUserSearchGames(userId).Select(g => g.GameId);
-            var usersToExchangeGamesIds = userProfiles.GetUserGames(userId).Select(g => g.GameId);
-            List<MatchView> userMatches = new List<MatchView>();
-
-            // --- filling games they have that you want
-            foreach (var searchedGame in usersSearchedGamesIds)
-            {
-                var otherUsersGames = userProfiles.GetUserGamesByGame(searchedGame);
-                foreach (var otherUsersGame in otherUsersGames)
-                {
-                    string gameTitle = games.GetGame(otherUsersGame.GameId).Title;
-                    var existingMatch = userMatches.FirstOrDefault(m => m.OtherUserId == otherUsersGame.UserId);
-
-                    if (existingMatch != null)
-                    {
-                        existingMatch.GamesTheyHave.Add(gameTitle);
-                    }
-                    else
-                    {
-                        userMatches.Add(new MatchView()
-                        {
-                            OtherUserId = otherUsersGame.UserId,
-                            GamesTheyHave = new List<string>() { gameTitle },
-                            GamesTheyWant = new List<string>() { }
-                        });
-                    }
-                }
-            }
-
-            // --- filling games they want that you have
-            foreach (var toExchange in usersToExchangeGamesIds)
-            {
-                var otherUsersGames = userProfiles.GetUserSearchesByGame(toExchange);
-                foreach (var otherUsersGame in otherUsersGames)
-                {
-                    string gameTitle = games.GetGame(otherUsersGame.GameId).Title;
-                    var existingMatch = userMatches.FirstOrDefault(m => m.OtherUserId == otherUsersGame.UserId);
-
-                    if (existingMatch != null)
-                    {
-                        existingMatch.GamesTheyWant.Add(gameTitle);
-                    }
-                    else
-                    {
-                        userMatches.Add(new MatchView()
-                        {
-                            OtherUserId = otherUsersGame.UserId,
-                            GamesTheyHave = new List<string>() { },
-                            GamesTheyWant = new List<string>() { gameTitle }
-                        });
-                    }
-                }
-            }
-
-            return userMatches;
-        }
-
         public IEnumerable<ExchangeDto> GetUserExchanges(int userId)
         {
             var myExchanges = userProfiles.GetUserExchanges(userId);
@@ -341,6 +282,42 @@ namespace ExchangeService.Controllers.Logic
                 exchanges.Add(newExchangeView);
             }
             return exchanges;
+        }
+
+        public IEnumerable<MatchAndUserView> GetMatches(int userId)
+        {
+            var allUserGames = userProfiles.GetAllUserGames();
+            var allUserSearches = userProfiles.GetAllUserSearches();
+            var allGames = games.GetGames(" ");
+            var myForExchangeIds = allUserGames.Where(g => g.UserId == userId).Select(g => g.GameId);
+            var mySearchesIds = allUserSearches.Where(g => g.UserId == userId).Select(g => g.GameId);
+            var matchedBySearches = allUserGames.Where(g => mySearchesIds.Contains(g.GameId) && g.UserId != userId).Select(g => g.UserId).Distinct();
+            var matchedByForExchange = allUserSearches.Where(g => myForExchangeIds.Contains(g.GameId) && g.UserId != userId).Select(g => g.UserId).Distinct();
+            var matchedUsers = matchedByForExchange.Where(u => matchedBySearches.Contains(u));
+            List<MatchAndUserView> myMatches = new List<MatchAndUserView>();
+            foreach (var user in matchedUsers)
+            {
+                var gamesTheyHaveIds = allUserGames.Where(g => g.UserId == user).Select(g => g.GameId);
+                var gamesTheyWantIds = allUserSearches.Where(g => g.UserId == user).Select(g => g.GameId);
+
+                var profile = userProfiles.GetUserProfile(user);
+                var comments = userProfiles.GetComments(user);
+                var avgMark = comments.Select(c => c.Mark).Sum() / comments.Count();
+                if (!(avgMark > 0)) avgMark = 0;
+                else avgMark = Math.Round(avgMark, 2);
+
+                myMatches.Add(new MatchAndUserView()
+                {
+                    OtherUserId = user,
+                    Name = profile.Name + " " + profile.Surname,
+                    AvgMark = avgMark,
+                    Location = profile.Location,
+                    UserImageUrl = profile.ImageUrl,
+                    GamesTheyHave = allGames.Where(g => gamesTheyHaveIds.Contains(g.GameId)).Select(g => g.Title).ToArray(),
+                    GamesTheyWant = allGames.Where(g => gamesTheyWantIds.Contains(g.GameId)).Select(g => g.Title).ToArray()
+                });
+            }
+            return myMatches;
         }
     }
 }
