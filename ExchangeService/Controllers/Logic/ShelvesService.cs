@@ -103,10 +103,11 @@ namespace ExchangeService.Controllers.Logic
             var usergame = userProfiles.GetUserGame(userGameId);
             var game = games.GetGame(usergame.GameId);
             var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
-            string[] images = usergame.UserGameImages.Contains(',')
+            string[] images = string.IsNullOrEmpty(usergame.UserGameImages)
+            ? new string[] { }
+            : usergame.UserGameImages.Contains(',')
             ? usergame.UserGameImages.Split(',')
-            : string.IsNullOrEmpty(usergame.UserGameImages)
-            ? null : new string[] { usergame.UserGameImages };
+            : new string[] { usergame.UserGameImages };
             return new UserGameView()
             {
                 UserGameId = usergame.UserGameId,
@@ -133,10 +134,11 @@ namespace ExchangeService.Controllers.Logic
             var usergame = userProfiles.GetUserGame(gameId, userId);
             var game = games.GetGame(usergame.GameId);
             var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
-            string[] images = usergame.UserGameImages.Contains(',')
-                ? usergame.UserGameImages.Split(',')
-                : string.IsNullOrEmpty(usergame.UserGameImages)
-                ? null : new string[] { usergame.UserGameImages };
+            string[] images = string.IsNullOrEmpty(usergame.UserGameImages)
+            ? new string[] { }
+            : usergame.UserGameImages.Contains(',')
+            ? usergame.UserGameImages.Split(',')
+            : new string[] { usergame.UserGameImages };
             return new UserGameView()
             {
                 UserGameId = usergame.UserGameId,
@@ -290,10 +292,12 @@ namespace ExchangeService.Controllers.Logic
             foreach (var game in gamePieces)
             {
                 var gameCopy = GetGameDetails(game.GameId);
-                string[] images = game.UserGameImages.Contains(',')
+                string[] images = string.IsNullOrEmpty(game.UserGameImages)
+                    ? new string[] { } 
+                    : game.UserGameImages.Contains(',')
                     ? game.UserGameImages.Split(',')
-                    : string.IsNullOrEmpty(game.UserGameImages)
-                    ? null : new string[] { game.UserGameImages };
+                    : new string[] { game.UserGameImages };
+
                 gameViews.Add(new UserGameView()
                 {
                     UserGameId = game.UserGameId,
