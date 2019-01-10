@@ -18,6 +18,7 @@ else
         <div class="row">
             <h3>Do you want to abandon an exchange?</h3>
         </div>
+        <p class="font-italic">You will not be able to take this action back.</p>
         <br />
         <div class="row">
             <div class="col-sm-3" />
@@ -25,7 +26,7 @@ else
                 <button type="button" class="btn btn-secondary btn-block" onclick="@(() => Return())">Return</button>
             </div>
             <div class="col-sm-3">
-                <button type="button" class="btn btn-danger btn-block" onclick="@(async () => await Abandon())">Remove</button>
+                <button type="button" class="btn btn-danger btn-block" onclick="@(async () => await Abandon())">Abandon</button>
             </div>
         </div>
     </div>    
