@@ -30,5 +30,6 @@ namespace ExchangeService.Core
         IEnumerable<UserGame> GetAllUserGames();
         IEnumerable<UserSearchGame> GetAllUserSearches();
         IEnumerable<User> GetAllUserProfiles();
+        void DeclineWaitingExchanges(int offeringUserId, string offeringUsersGames, int exchangeId);
     }
 }

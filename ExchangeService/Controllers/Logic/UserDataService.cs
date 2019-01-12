@@ -126,6 +126,8 @@ namespace ExchangeService.Controllers.Logic
             existingExchange.OtherUserContactInfo = exchange.MyContactInfo;
             userProfiles.RemoveExchangeGames(existingExchange.OfferingUserId, existingExchange.OfferingUsersGames);
             userProfiles.RemoveExchangeGames(existingExchange.OtherUserId, existingExchange.OtherUsersGames);
+            userProfiles.DeclineWaitingExchanges(existingExchange.OfferingUserId, existingExchange.OfferingUsersGames, existingExchange.ExchangeId);
+            userProfiles.DeclineWaitingExchanges(existingExchange.OtherUserId, existingExchange.OtherUsersGames, existingExchange.ExchangeId);
             unitOfWork.CompleteWork();
             return true;
         }

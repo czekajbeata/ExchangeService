@@ -1,5 +1,6 @@
 ﻿using ExchangeService.Core;
 using ExchangeService.Core.Entities;
+using ExchangeService.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -157,6 +158,27 @@ namespace ExchangeService.Data.Persistance
         public IEnumerable<User> GetAllUserProfiles()
         {
             return context.UserProfiles;
+        }
+
+        public void DeclineWaitingExchanges(int userId, string usersGames, int exchangeId)
+        {
+            int[] gameIds = usersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
+            var userExchanges = context.Exchanges.Where(e => e.OfferingUserId == userId && e.State == ExchangeState.Waiting && e.ExchangeId != exchangeId);
+            foreach (var exchange in userExchanges)
+            {
+                var games = exchange.OfferingUsersGames.Contains(',') ? exchange.OfferingUsersGames.Split(',') : new string[] { exchange.OfferingUsersGames };
+                games = games.Where(g => gameIds.Contains(Int32.Parse(g))).ToArray();
+                if (games.Count() > 0)
+                    exchange.State = ExchangeState.Declined;
+            }
+            userExchanges = context.Exchanges.Where(e => e.OtherUserId == userId && e.State == ExchangeState.Waiting && e.ExchangeId != exchangeId);
+            foreach (var exchange in userExchanges)
+            {
+                var games = exchange.OtherUsersGames.Contains(',') ? exchange.OtherUsersGames.Split(',') : new string[] { exchange.OtherUsersGames };
+                games = games.Where(g => gameIds.Contains(Int32.Parse(g))).ToArray();
+                if (games.Count() > 0)
+                    exchange.State = ExchangeState.Declined;
+            }
         }
     }
 }
