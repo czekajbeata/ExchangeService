@@ -84,6 +84,18 @@ namespace ExchangeService.Controllers.Logic
             return newGame.GameId != 0;
         }
 
+        public bool CanAddSearch(int gameId, int userId)
+        {
+            var userSearch = userProfiles.GetUserSearch(gameId, userId);
+            return userSearch == null;
+        }
+
+        public bool CanAddForExchange(int gameId, int userId)
+        {
+            var userGame = userProfiles.GetUserGame(gameId, userId);
+            return userGame == null;
+        }
+
         public UserSearchGameView GetUserSearch(int userSearchId)
         {
             var userSearch = userProfiles.GetUserSearch(userSearchId);

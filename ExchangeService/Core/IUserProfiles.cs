@@ -23,7 +23,8 @@ namespace ExchangeService.Core
         Exchange AddExchange(Exchange newExchange);
         bool DeleteUserGame(int userGameId);
         bool DeleteUserSearch(int userSearchId);
-        UserSearchGame GetUserSearch(int userGameId);
+        UserSearchGame GetUserSearch(int userSearchId);
+        UserSearchGame GetUserSearch(int gameId, int userId);
         Comment GetCommentByExchange(int exchangeId, int receivingUserId);
         void RemoveExchangeGames(int otherUserId, string otherUsersGames);
         User GetUserByInnerId(string innerId);

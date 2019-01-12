@@ -180,5 +180,10 @@ namespace ExchangeService.Data.Persistance
                     exchange.State = ExchangeState.Declined;
             }
         }
+
+        public UserSearchGame GetUserSearch(int gameId, int userId)
+        {
+            return context.UserSearchGames.FirstOrDefault(u => u.UserId == userId && u.GameId == gameId);
+        }
     }
 }

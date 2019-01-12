@@ -67,13 +67,29 @@ namespace ExchangeService.Controllers.Api
             return shelvesService.GetUserSearchGames(id);
         }
 
-
         [HttpGet("api/users/search/{userSearchId}")]
         public UserSearchGameView GetUserSearch(int userSearchId)
         {
             return shelvesService.GetUserSearch(userSearchId);
         }
 
+        [Authorize]
+        [HttpGet("api/searches/check/{gameId}")]
+        public bool CanAddSearch(int gameId)
+        {
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
+            return shelvesService.CanAddSearch(gameId, normalizedId);
+        }
+
+        [Authorize]
+        [HttpGet("api/games/check/{gameId}")]
+        public bool CanAddForExchange(int gameId)
+        {
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var normalizedId = profilesService.ToNormalizedId(id);
+            return shelvesService.CanAddForExchange(gameId, normalizedId);
+        }
 
         [HttpGet("api/users/games/{userId}")]
         public IEnumerable<UserGameView> GetUserGames(int userId)

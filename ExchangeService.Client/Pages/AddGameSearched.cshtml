@@ -195,130 +195,135 @@
 
 
 @functions {
-DropDownItem[] response;
-DropDownItem[] genres;
-string genre;
-bool gameWasSearched = false;
-bool gameDoesntExist = true;
-GameDto gameDetails = null;
-string gameID;
-public bool isValidGame = false;
-public List<string>
-    errorsGame = new List<string>
-        ();
+    DropDownItem[] response;
+    DropDownItem[] genres;
+    string genre;
+    bool gameWasSearched = false;
+    bool gameDoesntExist = true;
+    GameDto gameDetails = null;
+    string gameID;
+    public bool isValidGame = false;
+    public List<string>
+        errorsGame = new List<string>
+            ();
 
-string gameTitle = null;
-public string GameTitle
-{
-    get => gameTitle;
-    set
+    string gameTitle = null;
+    public string GameTitle
     {
-        gameTitle = value;
-        if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
+        get => gameTitle;
+        set
+        {
+            gameTitle = value;
+            if (!string.IsNullOrEmpty(gameTitle)) FillAutoComplete().ConfigureAwait(false);
+            StateHasChanged();
+        }
+    }
+
+    string selectedId = null;
+    public string SelectedId
+    {
+        get => selectedId;
+        set
+        {
+            selectedId = value;
+            if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false); gameDoesntExist = false;
+        }
+    }
+
+    protected override void OnInit()
+    {
+        appState.TrySetAccessTokens();
+        if (!appState.IsUserLoggedIn)
+        {
+            UriHelper.NavigateTo("/unauthorized");
+        }
+    }
+
+    private async Task FillAutoComplete()
+    {
+        response = await Http.GetJsonAsync<DropDownItem[]>
+    ("http://localhost:5000/api/games/" + GameTitle);
+        genres = await Http.GetJsonAsync<DropDownItem[]>
+            ("http://localhost:5000/api/genres");
+        SelectedId = null;
+        gameWasSearched = true;
+        gameDetails = null;
         StateHasChanged();
     }
-}
 
-string selectedId = null;
-public string SelectedId
-{
-    get => selectedId;
-    set
+    private void AddNewGame()
     {
-        selectedId = value;
-        if (!string.IsNullOrEmpty(selectedId)) GetGameDetails().ConfigureAwait(false); gameDoesntExist = false;
+        gameDetails = new GameDto();
+        gameDetails.Title = GameTitle;
+        SelectedId = string.Empty;
+        GameTitle = string.Empty;
+        gameDoesntExist = true;
     }
-}
 
-protected override void OnInit()
-{
-    appState.TrySetAccessTokens();
-    if (!appState.IsUserLoggedIn)
+    private async Task GetGameDetails()
     {
-        UriHelper.NavigateTo("/unauthorized");
+        gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
+        gameDoesntExist = false;
+        GameTitle = string.Empty;
+        gameID = gameDetails.GameId.ToString();
+        genre = genres.FirstOrDefault(g => g.Id == gameDetails.GenreId).Name;
+        StateHasChanged();
     }
-}
 
-private async Task FillAutoComplete()
-{
-    response = await Http.GetJsonAsync<DropDownItem[]>
-("http://localhost:5000/api/games/" + GameTitle);
-    genres = await Http.GetJsonAsync<DropDownItem[]>
-        ("http://localhost:5000/api/genres");
-    SelectedId = null;
-    gameWasSearched = true;
-    gameDetails = null;
-    StateHasChanged();
-}
-
-private void AddNewGame()
-{
-    gameDetails = new GameDto();
-    gameDetails.Title = GameTitle;
-    SelectedId = string.Empty;
-    GameTitle = string.Empty;
-    gameDoesntExist = true;
-}
-
-private async Task GetGameDetails()
-{
-    gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
-    gameDoesntExist = false;
-    GameTitle = string.Empty;
-    gameID = gameDetails.GameId.ToString();
-    genre = genres.FirstOrDefault(g => g.Id == gameDetails.GenreId).Name;
-    StateHasChanged();
-}
-
-private async Task AddToSearched()
-{
-    errorsGame.Clear();
-    ValidateInputsGame();
-    if (isValidGame)
+    private async Task AddToSearched()
     {
-        if (gameDoesntExist)
-            await AddGameToDB();
-        await AddSearch();
+        errorsGame.Clear();
+        ValidateInputsGame();
+        if (isValidGame)
+        {
+            if (gameDoesntExist)
+                await AddGameToDB();
+
+            var canAddGame = await Http.GetJsonAsync<bool>("http://localhost:5000/api/searches/check/" + gameDetails.GameId);
+            if(canAddGame)
+                await AddSearch();
+            else
+                UriHelper.NavigateTo("/addsearchfail");            
+        }
     }
-}
 
-private async Task AddGameToDB()
-{
-    await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
-    var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
-    gameID = games[0].Id.ToString();
-}
-
-private async Task UpdateGameInDB()
-{
-    await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
-}
-
-private async Task AddSearch()
-{
-    UserSearchGameDto newUserSearch = new UserSearchGameDto()
+    private async Task AddGameToDB()
     {
-        GameId = Int32.Parse(gameID)
-    };
-    await Http.PostJsonAsync("http://localhost:5000/api/users/searches/", newUserSearch);
-    UriHelper.NavigateTo("/gamesearchsuccess");
-}
+        await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
+        var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
+        gameID = games[0].Id.ToString();
+    }
 
-private void ValidateInputsGame()
-{
-    if (string.IsNullOrEmpty(gameDetails.Title))
-        errorsGame.Add("Please fill game title.");
-    if (string.IsNullOrEmpty(gameDetails.ImageUrl))
-    errorsGame.Add("Please provide url for game picture.");
-    if (string.IsNullOrEmpty(gameDetails.PlayerCount))
-        errorsGame.Add("Please fill players count.");
-    if (string.IsNullOrEmpty(gameDetails.MinAgeRequired))
-        errorsGame.Add("Please fill minimal age.");
-    if (string.IsNullOrEmpty(gameDetails.GameTimeInMin))
-        errorsGame.Add("Please fill game time.");
+    private async Task UpdateGameInDB()
+    {
+        await Http.PutJsonAsync("http://localhost:5000/api/games/", gameDetails);
+    }
 
-    isValidGame = errorsGame.Count() == 0;
-    StateHasChanged();
-}
+    private async Task AddSearch()
+    {
+        UserSearchGameDto newUserSearch = new UserSearchGameDto()
+        {
+            GameId = Int32.Parse(gameID)
+        };
+        await Http.PostJsonAsync("http://localhost:5000/api/users/searches/", newUserSearch);
+        UriHelper.NavigateTo("/gamesearchsuccess");
+    }
+
+    private void ValidateInputsGame()
+    {
+        if (string.IsNullOrEmpty(gameDetails.Title))
+            errorsGame.Add("Please fill game title.");
+        if (string.IsNullOrEmpty(gameDetails.ImageUrl))
+            errorsGame.Add("Please provide url for game picture.");
+        if (string.IsNullOrEmpty(gameDetails.PlayerCount))
+            errorsGame.Add("Please fill players count.");
+        if (string.IsNullOrEmpty(gameDetails.MinAgeRequired))
+            errorsGame.Add("Please fill minimal age.");
+        if (string.IsNullOrEmpty(gameDetails.GameTimeInMin))
+            errorsGame.Add("Please fill game time.");
+
+        isValidGame = errorsGame.Count() == 0;
+        StateHasChanged();
+    }
 
 }

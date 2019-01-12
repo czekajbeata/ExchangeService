@@ -365,8 +365,15 @@
         {
             if (pictureUrls == null) pictureUrls = string.Empty;
             newUserGame.UserImages = pictureUrls.Contains(',') ? pictureUrls.Split(',') : new string[] { pictureUrls };
-            await Http.PostJsonAsync("http://localhost:5000/api/users/games/", newUserGame);
-            UriHelper.NavigateTo("/gameexchangesuccess");
+
+            var canAddGame = await Http.GetJsonAsync<bool>("http://localhost:5000/api/games/check/" + gameDetails.GameId);
+            if(canAddGame)
+            {
+                await Http.PostJsonAsync("http://localhost:5000/api/users/games/", newUserGame);
+                UriHelper.NavigateTo("/gameexchangesuccess");
+            }
+            else
+                UriHelper.NavigateTo("/addforexchangefail");
         }
     }
 
