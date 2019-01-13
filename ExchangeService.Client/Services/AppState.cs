@@ -10,22 +10,23 @@ using System.Threading.Tasks;
 
 namespace ExchangeService.Client.Services
 {
-    public class AppState
+    public class AppState : IDisposable
     {
         public event Action OnChange;
 
         private readonly HttpClient http;
         private readonly LocalStorage localStorage;
-        private UserView userProfile;      
-        public bool IsUserLoggedIn {get; private set;}
+        private UserView userProfile;
+        public bool IsUserLoggedIn { get; private set; }
         public string Token { get; set; }
 
         public AppState(HttpClient http, LocalStorage localStorage)
         {
             this.http = http;
             this.localStorage = localStorage;
-            if (localStorage.GetItem<bool>("isUserLoggedIn"))
-            { 
+            string isLoggedItem = localStorage.GetItem("isUserLoggedIn");
+            if (!string.IsNullOrEmpty(isLoggedItem) && bool.Parse(isLoggedItem))
+            {
                 IsUserLoggedIn = true;
                 Token = localStorage.GetItem("token");
                 TrySetAccessTokens();
@@ -90,5 +91,10 @@ namespace ExchangeService.Client.Services
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();
+
+        public void Dispose()
+        {
+            localStorage.Clear();
+        }
     }
 }
