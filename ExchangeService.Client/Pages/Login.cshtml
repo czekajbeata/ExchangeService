@@ -19,12 +19,22 @@
         <input type="password" name="password" placeholder="Password" class="form-control" bind="@Password" />
     </div>
 
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <br />
+        <div class="alert alert-danger" role="alert">
+            <br />
+            <p class="font-italic">@error</p>
+        </div>
+    }
+
     <button type="button" class="btn btn-primary" onclick="@SubmitForm">Log in</button>
 </form>
 
 @functions{
     public string Email { get; set; } = "";
     public string Password { get; set; } = "";
+    string error = "";
 
     protected override void OnInit()
     {
@@ -36,17 +46,29 @@
 
     private async Task SubmitForm()
     {
+        error = "";
         var tokenvm = new TokenViewModel
         {
             Email = Email,
             Password = Password
         };
-        var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
+        TokenResponse response = null;
+        var r = await Http.PostAsync("http://localhost:5000/api/token/login", new StringContent(Json.Serialize(tokenvm), System.Text.Encoding.UTF8, "application/json"));
+        if (r.IsSuccessStatusCode)
+        {
+            response = Json.Deserialize<TokenResponse>(await r.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            var content = r.Content.ReadAsStringAsync();
+            error = content.Result + ".";
+            return;
+        }
         Console.WriteLine(response.Token);
-        
+
         await tokenService.SaveAccessToken(response.Token);
         appState.LogUser(response.Token);
-        reloadService.ReloadPage();
+        await reloadService.ReloadPage();
         UriHelper.NavigateTo("/myprofile");
     }
 

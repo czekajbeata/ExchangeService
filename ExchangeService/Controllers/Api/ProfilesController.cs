@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 
 namespace ExchangeService.Controllers.Api
 {
@@ -112,10 +114,13 @@ namespace ExchangeService.Controllers.Api
                 return BadRequest();
             }
 
+
             var user = await userManager.FindByEmailAsync(tokenvm.Email);
             var correctUser = await userManager.CheckPasswordAsync(user, tokenvm.Password);
 
             var result = await signInManager.PasswordSignInAsync(tokenvm.Email, tokenvm.Password, false, lockoutOnFailure: true);
+
+            //return StatusCode((int)HttpStatusCode.OK, user);
 
             if (!correctUser)
             {
