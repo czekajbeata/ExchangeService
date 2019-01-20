@@ -10,7 +10,6 @@ namespace ExchangeService.Core
         Game GetGame(int id);
         Genre GetGenre(int? id);
         IEnumerable<Genre> GetAllGenres();
-        Genre GetGenreByName(string name);
         (int, int) GetPlayerCounts(string playerCount);
     }
 }

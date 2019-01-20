@@ -22,51 +22,14 @@ namespace ExchangeService.Data.Persistance
             return result.Entity;
         }
 
-        public UserGame AddGame(UserGame game)
-        {
-            var result = context.UserGames.Add(game);
-            return result.Entity;
-        }
-
-        public UserSearchGame AddSearchGame(UserSearchGame game)
-        {
-            var result = context.UserSearchGames.Add(game);
-            return result.Entity;
-        }
-
         public IEnumerable<Comment> GetComments(int userId)
         {
             return context.Comments.Where(c => c.ReceivingUserId == userId);
         }
 
-        public UserGame GetUserGame(int gameId, int userId)
+        public int GetNormalizedId(string innerId)
         {
-            return context.UserGames.SingleOrDefault(g => g.GameId == gameId && g.UserId == userId);
-        }
-        
-        public UserGame GetUserGame(int userGameId)
-        {
-            return context.UserGames.SingleOrDefault(g => g.UserGameId == userGameId);
-        }
-
-        public IEnumerable<UserGame> GetUserGames(int userId)
-        {
-            return context.UserGames.Where(g => g.UserId == userId);
-        }
-
-        public IEnumerable<UserSearchGame> GetUserSearchGames(int userId)
-        {
-            return context.UserSearchGames.Where(g => g.UserId == userId);
-        }
-
-        public IEnumerable<UserGame> GetUserGamesByGame(int gameId)
-        {
-            return context.UserGames.Where(g => g.GameId == gameId);
-        }
-
-        public IEnumerable<UserSearchGame> GetUserSearchesByGame(int gameId)
-        {
-            return context.UserSearchGames.Where(g => g.GameId == gameId);
+            return context.UserProfiles.SingleOrDefault(u => u.InnerUserId == innerId).UserId;
         }
 
         public User AddUserProfile(User newUser)
@@ -74,7 +37,7 @@ namespace ExchangeService.Data.Persistance
             var result = context.UserProfiles.Add(newUser);
             return result.Entity;
         }
-
+        
         public User GetUserProfile(int userId)
         {
             return context.UserProfiles.SingleOrDefault(u => u.UserId == userId);
@@ -85,105 +48,9 @@ namespace ExchangeService.Data.Persistance
             return context.UserProfiles.SingleOrDefault(u => u.InnerUserId == innerId);
         }
 
-        public int GetNormalizedId(string innerId)
-        {
-            return context.UserProfiles.SingleOrDefault(u => u.InnerUserId == innerId).UserId;
-        }
-
-        public IEnumerable<Exchange> GetUserExchanges(int userId)
-        {
-            return context.Exchanges.Where(e => e.OfferingUserId  == userId || e.OtherUserId == userId);
-        }
-
-        public Exchange AddExchange(Exchange exchange)
-        {
-            var result = context.Exchanges.Add(exchange);
-            return result.Entity;
-        }
-
-        public bool DeleteUserGame(int userGameId)
-        {
-            var game = context.UserGames.FirstOrDefault(g => g.UserGameId == userGameId);
-            if (game == null)
-                return false;
-            context.UserGames.Remove(game);
-            return true;
-        }
-
-        public bool DeleteUserSearch(int userSearchId)
-        {
-            var search = context.UserSearchGames.FirstOrDefault(g => g.UserSearchGameId == userSearchId);
-            if (search == null)
-                return false;
-            context.UserSearchGames.Remove(search);
-            return true;
-        }
-
-        public UserSearchGame GetUserSearch(int userSearchId)
-        {
-            return context.UserSearchGames.SingleOrDefault(u => u.UserSearchGameId == userSearchId);
-        }
-
-        public Exchange GetExchange(int exchangeId)
-        {
-            return context.Exchanges.SingleOrDefault(e => e.ExchangeId == exchangeId);
-        }
-
-        public Comment GetCommentByExchange(int exchangeId, int leavingUserId)
-        {
-            return context.Comments.SingleOrDefault(c => c.ConnectedExchangeId == exchangeId && c.LeavingUserId == leavingUserId);
-        }
-
-        public void RemoveExchangeGames(int userId, string usersGames)
-        {
-            int[] gameIds = usersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
-            foreach(var gameId in gameIds)
-            {
-                var game = context.UserGames.FirstOrDefault(g => g.GameId == gameId && g.UserId == userId);
-                if (game != null)
-                    context.UserGames.Remove(game);
-            }
-        }
-
-        public IEnumerable<UserGame> GetAllUserGames()
-        {
-            return context.UserGames;
-        }
-
-        public IEnumerable<UserSearchGame> GetAllUserSearches()
-        {
-            return context.UserSearchGames;
-        }
-
         public IEnumerable<User> GetAllUserProfiles()
         {
             return context.UserProfiles;
-        }
-
-        public void DeclineWaitingExchanges(int userId, string usersGames, int exchangeId)
-        {
-            int[] gameIds = usersGames.Split(',').Select(g => Int32.Parse(g)).ToArray();
-            var userExchanges = context.Exchanges.Where(e => e.OfferingUserId == userId && e.State == ExchangeState.Waiting && e.ExchangeId != exchangeId);
-            foreach (var exchange in userExchanges)
-            {
-                var games = exchange.OfferingUsersGames.Contains(',') ? exchange.OfferingUsersGames.Split(',') : new string[] { exchange.OfferingUsersGames };
-                games = games.Where(g => gameIds.Contains(Int32.Parse(g))).ToArray();
-                if (games.Count() > 0)
-                    exchange.State = ExchangeState.Declined;
-            }
-            userExchanges = context.Exchanges.Where(e => e.OtherUserId == userId && e.State == ExchangeState.Waiting && e.ExchangeId != exchangeId);
-            foreach (var exchange in userExchanges)
-            {
-                var games = exchange.OtherUsersGames.Contains(',') ? exchange.OtherUsersGames.Split(',') : new string[] { exchange.OtherUsersGames };
-                games = games.Where(g => gameIds.Contains(Int32.Parse(g))).ToArray();
-                if (games.Count() > 0)
-                    exchange.State = ExchangeState.Declined;
-            }
-        }
-
-        public UserSearchGame GetUserSearch(int gameId, int userId)
-        {
-            return context.UserSearchGames.FirstOrDefault(u => u.UserId == userId && u.GameId == gameId);
         }
     }
 }
