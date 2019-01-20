@@ -12,12 +12,18 @@ namespace ExchangeService.Controllers.Logic
     {
         private readonly IUserProfiles userProfiles;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IExchanges exchanges;
+        private readonly IUserSearches userSearches;
+        private readonly IUserGames userGames;
         private readonly IGames games;
 
-        public ProfilesService(IUserProfiles userProfiles, IUnitOfWork unitOfWork, IGames games)
+        public ProfilesService(IUserProfiles userProfiles, IUnitOfWork unitOfWork, IExchanges exchanges, IUserSearches userSearches, IUserGames userGames, IGames games)
         {
             this.userProfiles = userProfiles;
             this.unitOfWork = unitOfWork;
+            this.exchanges = exchanges;
+            this.userSearches = userSearches;
+            this.userGames = userGames;
             this.games = games;
         }
         
@@ -47,8 +53,8 @@ namespace ExchangeService.Controllers.Logic
         public UserView GetUserProfile(int userId)
         {
             var user = userProfiles.GetUserProfile(userId);
-            var exchanges = userProfiles.GetUserExchanges(userId);
-            exchanges = exchanges.Where(e => e.State != ExchangeState.Declined).ToArray();
+            var userExchanges = exchanges.GetUserExchanges(userId);
+            userExchanges = userExchanges.Where(e => e.State != ExchangeState.Declined).ToArray();
             var comments = userProfiles.GetComments(userId);
             var avgMark = comments.Select(c => c.Mark).Sum() / comments.Count();
             if (!(avgMark > 0)) avgMark = 0;
@@ -63,7 +69,7 @@ namespace ExchangeService.Controllers.Logic
                 PhoneNumber = user.PhoneNumber,
                 ContactEmail = user.ContactEmail,
                 AvgMark = avgMark,
-                ExchangesCount = exchanges.Count(),
+                ExchangesCount = userExchanges.Count(),
                 ReviewsCount = comments.Count()
             };
         }
@@ -87,5 +93,61 @@ namespace ExchangeService.Controllers.Logic
             unitOfWork.CompleteWork();
             return true;
         }
+
+        public IEnumerable<CommentDto> GetComments(int userId)
+        {
+            var userComments = userProfiles.GetComments(userId);
+            List<CommentDto> commentDtos = new List<CommentDto>();
+            foreach (var comment in userComments)
+            {
+                commentDtos.Add(new CommentDto()
+                {
+                    LeavingUserId = comment.LeavingUserId,
+                    CommentDate = comment.CommentDate,
+                    Mark = comment.Mark,
+                    Text = comment.Text,
+                    IsVisible = comment.IsVisible,
+                    ConnectedExchangeId = comment.ConnectedExchangeId
+                });
+            }
+            return commentDtos;
+        }
+        
+        public IEnumerable<MatchAndUserView> GetMatches(int userId)
+        {
+            var allUserGames = userGames.GetAllUserGames();
+            var allUserSearches = userSearches.GetAllUserSearches();
+            var allGames = games.GetGames(" ");
+            var myForExchangeIds = allUserGames.Where(g => g.UserId == userId).Select(g => g.GameId);
+            var mySearchesIds = allUserSearches.Where(g => g.UserId == userId).Select(g => g.GameId);
+            var matchedBySearches = allUserGames.Where(g => mySearchesIds.Contains(g.GameId) && g.UserId != userId).Select(g => g.UserId).Distinct();
+            var matchedByForExchange = allUserSearches.Where(g => myForExchangeIds.Contains(g.GameId) && g.UserId != userId).Select(g => g.UserId).Distinct();
+            var matchedUsers = matchedByForExchange.Where(u => matchedBySearches.Contains(u));
+            List<MatchAndUserView> myMatches = new List<MatchAndUserView>();
+            foreach (var user in matchedUsers)
+            {
+                var gamesTheyHaveIds = allUserGames.Where(g => g.UserId == user).Select(g => g.GameId);
+                var gamesTheyWantIds = allUserSearches.Where(g => g.UserId == user).Select(g => g.GameId);
+
+                var profile = userProfiles.GetUserProfile(user);
+                var comments = userProfiles.GetComments(user);
+                var avgMark = comments.Select(c => c.Mark).Sum() / comments.Count();
+                if (!(avgMark > 0)) avgMark = 0;
+                else avgMark = Math.Round(avgMark, 2);
+
+                myMatches.Add(new MatchAndUserView()
+                {
+                    OtherUserId = user,
+                    Name = profile.Name + " " + profile.Surname,
+                    AvgMark = avgMark,
+                    Location = profile.Location,
+                    UserImageUrl = profile.ImageUrl,
+                    GamesTheyHave = allGames.Where(g => gamesTheyHaveIds.Contains(g.GameId)).Select(g => g.Title).ToArray(),
+                    GamesTheyWant = allGames.Where(g => gamesTheyWantIds.Contains(g.GameId)).Select(g => g.Title).ToArray()
+                });
+            }
+            return myMatches;
+        }
+
     }
 }

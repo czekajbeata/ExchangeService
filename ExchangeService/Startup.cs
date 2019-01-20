@@ -50,12 +50,17 @@ namespace ExchangeService
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddTransient<DropDownService>();
-            services.AddTransient<ShelvesService>();
             services.AddTransient<ProfilesService>();
-            services.AddTransient<UserDataService>();
+            services.AddTransient<ExchangesService>();
+            services.AddTransient<GamesService>();
+            services.AddTransient<UserGamesService>();
+            services.AddTransient<UserSearchesService>();
             services.AddTransient<IGames, Games>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IUserProfiles, UserProfiles>();
+            services.AddTransient<IExchanges, Exchanges>();
+            services.AddTransient<IUserGames, UserGames>();
+            services.AddTransient<IUserSearches, UserSearches>();
             services.AddTransient<IJwtTokenService, JwtTokenService>();
 
             services.AddCors(options =>
