@@ -1,32 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ExchangeService.Controllers.Logic;
-using ExchangeService.Shared.Enums;
+﻿using ExchangeService.Controllers.Logic;
 using ExchangeService.Shared.Resources;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ExchangeService.Controllers.Api
 {
     [ApiController]
     public class UserDataController : ControllerBase
     {
-        private readonly UserDataService userDataService;
         private readonly ProfilesService profilesService;
+        private readonly ExchangesService exchangeService;
 
-        public UserDataController(UserDataService userDataService, ProfilesService profilesService)
+        public UserDataController(ProfilesService profilesService, ExchangesService exchangeService)
         {
-            this.userDataService = userDataService;
             this.profilesService = profilesService;
+            this.exchangeService = exchangeService;
         }
 
         [HttpGet("api/users/comments/{id?}")]
         public IEnumerable<CommentDto> GetComments(int id)
         {
-            return userDataService.GetComments(id);
+            return profilesService.GetComments(id);
         }
 
         [Authorize]
@@ -35,28 +31,28 @@ namespace ExchangeService.Controllers.Api
         {
             var id = User.Claims.Single(c => c.Type == "Id").Value;
             var normalizedId = profilesService.ToNormalizedId(id);
-            return userDataService.GetMatches(normalizedId);
+            return profilesService.GetMatches(normalizedId);
         }
-
+        
         [Authorize]
         [HttpGet("api/users/myexchanges")]
         public IEnumerable<ExchangeView> GetMyExchanges()
         {
             var id = User.Claims.Single(c => c.Type == "Id").Value;
             var normalizedId = profilesService.ToNormalizedId(id);
-            return userDataService.GetMyExchanges(normalizedId);
+            return exchangeService.GetMyExchanges(normalizedId);
         }
 
         [HttpGet("api/users/exchanges/{id?}")]
         public IEnumerable<ExchangeDto> GetExchanges(int id)
         {
-            return userDataService.GetUserExchanges(id);
+            return exchangeService.GetUserExchanges(id);
         }
 
         [HttpGet("api/users/shortendexchange/{ExchangeId?}")]
         public ShortenedExchangeView GetShortenedExchange(int ExchangeId)
         {
-            return userDataService.GetShortenedExchange(ExchangeId);
+            return exchangeService.GetShortenedExchange(ExchangeId);
         }
 
         [HttpGet("api/users/exchange/{ExchangeId?}")]
@@ -64,14 +60,14 @@ namespace ExchangeService.Controllers.Api
         {
             var id = User.Claims.Single(c => c.Type == "Id").Value;
             var normalizedId = profilesService.ToNormalizedId(id);
-            return userDataService.GetExchange(ExchangeId, normalizedId);
+            return exchangeService.GetExchange(ExchangeId, normalizedId);
         }
 
         [Authorize]
         [HttpPut("api/users/exchanges/decline")]
         public IActionResult AbandonExchange([FromBody] ShortenedExchangeView exchange)
         {
-            var result =  userDataService.AbandonExchange(exchange.ExchangeId);
+            var result = exchangeService.AbandonExchange(exchange.ExchangeId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
@@ -79,7 +75,7 @@ namespace ExchangeService.Controllers.Api
         [HttpPut("api/users/exchanges/accept")]
         public IActionResult AcceptExchange([FromBody] ExchangeDto exchange)
         {
-            var result = userDataService.AcceptExchange(exchange);
+            var result = exchangeService.AcceptExchange(exchange);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
@@ -89,7 +85,7 @@ namespace ExchangeService.Controllers.Api
         {
             var id = User.Claims.Single(c => c.Type == "Id").Value;
             var normalizedId = profilesService.ToNormalizedId(id);
-            var result = userDataService.FinalizeExchange(exchange, normalizedId);
+            var result = exchangeService.FinalizeExchange(exchange, normalizedId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
@@ -97,7 +93,7 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/users/comments")]
         public IActionResult AddComment([FromBody] CommentDto comment)
         {
-            var result = userDataService.AddComment(comment);
+            var result = exchangeService.AddComment(comment);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
@@ -107,7 +103,7 @@ namespace ExchangeService.Controllers.Api
         {
             var id = User.Claims.Single(c => c.Type == "Id").Value;
             var normalizedId = profilesService.ToNormalizedId(id);
-            var result = userDataService.AddExchange(exchange, normalizedId);
+            var result = exchangeService.AddExchange(exchange, normalizedId);
             return result ? (IActionResult)Ok() : BadRequest();
         }
     }
