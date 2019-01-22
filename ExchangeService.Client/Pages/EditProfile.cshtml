@@ -1,66 +1,65 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
+@using ExchangeService.Client.Pages.Components;
 @using System.Text.RegularExpressions;
 @page "/edit"
 @inject HttpClient Http
 @inject TokenService tokenService
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
-
+@inherits ProfileBase
 
 <h3>Edit profile:</h3>
 <br />
-
 <form>
     <div class="form-group row">
         <label for="picture" class="col-sm-3 col-form-label">Profile picture url</label>
         <div class="col-sm-4">
-            <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@myProfile.ImageUrl" />
+            <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@UserProfile.ImageUrl" />
         </div>
     </div>
     <div class="form-group row">
         <label for="name" class="col-sm-3 col-form-label">Name</label>
         <div class="col-sm-4">
-            <input type="text" name="name" placeholder="Name" class="form-control" bind="@myProfile.Name" />
+            <input type="text" name="name" placeholder="Name" class="form-control" bind="@UserProfile.Name" />
         </div>
     </div>
     <div class="form-group row">
         <label for="surname" class="col-sm-3 col-form-label">Surname</label>
         <div class="col-sm-4">
-            <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@myProfile.Surname" />
+            <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@UserProfile.Surname" />
         </div>
     </div>
     <div class="form-group row">
         <label for="location" class="col-sm-3 col-form-label">Location</label>
         <div class="col-sm-4">
-            <input type="text" name="location" placeholder="Location" class="form-control" bind="@myProfile.Location" />
+            <input type="text" name="location" placeholder="Location" class="form-control" bind="@UserProfile.Location" />
         </div>
     </div>
     <div class="form-group row">
         <label for="email" class="col-sm-3 col-form-label">Contact email</label>
         <div class="col-sm-4">
-            <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@myProfile.ContactEmail" />
+            <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@UserProfile.ContactEmail" />
         </div>
     </div>
     <div class="form-group row">
         <label for="number" class="col-sm-3 col-form-label">Phone number</label>
         <div class="col-sm-4">
-            <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@myProfile.PhoneNumber" />
+            <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@UserProfile.PhoneNumber" />
         </div>
     </div>
-
-    @if (errors.Count() > 0)
+    @if (Errors.Count() > 0)
     {
-    <br />
-    <div class="alert alert-danger" role="alert">
         <br />
-        @foreach (var error in errors)
+        <div class="alert alert-danger" role="alert">
+            <br />
+            @foreach (var error in Errors)
             {
-        <p class="font-italic">@error</p>
+                <p class="font-italic">@error</p>
             }
-    </div>
+        </div>
     }
-    <div class="form-group row">
+    <div class="row">
         <div class="col-sm-3">
             <button type="button" class="btn btn-secondary btn-block" onclick="@Back">Back to profile</button>
         </div>
@@ -71,10 +70,6 @@
 </form>
 
 @functions{
-    UserView myProfile = new UserView();
-    public List<string> errors = new List<string>();
-    public bool isValid = false;
-
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
@@ -84,29 +79,23 @@
         }
         else
         {
-            myProfile = await appState.GetMyProfile();
+            var user = await appState.GetMyProfile();
+            UserProfile = user;
         }
     }
 
     private async Task SubmitForm()
     {
-        errors.Clear();
+        Console.WriteLine("insubmit");
+        Errors.Clear();
         ValidateInputs();
-        if (isValid)
+        Console.WriteLine("after validate");
+        if (IsValid)
         {
-            if (myProfile.ImageUrl == null)
-                myProfile.ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
+            if (UserProfile.ImageUrl == null)
+                UserProfile.ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
 
-            UserView userView = new UserView()
-            {
-                Location = myProfile.Location,
-                Name = myProfile.Name,
-                Surname = myProfile.Surname,
-                ImageUrl = myProfile.ImageUrl,
-                PhoneNumber = myProfile.PhoneNumber,
-                ContactEmail = myProfile.ContactEmail
-            };
-            await Http.PutJsonAsync("http://localhost:5000/api/users/profile", userView);
+            await Http.PutJsonAsync("http://localhost:5000/api/users/profile", UserProfile);
             UriHelper.NavigateTo("/profileupdatesuccess");
         }
     }
@@ -114,33 +103,5 @@
     private void Back()
     {
         UriHelper.NavigateTo("/myprofile");
-    }
-
-    private void ValidateInputs()
-    {
-        if (string.IsNullOrEmpty(myProfile.Name))
-            errors.Add("Please fill your name.");
-        if (string.IsNullOrEmpty(myProfile.Location))
-            errors.Add("Please fill your location.");
-
-        if (string.IsNullOrEmpty(myProfile.PhoneNumber) && string.IsNullOrEmpty(myProfile.ContactEmail))
-            errors.Add("Please fill at least one contact detail.");
-        else
-        {
-            if (!string.IsNullOrEmpty(myProfile.PhoneNumber))
-            {
-                string phonePattern = @"\d{3}-? *\d{3}-? *-?\d{3}";
-                Regex rgx = new Regex(phonePattern);
-                if (!rgx.IsMatch(myProfile.PhoneNumber))
-                    errors.Add("Phone number has invalid format.");
-            }
-            if (!string.IsNullOrEmpty(myProfile.ContactEmail))
-            {
-                if (!myProfile.ContactEmail.Contains("@"))
-                    errors.Add("Email has invalid format.");
-            }
-        }
-        isValid = errors.Count() == 0;
-        StateHasChanged();
     }
 }
