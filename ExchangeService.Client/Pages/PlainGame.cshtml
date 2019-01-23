@@ -6,79 +6,19 @@
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<h3>@gameView.Title</h3>
+<h3>@GameView.Title</h3>
 <br />
+<GameDetails Game="GameView"/>
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-7">
-            <div class="row">
-                <div class="col-sm-8">
-                    <p class="font-weight-normal">Genre: </p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="font-italic">@gameView.GenreName</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8">
-                    <p class="font-weight-normal">Player count: </p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="font-italic">@gameView.PlayerCount</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8">
-                    <p class="font-weight-normal">Age required: </p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="font-italic">@gameView.MinAgeRequired</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8">
-                    <p class="font-weight-normal">Game time (in minutes): </p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="font-italic">@gameView.GameTimeInMin</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8">
-                    <p class="font-weight-normal">Publisher: </p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="font-italic">@gameView.Publisher</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8">
-                    <p class="font-weight-normal">Description: </p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <p class="font-italic">@gameView.Description</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-5">
-            <div class="row justify-content-center">
-                <img src="@gameView.ImageUrl" width="250" height="250">
-            </div>
-        </div>
-    </div>
-</div>
 
 @functions {
-[Parameter]
-string GameId { get; set; }
-GameView gameView { get; set; } = new GameView();
+    [Parameter]
+    string GameId { get; set; }
+    GameView GameView { get; set; } = new GameView();
 
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    gameView = await Http.GetJsonAsync<GameView>("http://localhost:5000/api/games/getview/" + GameId);
-}
+    protected override async Task OnInitAsync()
+    {
+        appState.TrySetAccessTokens();
+        GameView = await Http.GetJsonAsync<GameView>("http://localhost:5000/api/games/getview/" + GameId);
+    }
 }

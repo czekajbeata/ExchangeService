@@ -21,6 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Pages\Base Components\UserGameDetails.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\Base Components\GameDetails.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Components\GamesListDetails.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -33,7 +39,7 @@
     <Content Update="Pages\EditProfile.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Pages\Components\ValidateProfile.cshtml">
+    <Content Update="Pages\Base Components\ValidateProfile.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Pages\Informations\AddForExchangeGame - Fail.cshtml">

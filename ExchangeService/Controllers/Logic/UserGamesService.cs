@@ -50,32 +50,21 @@ namespace ExchangeService.Controllers.Logic
             return userGame == null;
         }
 
-        public UserGameView GetUserGame(int userGameId)
+        public UserGameDto GetUserGame(int userGameId)
         {
             var usergame = userGames.GetUserGame(userGameId);
-            var game = games.GetGame(usergame.GameId);
-            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
             string[] images = string.IsNullOrEmpty(usergame.UserGameImages)
             ? new string[] { }
             : usergame.UserGameImages.Contains(',')
             ? usergame.UserGameImages.Split(',')
             : new string[] { usergame.UserGameImages };
-            return new UserGameView()
+            return new UserGameDto()
             {
-                UserGameId = usergame.UserGameId,
                 GameId = usergame.GameId,
                 UserId = usergame.UserId,
-                GameTimeInMin = game.GameTimeInMin.ToString(),
-                Description = game.Description,
-                GenreName = games.GetGenre(game.GenreId).Name,
-                ImageUrl = game.ImageUrl,
                 IsComplete = usergame.IsComplete,
-                MinAgeRequired = game.MinAgeRequired.ToString(),
-                PlayerCount = playerCount,
-                Publisher = game.Publisher ?? String.Empty,
                 Shipment = usergame.Shipment,
                 State = usergame.State,
-                Title = game.Title,
                 UserGameDescription = usergame.UserGameDescription,
                 UserImages = images
             };

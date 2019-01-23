@@ -56,7 +56,7 @@ namespace ExchangeService.Controllers.Api
         }
 
         [HttpGet("api/users/game/{userGameId}")]
-        public UserGameView GetUserGame(int userGameId)
+        public UserGameDto GetUserGame(int userGameId)
         {
             return userGamesService.GetUserGame(userGameId);
         }
