@@ -38,8 +38,6 @@
 
     private async Task AddToSearched(UIEventArgs args)
     {
-        Console.WriteLine("in add search, " + Game.Title);
-        Console.WriteLine("in add search, id: " + Game.GameId);
         var canAddGame = await Http.GetJsonAsync<bool>("http://localhost:5000/api/searches/check/" + Game.GameId);
         if (canAddGame)
             await AddSearch();
@@ -49,7 +47,6 @@
 
     private async Task AddSearch()
     {
-        Console.WriteLine("adding search");
         UserSearchGameDto newUserSearch = new UserSearchGameDto()
         {
             GameId = Game.GameId

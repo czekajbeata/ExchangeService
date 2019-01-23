@@ -16,208 +16,193 @@
     </div>
 
     @if (gameWasSearched)
-{
-    @if (response != null && response.Length > 0)
     {
-    <div class="form-group row">
-        <label for="gameId" class="col-sm-6">Select game from existing or add a new one:</label>
-        <div class="col-sm-3">
-            <select bind="@SelectedId" class="form-control">
-                <option selected>Choose...</option>
-                @foreach (var game in response)
-                    {
-                <option value="@game.Id">@game.Name</option>
-                    }
-            </select>
-        </div>
-        <div class="col-sm-3">
-            <button type="button" class="btn btn-light btn-block" onclick=@(() => AddNewGame())>Add new game</button>
-        </div>
-    </div>
-    }
-    else
-    {
-    <div class="form-group row">
-        <label for="gameId" class="col-sm-6">Game with provided title wasn't found. </label>
-        <div class="col-sm-3">
-            <button type="button" class="btn btn-light btn-block" onclick=@(() => AddNewGame())>Add new game</button>
-        </div>
-    </div>
-    }
-    <br />
-
-    @if (gameDetails != null)
-    {
-    @if (gameDoesntExist)
+        @if (response != null && response.Length > 0)
         {
-    <div class="row" style="padding:4px">
-        <label for="gameTitle" class="col-sm-6">Game title: </label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="gameTitle" placeholder="Title" bind="@gameDetails.Title" />
-        </div>
-    </div>
-    <div class="row" style="padding:4px">
-        <label for="picture" class="col-sm-6">Game picture url: </label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="picture" placeholder="Game picture url" bind="@gameDetails.ImageUrl" />
-        </div>
-    </div>
-    <div class="row" style="padding:4px">
-        <label for="description" class="col-sm-6">Description: </label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="description" placeholder="Description" bind="@gameDetails.Description" />
-        </div>
-    </div>
-    <div class="row" style="padding:4px">
-        <label for="publisher" class="col-sm-6">Publisher: </label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="publisher" placeholder="Publisher" bind="@gameDetails.Publisher" />
-        </div>
-    </div>
-    <div class="row" style="padding:4px">
-        <label for="genre" class="col-sm-6">Genre: </label>
-        <div class="col-sm-6">
-            <select bind="@gameDetails.GenreId" class="form-control">
-                @foreach (var genre in genres)
-                            {
-                <option value="@genre.Id">@genre.Name</option>
-                            }
-            </select>
-        </div>
-    </div>
-    <div class="row" style="padding:4px">
-        <label for="playerCount" class="col-sm-6">Player count: </label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="playerCount" placeholder="Min-max" bind="@gameDetails.PlayerCount" />
-        </div>
-    </div>
-    <div class="row" style="padding:4px">
-        <label for="ageRequired" class="col-sm-6"> Age required: </label>
-        <div class="col-sm-6">
-            <input type="number" class="form-control" id="ageRequired" placeholder="Age required" bind="@gameDetails.MinAgeRequired" />
-        </div>
-    </div>
-    <div class="row" style="padding:4px">
-        <label for="gameTime" class="col-sm-6"> Game time (in minutes): </label>
-        <div class="col-sm-6">
-            <input type="number" class="form-control" id="gameTime" placeholder="Game time" bind="@gameDetails.GameTimeInMin" />
-        </div>
-    </div>
+            <div class="form-group row">
+                <label for="gameId" class="col-sm-6">Select game from existing or add a new one:</label>
+                <div class="col-sm-3">
+                    <select bind="@SelectedId" class="form-control">
+                        <option selected>Choose...</option>
+                        @foreach (var game in response)
+                        {
+                            <option value="@game.Id">@game.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-light btn-block" onclick=@(() => AddNewGame())>Add new game</button>
+                </div>
+            </div>
         }
         else
         {
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-9">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <p class="font-weight-normal">Genre: </p>
-                            </div>
-                            <div class="col-sm-4">
-                                <p class="font-italic">@genre</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <p class="font-weight-normal">Player count: </p>
-                            </div>
-                            <div class="col-sm-4">
-                                <p class="font-italic">@gameDetails.PlayerCount</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <p class="font-weight-normal">Age required: </p>
-                            </div>
-                            <div class="col-sm-4">
-                                <p class="font-italic">@gameDetails.MinAgeRequired</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <p class="font-weight-normal">Game time (in minutes): </p>
-                            </div>
-                            <div class="col-sm-4">
-                                <p class="font-italic">@gameDetails.GameTimeInMin</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <p class="font-weight-normal">Publisher: </p>
-                            </div>
-                            <div class="col-sm-4">
-                                <p class="font-italic">@gameDetails.Publisher</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <p class="font-weight-normal">Description: </p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <p class="font-italic">@gameDetails.Description</p>
-                            </div>
-                        </div>
+            <div class="form-group row">
+                <label for="gameId" class="col-sm-6">Game with provided title wasn't found. </label>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-light btn-block" onclick=@(() => AddNewGame())>Add new game</button>
+                </div>
+            </div>
+        }
+        <br />
+
+        @if (gameDetails != null)
+        {
+            @if (gameDoesntExist)
+            {
+                <div class="row" style="padding:4px">
+                    <label for="gameTitle" class="col-sm-6">Game title: </label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="gameTitle" placeholder="Title" bind="@gameDetails.Title" />
                     </div>
-                    <div class="col-sm-4">
-                        <div class="row justify-content-center">
-                            <img src="@gameDetails.ImageUrl" width="200" height="200">
-                        </div>
-                        <div class="row justify-content-center">
-                            <p class="font-weight-bold">@gameDetails.Title</p>
+                </div>
+                <div class="row" style="padding:4px">
+                    <label for="picture" class="col-sm-6">Game picture url: </label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="picture" placeholder="Game picture url" bind="@gameDetails.ImageUrl" />
+                    </div>
+                </div>
+                <div class="row" style="padding:4px">
+                    <label for="description" class="col-sm-6">Description: </label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="description" placeholder="Description" bind="@gameDetails.Description" />
+                    </div>
+                </div>
+                <div class="row" style="padding:4px">
+                    <label for="publisher" class="col-sm-6">Publisher: </label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="publisher" placeholder="Publisher" bind="@gameDetails.Publisher" />
+                    </div>
+                </div>
+                <div class="row" style="padding:4px">
+                    <label for="genre" class="col-sm-6">Genre: </label>
+                    <div class="col-sm-6">
+                        <select bind="@gameDetails.GenreId" class="form-control">
+                            @foreach (var genre in genres)
+                            {
+                                <option value="@genre.Id">@genre.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row" style="padding:4px">
+                    <label for="playerCount" class="col-sm-6">Player count: </label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="playerCount" placeholder="Min-max" bind="@gameDetails.PlayerCount" />
+                    </div>
+                </div>
+                <div class="row" style="padding:4px">
+                    <label for="ageRequired" class="col-sm-6"> Age required: </label>
+                    <div class="col-sm-6">
+                        <input type="number" class="form-control" id="ageRequired" placeholder="Age required" bind="@gameDetails.MinAgeRequired" />
+                    </div>
+                </div>
+                <div class="row" style="padding:4px">
+                    <label for="gameTime" class="col-sm-6"> Game time (in minutes): </label>
+                    <div class="col-sm-6">
+                        <input type="number" class="form-control" id="gameTime" placeholder="Game time" bind="@gameDetails.GameTimeInMin" />
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-9">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <p class="font-weight-normal">Genre: </p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="font-italic">@genre</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <p class="font-weight-normal">Player count: </p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="font-italic">@gameDetails.PlayerCount</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <p class="font-weight-normal">Age required: </p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="font-italic">@gameDetails.MinAgeRequired</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <p class="font-weight-normal">Game time (in minutes): </p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="font-italic">@gameDetails.GameTimeInMin</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <p class="font-weight-normal">Publisher: </p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="font-italic">@gameDetails.Publisher</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <p class="font-weight-normal">Description: </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <p class="font-italic">@gameDetails.Description</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="row justify-content-center">
+                                        <img src="@gameDetails.ImageUrl" width="200" height="200">
+                                    </div>
+                                    <div class="row justify-content-center">
+                                        <p class="font-weight-bold">@gameDetails.Title</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-        }
+            }
 
-    @if (errorsGame.Count() > 0)
-        {
-    <br />
-    <div class="alert alert-danger" role="alert">
-        <br />
-        @foreach (var error in errorsGame)
-                {
-        <p class="font-italic">@error</p>
-                }
-    </div>
-        }
+            @if (errorsGame.Count() > 0)
+            {
+                <br />
+                <div class="alert alert-danger" role="alert">
+                    <br />
+                    @foreach (var error in errorsGame)
+                    {
+                        <p class="font-italic">@error</p>
+                    }
+                </div>
+            }
 
-    }
+        }
     }
 
     @ChildContent
 </form>
 
 @functions{
-
-
     [Parameter]
     private Func<UIEventArgs, Task> OnSubmit { get; set; }
     [Parameter]
-    public GameDto gameDetails { get; set; } = new GameDto();
-[Parameter]
-    private RenderFragment ChildContent { get; set; }
+    private GameDto gameDetails { get; set; } = new GameDto();
     [Parameter]
     Action<GameDto> ItemChanged { get; set; }
-
-
-    public string gameID { get; set; }
-
-    DropDownItem[] response;
-    DropDownItem[] genres;
-    string genre;
-    bool gameWasSearched = false;
-    bool gameDoesntExist = true;
-    public bool isValidGame = false;
-    public List<string>
-        errorsGame = new List<string>
-            ();
+    [Parameter]
+    private RenderFragment ChildContent { get; set; }
 
     string gameTitle = null;
     public string GameTitle
@@ -242,26 +227,30 @@
         }
     }
 
+    public string gameID { get; set; }
+    DropDownItem[] response;
+    DropDownItem[] genres;
+    string genre;
+    bool gameWasSearched = false;
+    bool gameDoesntExist = true;
+    public bool isValidGame = false;
+    public List<string> errorsGame = new List<string>();
 
     private async Task FillAutoComplete()
     {
-        Console.WriteLine("filling autocomplete");
         gameDetails = null;
-        response = await Http.GetJsonAsync<DropDownItem[]>
-    ("http://localhost:5000/api/games/" + GameTitle);
-        genres = await Http.GetJsonAsync<DropDownItem[]>
-            ("http://localhost:5000/api/genres");
+        response = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + GameTitle);
+        genres = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/genres");
         SelectedId = null;
         gameWasSearched = true;
         gameID = string.Empty;
-        Console.WriteLine("filling autocomplete done");
         StateHasChanged();
     }
 
     private void AddNewGame()
     {
         gameDetails = new GameDto();
-ItemChanged(gameDetails);
+        ItemChanged(gameDetails);
         gameDetails.Title = GameTitle;
         SelectedId = string.Empty;
         GameTitle = string.Empty;
@@ -271,9 +260,8 @@ ItemChanged(gameDetails);
 
     private async Task GetGameDetails()
     {
-        Console.WriteLine("getiing details");
         gameDetails = await Http.GetJsonAsync<GameDto>("http://localhost:5000/api/games/get/" + SelectedId);
-ItemChanged(gameDetails);
+        ItemChanged(gameDetails);
         gameDoesntExist = false;
         GameTitle = string.Empty;
         gameID = gameDetails.GameId.ToString();
@@ -284,32 +272,28 @@ ItemChanged(gameDetails);
 
     private async Task OnSubmitValidateAsync(UIEventArgs eventArgs)
     {
-if(gameDetails != null)
-{
-        Console.WriteLine("submit in details, id: " + gameID);
-        errorsGame.Clear();
-        ValidateInputsGame();
-        if (isValidGame)
+        if (gameDetails != null)
         {
-        Console.WriteLine("in is valid");
-            if (gameDoesntExist)
-                await AddGameToDB();
+            errorsGame.Clear();
+            ValidateInputsGame();
+            if (isValidGame)
+            {
+                if (gameDoesntExist)
+                    await AddGameToDB();
 
-             await OnSubmit(eventArgs);
+                await OnSubmit(eventArgs);
+            }
         }
-}
     }
 
     private async Task AddGameToDB()
     {
-
-        Console.WriteLine("adding to db");
         await Http.PostJsonAsync("http://localhost:5000/api/games/", gameDetails);
         var games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/" + gameDetails.Title);
         gameID = games[0].Id.ToString();
     }
 
-       private void ValidateInputsGame()
+    private void ValidateInputsGame()
     {
         if (string.IsNullOrEmpty(gameDetails.Title))
             errorsGame.Add("Please fill game title.");
@@ -325,6 +309,4 @@ if(gameDetails != null)
         isValidGame = errorsGame.Count() == 0;
         StateHasChanged();
     }
-
-
 }
