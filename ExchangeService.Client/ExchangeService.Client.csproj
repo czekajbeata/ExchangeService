@@ -30,6 +30,9 @@
     <Content Update="Pages\EditProfile.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Components\ValidateProfile.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Informations\AddForExchangeGame - Fail.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

@@ -1,0 +1,108 @@
+﻿@using ExchangeService.Shared.Resources;
+@using System.Text.RegularExpressions;
+@inject HttpClient Http
+
+
+<form novalidate onsubmit="@OnSubmitValidateAsync">
+    <div class="form-group row">
+        <label for="picture" class="col-sm-3 col-form-label">Profile picture url</label>
+        <div class="col-sm-4">
+            <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@UserProfile.ImageUrl" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="name" class="col-sm-3 col-form-label">Name</label>
+        <div class="col-sm-4">
+            <input type="text" name="name" placeholder="Name" class="form-control" bind="@UserProfile.Name" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="surname" class="col-sm-3 col-form-label">Surname</label>
+        <div class="col-sm-4">
+            <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@UserProfile.Surname" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="location" class="col-sm-3 col-form-label">Location</label>
+        <div class="col-sm-4">
+            <input type="text" name="location" placeholder="Location" class="form-control" bind="@UserProfile.Location" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="email" class="col-sm-3 col-form-label">Contact email</label>
+        <div class="col-sm-4">
+            <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@UserProfile.ContactEmail" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="number" class="col-sm-3 col-form-label">Phone number</label>
+        <div class="col-sm-4">
+            <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@UserProfile.PhoneNumber" />
+        </div>
+    </div>
+    @if (Errors.Count() > 0)
+    {
+    <br />
+    <div class="alert alert-danger" role="alert">
+        <br />
+        @foreach (var error in Errors)
+            {
+        <p class="font-italic">@error</p>
+            }
+    </div>
+    }
+    @ChildContent
+</form>
+
+@functions{
+
+    [Parameter]
+    private RenderFragment ChildContent { get; set; }
+    [Parameter]
+    private Func<UIEventArgs, Task> OnSubmit { get; set; }
+    [Parameter]
+    public UserView UserProfile { get; set; } = new UserView();
+
+    public List<string> Errors = new List<string>();
+    public bool IsValid = false;
+
+    private async Task OnSubmitValidateAsync(UIEventArgs eventArgs)
+    {
+        Console.WriteLine("in fill");
+        Errors.Clear();
+        ValidateInputs();
+        if (IsValid)
+        {
+            await OnSubmit(eventArgs);
+        }
+    }
+
+    public void ValidateInputs()
+        {
+            if (string.IsNullOrEmpty(UserProfile.Name))
+                Errors.Add("Please fill your name.");
+            if (string.IsNullOrEmpty(UserProfile.Location))
+                Errors.Add("Please fill your location.");
+
+            if (string.IsNullOrEmpty(UserProfile.PhoneNumber) && string.IsNullOrEmpty(UserProfile.ContactEmail))
+                Errors.Add("Please fill at least one contact detail.");
+            else
+            {
+                if (!string.IsNullOrEmpty(UserProfile.PhoneNumber))
+                {
+                    string phonePattern = @"\d{3}-? *\d{3}-? *-?\d{3}";
+                    Regex rgx = new Regex(phonePattern);
+                    if (!rgx.IsMatch(UserProfile.PhoneNumber))
+                        Errors.Add("Phone number has invalid format.");
+                }
+                if (!string.IsNullOrEmpty(UserProfile.ContactEmail))
+                {
+                    if (!UserProfile.ContactEmail.Contains("@"))
+                        Errors.Add("Email has invalid format.");
+                }
+            }
+            IsValid = Errors.Count() == 0;
+            StateHasChanged();
+        }
+
+}

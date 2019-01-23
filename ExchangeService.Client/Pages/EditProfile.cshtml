@@ -11,65 +11,22 @@
 
 <h3>Edit profile:</h3>
 <br />
-<form>
-    <div class="form-group row">
-        <label for="picture" class="col-sm-3 col-form-label">Profile picture url</label>
-        <div class="col-sm-4">
-            <input type="text" name="picture" placeholder="PictureUrl" class="form-control" bind="@UserProfile.ImageUrl" />
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="name" class="col-sm-3 col-form-label">Name</label>
-        <div class="col-sm-4">
-            <input type="text" name="name" placeholder="Name" class="form-control" bind="@UserProfile.Name" />
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="surname" class="col-sm-3 col-form-label">Surname</label>
-        <div class="col-sm-4">
-            <input type="text" name="surname" placeholder="Surname" class="form-control" bind="@UserProfile.Surname" />
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="location" class="col-sm-3 col-form-label">Location</label>
-        <div class="col-sm-4">
-            <input type="text" name="location" placeholder="Location" class="form-control" bind="@UserProfile.Location" />
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="email" class="col-sm-3 col-form-label">Contact email</label>
-        <div class="col-sm-4">
-            <input type="text" name="email" placeholder="Contact email" class="form-control" bind="@UserProfile.ContactEmail" />
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="number" class="col-sm-3 col-form-label">Phone number</label>
-        <div class="col-sm-4">
-            <input type="text" name="number" placeholder="Phone number" class="form-control" bind="@UserProfile.PhoneNumber" />
-        </div>
-    </div>
-    @if (Errors.Count() > 0)
-    {
-        <br />
-        <div class="alert alert-danger" role="alert">
-            <br />
-            @foreach (var error in Errors)
-            {
-                <p class="font-italic">@error</p>
-            }
-        </div>
-    }
+<ValidateProfile OnSubmit="SubmitForm" UserProfile="Profile">
     <div class="row">
         <div class="col-sm-3">
             <button type="button" class="btn btn-secondary btn-block" onclick="@Back">Back to profile</button>
         </div>
         <div class="col-sm-3">
-            <button type="button" class="btn btn-primary btn-block" onclick="@SubmitForm">Update profile</button>
+            <button type="submit" class="btn btn-primary btn-block">Update profile</button>
         </div>
     </div>
-</form>
+</ValidateProfile>
+
 
 @functions{
+
+    public UserView Profile { get; set; } = new UserView();
+
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
@@ -80,24 +37,18 @@
         else
         {
             var user = await appState.GetMyProfile();
-            UserProfile = user;
+            Profile = user;
         }
     }
 
-    private async Task SubmitForm()
+    private async Task SubmitForm(UIEventArgs args)
     {
-        Console.WriteLine("insubmit");
-        Errors.Clear();
-        ValidateInputs();
-        Console.WriteLine("after validate");
-        if (IsValid)
-        {
-            if (UserProfile.ImageUrl == null)
-                UserProfile.ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
+        Console.WriteLine("in edit");
+        if (Profile.ImageUrl == null)
+            Profile.ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
 
-            await Http.PutJsonAsync("http://localhost:5000/api/users/profile", UserProfile);
-            UriHelper.NavigateTo("/profileupdatesuccess");
-        }
+        await Http.PutJsonAsync("http://localhost:5000/api/users/profile", Profile);
+        UriHelper.NavigateTo("/profileupdatesuccess");
     }
 
     private void Back()
