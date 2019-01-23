@@ -1,13 +1,11 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
-@using ExchangeService.Client.Pages.Components;
-@using System.Text.RegularExpressions;
 @page "/edit"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject ReloadService reloadService
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
-@inherits ProfileBase
 
 <h3>Edit profile:</h3>
 <br />
@@ -48,6 +46,7 @@
             Profile.ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
 
         await Http.PutJsonAsync("http://localhost:5000/api/users/profile", Profile);
+        await reloadService.ReloadPage();
         UriHelper.NavigateTo("/profileupdatesuccess");
     }
 
