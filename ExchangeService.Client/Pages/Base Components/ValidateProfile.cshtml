@@ -55,13 +55,12 @@
 </form>
 
 @functions{
-
-        [Parameter]
-        private RenderFragment ChildContent { get; set; }
-        [Parameter]
-        private Func<UIEventArgs, Task> OnSubmit { get; set; }
-        [Parameter]
-        private UserView UserProfile { get; set; } = new UserView();
+    [Parameter]
+    private RenderFragment ChildContent { get; set; }
+    [Parameter]
+    private Func<UIEventArgs, Task> OnSubmit { get; set; }
+    [Parameter]
+    private UserView UserProfile { get; set; } = new UserView();
 
     public List<string> Errors = new List<string>();
     public bool IsValid = false;
@@ -103,5 +102,4 @@
         IsValid = Errors.Count() == 0;
         StateHasChanged();
     }
-
 }

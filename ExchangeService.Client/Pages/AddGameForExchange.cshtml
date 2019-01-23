@@ -10,14 +10,11 @@
 
 <h1>Add game for exchange</h1>
 <br />
-
 <GamesListDetails OnSubmit="SaveDetails" gameDetails="Game" ItemChanged="@SetGameDtoCallback">
     <button type="submit" class="btn btn-primary" disabled="@(Game == null)">
         Save game details
     </button>
 </GamesListDetails>
-
-
 <br /><br />
 @if (newUserGame != null)
 {

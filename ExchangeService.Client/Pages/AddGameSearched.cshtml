@@ -9,13 +9,11 @@
 
 <h1>Add game search</h1>
 <br />
-
 <GamesListDetails OnSubmit="AddToSearched" gameDetails="Game" ItemChanged="@SetGameDtoCallback">
     <button type="submit" class="btn btn-primary" disabled="@(Game == null)">
         Add game search
     </button>
 </GamesListDetails>
-
 
 @functions {
 
