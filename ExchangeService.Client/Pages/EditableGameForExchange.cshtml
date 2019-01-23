@@ -1,5 +1,4 @@
 ﻿@using ExchangeService.Shared.Resources
-@using ExchangeService.Shared.Enums;
 @using ExchangeService.Client.Services;
 @page "/editableexchangegame/{UserGameId}"
 @inject HttpClient Http
@@ -7,7 +6,7 @@
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<h3>Edit game: @gameView.Title</h3>
+<h3>Edit game: @GameView.Title</h3>
 <br />
 
 <div class="container">
@@ -79,151 +78,17 @@
         </div>
 
         <div class="col-sm-9">
-            <div class="row">
-                <div class="col-sm-8">
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Genre: </p>
-                        </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.GenreName</p>
-                        </div>
+            <GameDetails Game="GameView" />
+            <ValidateUserGame OnSubmit="UpdateDetails" UserGame="UserGameView" Pictures="GamePictures">                
+                <div class="row">
+                    <div class="col-sm-4">
+                        <a role="button" class="btn btn-secondary btn-block" href="/myprofile">Back to profile</a>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Player count: </p>
-                        </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.PlayerCount</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Age required: </p>
-                        </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.MinAgeRequired</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Game time (in minutes): </p>
-                        </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.GameTimeInMin</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Publisher: </p>
-                        </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.Publisher</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <p class="font-weight-normal">Description: </p>
-                        </div>
-                        <div class="col-sm-4">
-                            <p class="font-italic">@gameView.Description</p>
-                        </div>
+                    <div class="col-sm-4">
+                        <button type="submit" class="btn btn-primary btn-block">Update details</button>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <div class="row justify-content-center">
-                        <img src="@gameView.ImageUrl" width="200" height="200">
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8">
-                    <form>
-                        <div class="row" style="padding:4px">
-                            <label for="shipment" class="col-sm-6 col-form-label"> Shipment type: </label>
-                            <div class="col-sm-6">
-                                <select bind="@gameView.Shipment" class="form-control">
-                                    @foreach (var shipmentType in Enum.GetValues(typeof(Shipment)))
-                                    {
-                                        <option value="@shipmentType">@shipmentType</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row" style="padding:4px">
-                            <label for="isComplete" class="col-sm-6 col-form-label"> Is this game complete: </label>
-                            <div class="col-sm-6">
-                                <input type="checkbox" class="form-control" id="isComplete" placeholder="false" bind="@gameView.IsComplete" />
-                            </div>
-                        </div>
-                        <div class="row" style="padding:4px">
-                            <label for="gameState" class="col-sm-6 col-form-label"> Game state: </label>
-                            <div class="col-sm-6">
-                                <select bind="@gameView.State" class="form-control">
-                                    @foreach (var gameState in Enum.GetValues(typeof(GameState)))
-                                    {
-                                        <option value="@gameState">@gameState</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row" style="padding:4px">
-                            <label for="stateDescription" class="col-sm-6 col-form-label"> State description: </label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="stateDescription" placeholder="Description of game state" bind="@gameView.UserGameDescription" />
-                            </div>
-                        </div>
-                        <div class="row" style="padding:4px">
-                            <label for="gamePictures" class="col-sm-6"> Game pictures: </label>
-                        </div>
-                        <div class="row" style="padding:4px">
-                            <div class="col-sm-6">
-                                @foreach (var picture in gamePictures)
-                                {
-                                    <div class="row">
-                                        <div class="col-sm-10">
-                                            <img class="d-block w-100" src="@picture">
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <i onclick="@(() => DeletePicture(picture))" class="fas fa-trash-alt"></i>
-                                        </div>
-                                    </div>
-                                    <br />
-                                }
-                            </div>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="pictureUrl" placeholder="Url for game picture" bind="@newPictureUrl" />
-                                <br />
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <button type="button" class="btn btn-light btn-block" onclick="@(() => AddNewPicture())">Add picture</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @if (errorsUsergame.Count() > 0)
-                        {
-                            <br />
-                            <div class="alert alert-danger" role="alert">
-                                <br />
-                                @foreach (var error in errorsUsergame)
-                                {
-                                    <p class="font-italic">@error</p>
-                                }
-                            </div>
-                        }
-                        <br />
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <a role="button" class="btn btn-secondary btn-block" href="/myprofile">Back to profile</a>
-                            </div>
-                            <div class="col-sm-4">
-                                <button type="button" class="btn btn-primary btn-block" onclick=@(async () => await UpdateUserGameDetails())>Update details</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            </ValidateUserGame>
         </div>
     </div>
 </div>
@@ -231,17 +96,13 @@
 @functions {
     [Parameter]
     string UserGameId { get; set; }
-    UserGameView gameView { get; set; } = new UserGameView();
-    DropDownItem[] genres;
+    GameView GameView { get; set; } = new GameView();
+    UserGameDto UserGameView { get; set; } = new UserGameDto();
+    List<string> GamePictures { get; set; } = new List<string>();
     UserView gameOwner { get; set; } = new UserView();
+    DropDownItem[] genres;
     bool contactDetailsVisible = false;
     string contactDetailsButton = "Show contact details";
-    public bool isValidUsergame = false;
-    public List<string>
-    errorsUsergame = new List<string>();
-    public string newPictureUrl = "";
-    List<string> gamePictures = new List<string>();
-
 
     protected override async Task OnInitAsync()
     {
@@ -250,18 +111,15 @@
         {
             UriHelper.NavigateTo("/unauthorized");
         }
-        gameView = await Http.GetJsonAsync<UserGameView>("http://localhost:5000/api/users/game/" + UserGameId);
-        genres = await Http.GetJsonAsync<DropDownItem[]>
-            ("http://localhost:5000/api/genres");
-
-        gameOwner = await Http.GetJsonAsync<UserView>
-            ("http://localhost:5000/api/users/myprofile");
-        gamePictures = gameView.UserImages.ToList();
-        if (gameOwner.UserId != gameView.UserId)
+        UserGameView = await Http.GetJsonAsync<UserGameDto>("http://localhost:5000/api/users/game/" + UserGameId);
+        GameView = await Http.GetJsonAsync<GameView>("http://localhost:5000/api/games/getview/" + UserGameView.GameId);
+        GamePictures = UserGameView.UserImages.ToList();
+        genres = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/genres");
+        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
+        if (gameOwner.UserId != UserGameView.UserId)
         {
             UriHelper.NavigateTo("/gameeditfail");
         }
-        Console.WriteLine(gamePictures);
     }
 
     private void ToogleContactDetails()
@@ -278,46 +136,18 @@
         }
     }
 
-    private async Task UpdateUserGameDetails()
+    private async Task UpdateDetails(UIEventArgs args)
     {
-        errorsUsergame.Clear();
-        ValidateInputsUsergame();
-        if (isValidUsergame)
+        UserGameDto updatedUserGame = new UserGameDto
         {
-            Console.WriteLine(string.Join(",", gamePictures));
-            UserGameDto updatedUserGame = new UserGameDto
-            {
-                GameId = gameView.GameId,
-                State = gameView.State,
-                IsComplete = gameView.IsComplete,
-                Shipment = gameView.Shipment,
-                UserGameDescription = gameView.UserGameDescription,
-                UserImages = gamePictures.ToArray()
-            };
-            await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
-            UriHelper.NavigateTo("/gameupdatedsuccess");
-        }
-    }
-
-    private void ValidateInputsUsergame()
-    {
-        if (string.IsNullOrEmpty(gameView.UserGameDescription))
-            errorsUsergame.Add("Please fill game state description.");
-
-        isValidUsergame = errorsUsergame.Count() == 0;
-        StateHasChanged();
-    }
-
-    private void AddNewPicture()
-    {
-        gamePictures.Add(newPictureUrl);
-        newPictureUrl = string.Empty;
-        StateHasChanged();
-    }
-
-    private void DeletePicture(string picture)
-    {
-        gamePictures.Remove(picture);
-        StateHasChanged();
+            GameId = UserGameView.GameId,
+            State = UserGameView.State,
+            IsComplete = UserGameView.IsComplete,
+            Shipment = UserGameView.Shipment,
+            UserGameDescription = UserGameView.UserGameDescription,
+            UserImages = GamePictures.ToArray()
+        };
+        await Http.PutJsonAsync("http://localhost:5000/api/users/games/", updatedUserGame);
+        UriHelper.NavigateTo("/gameupdatedsuccess");
     }
 }

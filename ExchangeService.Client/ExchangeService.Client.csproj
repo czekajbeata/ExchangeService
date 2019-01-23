@@ -27,6 +27,9 @@
     <Content Update="Pages\Base Components\GameDetails.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Pages\Base Components\ValidateUserGame.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Components\GamesListDetails.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

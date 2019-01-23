@@ -42,33 +42,32 @@
     </div>
     @if (Errors.Count() > 0)
     {
-    <br />
-    <div class="alert alert-danger" role="alert">
         <br />
-        @foreach (var error in Errors)
+        <div class="alert alert-danger" role="alert">
+            <br />
+            @foreach (var error in Errors)
             {
-        <p class="font-italic">@error</p>
+                <p class="font-italic">@error</p>
             }
-    </div>
+        </div>
     }
     @ChildContent
 </form>
 
 @functions{
 
-    [Parameter]
-    private RenderFragment ChildContent { get; set; }
-    [Parameter]
-    private Func<UIEventArgs, Task> OnSubmit { get; set; }
-    [Parameter]
-    public UserView UserProfile { get; set; } = new UserView();
+        [Parameter]
+        private RenderFragment ChildContent { get; set; }
+        [Parameter]
+        private Func<UIEventArgs, Task> OnSubmit { get; set; }
+        [Parameter]
+        private UserView UserProfile { get; set; } = new UserView();
 
     public List<string> Errors = new List<string>();
     public bool IsValid = false;
 
     private async Task OnSubmitValidateAsync(UIEventArgs eventArgs)
     {
-        Console.WriteLine("in fill");
         Errors.Clear();
         ValidateInputs();
         if (IsValid)
@@ -78,31 +77,31 @@
     }
 
     public void ValidateInputs()
-        {
-            if (string.IsNullOrEmpty(UserProfile.Name))
-                Errors.Add("Please fill your name.");
-            if (string.IsNullOrEmpty(UserProfile.Location))
-                Errors.Add("Please fill your location.");
+    {
+        if (string.IsNullOrEmpty(UserProfile.Name))
+            Errors.Add("Please fill your name.");
+        if (string.IsNullOrEmpty(UserProfile.Location))
+            Errors.Add("Please fill your location.");
 
-            if (string.IsNullOrEmpty(UserProfile.PhoneNumber) && string.IsNullOrEmpty(UserProfile.ContactEmail))
-                Errors.Add("Please fill at least one contact detail.");
-            else
+        if (string.IsNullOrEmpty(UserProfile.PhoneNumber) && string.IsNullOrEmpty(UserProfile.ContactEmail))
+            Errors.Add("Please fill at least one contact detail.");
+        else
+        {
+            if (!string.IsNullOrEmpty(UserProfile.PhoneNumber))
             {
-                if (!string.IsNullOrEmpty(UserProfile.PhoneNumber))
-                {
-                    string phonePattern = @"\d{3}-? *\d{3}-? *-?\d{3}";
-                    Regex rgx = new Regex(phonePattern);
-                    if (!rgx.IsMatch(UserProfile.PhoneNumber))
-                        Errors.Add("Phone number has invalid format.");
-                }
-                if (!string.IsNullOrEmpty(UserProfile.ContactEmail))
-                {
-                    if (!UserProfile.ContactEmail.Contains("@"))
-                        Errors.Add("Email has invalid format.");
-                }
+                string phonePattern = @"\d{3}-? *\d{3}-? *-?\d{3}";
+                Regex rgx = new Regex(phonePattern);
+                if (!rgx.IsMatch(UserProfile.PhoneNumber))
+                    Errors.Add("Phone number has invalid format.");
             }
-            IsValid = Errors.Count() == 0;
-            StateHasChanged();
+            if (!string.IsNullOrEmpty(UserProfile.ContactEmail))
+            {
+                if (!UserProfile.ContactEmail.Contains("@"))
+                    Errors.Add("Email has invalid format.");
+            }
         }
+        IsValid = Errors.Count() == 0;
+        StateHasChanged();
+    }
 
 }
