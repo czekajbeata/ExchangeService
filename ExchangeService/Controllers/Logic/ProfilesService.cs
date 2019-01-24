@@ -46,7 +46,7 @@ namespace ExchangeService.Controllers.Logic
         {
             var user = userProfiles.GetUserProfile(userId);
             var userExchanges = exchanges.GetUserExchanges(userId);
-            userExchanges = userExchanges.Where(e => e.State != ExchangeState.Declined).ToArray();
+            userExchanges = userExchanges.Where(e => e.State != ExchangeState.Declined && e.State != ExchangeState.Waiting).ToArray();
             var comments = userProfiles.GetComments(userId);
             return mappingService.GetUserViewFromUser(user, comments, userExchanges.Count());
         }

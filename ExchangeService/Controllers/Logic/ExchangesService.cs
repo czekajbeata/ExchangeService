@@ -16,11 +16,12 @@ namespace ExchangeService.Controllers.Logic
         private readonly MappingService mappingService;
         private readonly IGames games;
 
-        public ExchangesService(IUserProfiles userProfiles, IExchanges exchanges, IUnitOfWork unitOfWork, MappingService mappingService)
+        public ExchangesService(IUserProfiles userProfiles, IExchanges exchanges, IUnitOfWork unitOfWork, IGames games, MappingService mappingService)
         {
             this.userProfiles = userProfiles;
             this.exchanges = exchanges;
             this.unitOfWork = unitOfWork;
+            this.games = games;
             this.mappingService = mappingService;
         }
 
@@ -147,7 +148,8 @@ namespace ExchangeService.Controllers.Logic
                     var otherUserGames = exchange.OtherUsersGames.Split(',').ToArray();
                     for (int i = 0; i < myGames.Count(); i++)
                     {
-                        myGames[i] = games.GetGame(Int32.Parse(myGames[i])).Title;
+                        var g = games.GetGame(Int32.Parse(myGames[i]));
+                        myGames[i] = g.Title;
                     }
                     for (int i = 0; i < otherUserGames.Count(); i++)
                     {
