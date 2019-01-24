@@ -1,0 +1,66 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@inject HttpClient Http
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Shipment type: </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@UserGame.Shipment</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Is this game complete: </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@UserGame.IsComplete</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Game state: </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@UserGame.State</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">State description: </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@UserGame.UserGameDescription</p>
+                </div>
+            </div>
+
+            @if (UserGame.UserImages != null && UserGame.UserImages.Count() > 0)
+            {
+                <div class="row">
+                    <div class="col-sm-8">
+                        <p class="font-weight-normal">Game pictures: </p>
+                    </div>
+                </div>
+                @for (int i = 0; i < UserGame.UserImages.Count(); i++)
+                {
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <img class="d-block w-100" src="@UserGame.UserImages[i]">
+                        </div>
+                    </div>
+                    <br />
+                }
+                <br /><br />
+            }
+        </div>
+    </div>
+</div>
+
+@functions{
+    [Parameter]
+    UserGameDto UserGame { get; set; } = new UserGameDto();
+}

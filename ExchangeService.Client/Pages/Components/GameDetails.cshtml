@@ -1,0 +1,70 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Client.Services;
+@inject HttpClient Http
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Genre: </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@Game.GenreName</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Player count: </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@Game.PlayerCount</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Age required: </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@Game.MinAgeRequired</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Game time (in minutes): </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@Game.GameTimeInMin</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Publisher: </p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="font-italic">@Game.Publisher</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="font-weight-normal">Description: </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <p class="font-italic">@Game.Description</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="row justify-content-center">
+                <img src="@Game.ImageUrl" width="250" height="250">
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions{
+    [Parameter]
+    GameView Game { get; set; } = new GameView();
+}

@@ -47,12 +47,6 @@ namespace ExchangeService.Data.Persistance
             return null;
         }
 
-        public Genre GetGenreByName(string name)
-        {
-            if (name != null) return context.Genres.FirstOrDefault(g => g.Name == name);
-            return null;
-        }
-
         public (int,int) GetPlayerCounts(string playerCount)
         {
             string pattern = @"(\d+)\-(\d+)";

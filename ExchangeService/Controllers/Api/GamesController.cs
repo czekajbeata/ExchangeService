@@ -11,14 +11,12 @@ namespace ExchangeService.Controllers.Api
     public class GamesController : ControllerBase
     {
         private readonly DropDownService dropDownService;
-        private readonly ShelvesService shelvesService;
-        private readonly ProfilesService profilesService;
+        private readonly GamesService gamesService;
 
-        public GamesController(DropDownService dropDownService, ShelvesService shelvesService, ProfilesService profilesService)
+        public GamesController(DropDownService dropDownService, GamesService gamesService)
         {
             this.dropDownService = dropDownService;
-            this.shelvesService = shelvesService;
-            this.profilesService = profilesService;
+            this.gamesService = gamesService;
         }
         
         [HttpGet("api/genres")]
@@ -30,11 +28,11 @@ namespace ExchangeService.Controllers.Api
         [HttpGet("api/{query?}")]
         public IEnumerable<GameView> GetAllGames(string query)
         {
-            return shelvesService.GetAllGames(query);
+            return gamesService.GetAllGames(query);
         }
 
         [HttpGet("api/games/{query?}")]
-        public IEnumerable<DropDownItem> GetGames(string query)
+        public IEnumerable<DropDownItem> GetGamesList(string query)
         {
             return dropDownService.GetGamesList(query);
         }
@@ -42,7 +40,7 @@ namespace ExchangeService.Controllers.Api
         [HttpGet("api/games/get/{id}")]
         public IActionResult GetGameDetails(int id)
         {
-            var game = shelvesService.GetGameDetails(id);
+            var game = gamesService.GetGameDetails(id);
 
             if (game != null)
                 return Ok(game);          
@@ -53,7 +51,7 @@ namespace ExchangeService.Controllers.Api
         [HttpGet("api/games/getview/{id}")]
         public IActionResult GetGameView(int id)
         {
-            var game = shelvesService.GetGameView(id);
+            var game = gamesService.GetGameView(id);
 
             if (game != null)
                 return Ok(game);
@@ -61,79 +59,11 @@ namespace ExchangeService.Controllers.Api
             return NotFound();
         }
 
-        [HttpGet("api/users/searches/{id}")]
-        public IEnumerable<UserSearchGameView> GetUserGameSearches(int id)
-        {
-            return shelvesService.GetUserSearchGames(id);
-        }
-
-        [HttpGet("api/users/search/{userSearchId}")]
-        public UserSearchGameView GetUserSearch(int userSearchId)
-        {
-            return shelvesService.GetUserSearch(userSearchId);
-        }
-
-        [Authorize]
-        [HttpGet("api/searches/check/{gameId}")]
-        public bool CanAddSearch(int gameId)
-        {
-            var id = User.Claims.Single(c => c.Type == "Id").Value;
-            var normalizedId = profilesService.ToNormalizedId(id);
-            return shelvesService.CanAddSearch(gameId, normalizedId);
-        }
-
-        [Authorize]
-        [HttpGet("api/games/check/{gameId}")]
-        public bool CanAddForExchange(int gameId)
-        {
-            var id = User.Claims.Single(c => c.Type == "Id").Value;
-            var normalizedId = profilesService.ToNormalizedId(id);
-            return shelvesService.CanAddForExchange(gameId, normalizedId);
-        }
-
-        [HttpGet("api/users/games/{userId}")]
-        public IEnumerable<UserGameView> GetUserGames(int userId)
-        {
-            return shelvesService.GetUserGames(userId);
-        }
-
-        [HttpGet("api/usergames/{gameId}")]
-        public IEnumerable<GameAndUserView> GetUserGamesByGame(int gameId)
-        {
-            return shelvesService.GetUserGamesByGame(gameId);
-        }
-
-        [HttpGet("api/users/game/{userGameId}")]
-        public UserGameView GetUserGame(int userGameId)
-        {
-            return shelvesService.GetUserGame(userGameId);
-        }
-
-        [Authorize]
-        [HttpPost("api/users/games")]
-        public IActionResult AddUserGame([FromBody] UserGameDto userGameDto)
-        {
-            var id = User.Claims.Single(c => c.Type == "Id").Value;
-            var normalizedId = profilesService.ToNormalizedId(id);
-            var result = shelvesService.AddUserGame(userGameDto, normalizedId);
-            return result ? (IActionResult)Ok() : BadRequest();
-        }
-
-        [Authorize]
-        [HttpPost("api/users/searches")]
-        public IActionResult AddUserSearchGame([FromBody] UserSearchGameDto userGameDto)
-        {
-            var id = User.Claims.Single(c => c.Type == "Id").Value;
-            var normalizedId = profilesService.ToNormalizedId(id);
-            var result = shelvesService.AddUserSearchGame(userGameDto, normalizedId);
-            return result ? (IActionResult)Ok() : BadRequest();
-        }
-
         [Authorize]
         [HttpPost("api/games")]
         public IActionResult AddGame([FromBody] GameDto gameDto)
         {
-            var result = shelvesService.AddGame(gameDto);
+            var result = gamesService.AddGame(gameDto);
             return result ? (IActionResult)Ok() : BadRequest();
         }
 
@@ -141,34 +71,8 @@ namespace ExchangeService.Controllers.Api
         [HttpPut("api/games")]
         public IActionResult UpdateGame([FromBody] GameDto gameDto)
         {
-            var result = shelvesService.UpdateGame(gameDto);
+            var result = gamesService.UpdateGame(gameDto);
             return result ? (IActionResult)Ok() : BadRequest();
-        }
-
-        [Authorize]
-        [HttpPut("api/users/games")]
-        public IActionResult UpdateUserGame([FromBody] UserGameDto userGameDto)
-        {
-            var id = User.Claims.Single(c => c.Type == "Id").Value;
-            var normalizedId = profilesService.ToNormalizedId(id);
-            var result = shelvesService.UpdateUserGame(userGameDto, normalizedId);
-            return result ? (IActionResult)Ok() : BadRequest();
-        }
-
-        [Authorize]
-        [HttpDelete("api/users/searches/{userSearchId}")]
-        public IActionResult DeleteUserSearch(int userSearchId)
-        {
-            var result = shelvesService.DeleteUserSearch(userSearchId);
-            return result ? (IActionResult)Ok() : NoContent();
-        }
-
-        [Authorize]
-        [HttpDelete("api/users/games/{userGameId}")]
-        public IActionResult DeleteUserGame(int userGameId)
-        {
-            var result = shelvesService.DeleteUserGame(userGameId);
-            return result ? (IActionResult)Ok() : NoContent();
         }
     }
 }

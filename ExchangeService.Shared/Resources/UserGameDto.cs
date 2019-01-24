@@ -4,6 +4,7 @@ namespace ExchangeService.Shared.Resources
 {
     public class UserGameDto
     {
+        public int UserId { get; set; }
         public int GameId { get; set; }
         public GameState State { get; set; }
         public bool IsComplete { get; set; }

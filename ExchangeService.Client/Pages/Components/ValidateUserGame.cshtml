@@ -1,0 +1,133 @@
+﻿@using ExchangeService.Shared.Resources;
+@using ExchangeService.Shared.Enums;
+@using System.Text.RegularExpressions;
+@inject HttpClient Http
+
+<form novalidate onsubmit="@OnSubmitValidateAsync">
+    <div class="form-group row">
+        <label for="shipment" class="col-sm-6"> Shipment type: </label>
+        <div class="col-sm-6">
+            <select bind="@UserGame.Shipment" class="form-control">
+                @foreach (var shipmentType in Enum.GetValues(typeof(Shipment)))
+                {
+                    <option value="@shipmentType">@shipmentType</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="isComplete" class="col-sm-6"> Is your game complete: </label>
+        <div class="col-sm-6">
+            <input type="checkbox" class="form-control" id="isComplete" placeholder="false" bind="@UserGame.IsComplete" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="gameState" class="col-sm-6"> Game state: </label>
+        <div class="col-sm-6">
+            <select bind="@UserGame.State" class="form-control">
+                @foreach (var gameState in Enum.GetValues(typeof(GameState)))
+                {
+                    <option value="@gameState">@gameState</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="stateDescription" class="col-sm-6"> State description: </label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="stateDescription" placeholder="Description of game state" bind="@UserGame.UserGameDescription" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="gamePictures" class="col-sm-6"> Game pictures: </label>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-6">
+            @foreach (var picture in Pictures)
+            {
+                <div class="row">
+                    <div class="col-sm-10">
+                        <img class="d-block w-100" src="@picture">
+                    </div>
+                    <div class="col-sm-2">
+                        <i onclick="@(() => DeletePicture(picture))" class="fas fa-trash-alt"></i>
+                    </div>
+                </div>
+                <br />
+            }
+        </div>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="pictureUrl" placeholder="Url for game picture" bind="@newPictureUrl" />
+            <br />
+            <div class="row">
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-light btn-block" onclick="@(() => AddNewPicture())">Add picture</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (Errors.Count() > 0)
+    {
+        <br />
+        <div class="alert alert-danger" role="alert">
+            <br />
+            @foreach (var error in Errors)
+            {
+                <p class="font-italic">@error</p>
+            }
+        </div>
+    }
+    @ChildContent
+</form>
+
+@functions{
+
+    [Parameter]
+    private RenderFragment ChildContent { get; set; }
+    [Parameter]
+    private Func<UIEventArgs, Task> OnSubmit { get; set; }
+    [Parameter]
+    private UserGameDto UserGame { get; set; } = new UserGameDto();
+    [Parameter]
+    List<string> Pictures { get; set; } = new List<string>();
+
+    public List<string> Errors = new List<string>();
+    public bool IsValid = false;
+    public string newPictureUrl = "";
+
+    private async Task OnSubmitValidateAsync(UIEventArgs eventArgs)
+    {
+        Errors.Clear();
+        ValidateInputs();
+        Console.WriteLine("In validate");
+        if (IsValid)
+        {
+            await OnSubmit(eventArgs);
+        }
+    }
+
+    public void ValidateInputs()
+    {
+        if (string.IsNullOrEmpty(UserGame.UserGameDescription))
+            Errors.Add("Please fill game state description.");
+
+        IsValid = Errors.Count() == 0;
+        StateHasChanged();
+    }
+
+    private void AddNewPicture()
+    {
+        if(!string.IsNullOrEmpty(newPictureUrl))
+        {
+            Pictures.Add(newPictureUrl);
+            newPictureUrl = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    private void DeletePicture(string picture)
+    {
+        Pictures.Remove(picture);
+        StateHasChanged();
+    }
+}
