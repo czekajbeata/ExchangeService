@@ -77,6 +77,14 @@ namespace ExchangeService.Controllers.Api
             return profilesService.DoesProfileExist(id);
         }
 
+        [HttpGet("api/users/profile/email")]
+        public async Task<string> GetUserEmail()
+        {
+            var id = User.Claims.Single(c => c.Type == "Id").Value;
+            var user = await userManager.FindByIdAsync(id);
+            return user.Email;
+        }
+
         [HttpPost("api/users/profile")]
         public IActionResult AddUserProfile([FromBody] UserView user)
         {

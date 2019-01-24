@@ -8,16 +8,30 @@
                 @Body
             </div>
         </div>
+        <div class="row justify-content-center">
+            <div style="position:fixed; bottom:0; width:70%">
+                <div class="alert alert-secondary mt-4" role="alert" style="width:100%">
+                    <div class="row" style="padding:3px">
+                        <span class="oi oi-pencil mr-2" aria-hidden="true"></span>
+                        <text>
+                            <strong>Problems? </strong>
+                            Contact us at
+                            <text class="font-italic">helper@exchanges.com.</text>
+                        </text>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @functions {
 
-    [Parameter]
-    private bool ParentDropdown { get; set; } = false;
+[Parameter]
+private bool ParentDropdown { get; set; } = false;
 
-    void CloseNavDropdown()
-    {
-        ParentDropdown = false;
-    }
+void CloseNavDropdown()
+{
+    ParentDropdown = false;
+}
 }

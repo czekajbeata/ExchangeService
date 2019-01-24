@@ -37,6 +37,8 @@
                 UriHelper.NavigateTo("/edit");
             }
         }
+        var email = await Http.GetJsonAsync<string>("http://localhost:5000/api/users/profile/email");
+        Profile.ContactEmail = email;
     }
 
     private async Task SubmitForm(UIEventArgs args)

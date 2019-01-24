@@ -36,6 +36,8 @@
         {
             var user = await appState.GetMyProfile();
             Profile = user;
+            if (Profile.ContactEmail.Equals("not given")) Profile.ContactEmail = string.Empty;
+            if (Profile.PhoneNumber.Equals("not given")) Profile.PhoneNumber = string.Empty;
         }
     }
 

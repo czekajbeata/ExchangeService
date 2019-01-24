@@ -40,7 +40,7 @@ namespace ExchangeService.Data.Persistance
         
         public User GetUserProfile(int userId)
         {
-            return context.UserProfiles.SingleOrDefault(u => u.UserId == userId);
+            return context.UserProfiles.FirstOrDefault(u => u.UserId == userId);
         }
 
         public User GetUserByInnerId(string innerId)

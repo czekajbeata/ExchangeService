@@ -20,6 +20,10 @@
         <label for="password">Password</label>
         <input type="password" name="password" placeholder="Password" class="form-control" bind="@Password" />
     </div>
+    <div class="form-group">
+        <label for="confirmPassword">Confirm password</label>
+        <input type="password" name="confirmPassword" placeholder="Confirm password" class="form-control" bind="@ConfirmPassword" />
+    </div>
 
     @if (errors.Count() > 0)
     {
@@ -39,6 +43,7 @@
 @functions{
     public string Email { get; set; } = "";
     public string Password { get; set; } = "";
+    public string ConfirmPassword { get; set; } = "";
     public bool isValid = false;
     public List<string> errors = new List<string>();
     const int MIN_LENGTH = 8;
@@ -80,6 +85,8 @@
     {
         if (!Email.Contains("@"))
             errors.Add("Email has invalid format.");
+        if (!Password.Equals(ConfirmPassword))
+            errors.Add("Passwords do not match.");
         if (Password.Length < MIN_LENGTH || Password.Length > MAX_LENGTH)
             errors.Add("Passwords lenght has to be between " + MIN_LENGTH + " and " + MAX_LENGTH + ".");
 
