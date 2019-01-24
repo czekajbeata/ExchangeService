@@ -19,6 +19,7 @@ namespace ExchangeService.Client.Services
         private UserView userProfile;
         public bool IsUserLoggedIn { get; private set; }
         public string Token { get; set; }
+        public string Email { get; set; }
 
         public AppState(HttpClient http, LocalStorage localStorage)
         {

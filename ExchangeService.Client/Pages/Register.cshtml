@@ -74,6 +74,7 @@
             var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
             await tokenService.SaveAccessToken(response.Token);
             appState.LogUser(response.Token);
+            appState.Email = Email;
             if (!string.IsNullOrEmpty(await tokenService.GetAccessToken()))
             {
                 UriHelper.NavigateTo("/fillprofile");
