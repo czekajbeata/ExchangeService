@@ -123,9 +123,6 @@
     <Content Update="Pages\GameForExchange.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Pages\FillProfile.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="Pages\Informations\GameExchangeAdded - Success.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

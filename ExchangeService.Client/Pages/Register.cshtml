@@ -3,47 +3,73 @@
 @page "/register"
 @inject HttpClient Http
 @inject TokenService tokenService
+@inject ReloadService reloadService
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<form>
-    <h1>Register</h1>
-    <div class="form-group">
-        <label for="email">Email</label>
-        <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
-        @if (!isEmailValid)
-        {
-            <p class="font-italic" style="color: red">User with that e-mail is already registered.</p>
-        }
-    </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" name="password" placeholder="Password" class="form-control" bind="@Password" />
-    </div>
-    <div class="form-group">
-        <label for="confirmPassword">Confirm password</label>
-        <input type="password" name="confirmPassword" placeholder="Confirm password" class="form-control" bind="@ConfirmPassword" />
-    </div>
-
-    @if (errors.Count() > 0)
-    {
-        <br />
-        <div class="alert alert-danger" role="alert">
-            <br />
-            @foreach (var error in errors)
-            {
-                <p class="font-italic">@error</p>
-            }
+@if (!isRegistered)
+{
+    <form>
+        <h1>Register</h1>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <div class="col-sm-6">
+                <input type="text" name="email" placeholder="Email" class="form-control" bind="@Email" />
+                @if (!isEmailValid)
+                {
+                    <p class="font-italic" style="color: red">User with that e-mail is already registered.</p>
+                }
+            </div>
         </div>
-    }
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="col-sm-6">
+                <input type="password" name="password" placeholder="Password" class="form-control" bind="@Password" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">Confirm password</label>
+            <div class="col-sm-6">
+                <input type="password" name="confirmPassword" placeholder="Confirm password" class="form-control" bind="@ConfirmPassword" />
+            </div>
+        </div>
 
-    <button type="button" class="btn btn-primary" onclick="@SubmitForm">Create an account</button>
-</form>
+        @if (errors.Count() > 0)
+        {
+            <br />
+            <div class="alert alert-danger" role="alert">
+                <br />
+                @foreach (var error in errors)
+                {
+                    <p class="font-italic">@error</p>
+                }
+            </div>
+        }
+        <br /><br />
+        <button type="button" class="btn btn-primary" onclick="@RegisterAccount">Create an account</button>
+    </form>
+}
+else
+{
+    <h2>Thank you for registering!</h2>
+    <h3>Plese provide additional details before you get started:</h3>
+    <br />
+    <ValidateProfile OnSubmit="SubmitForm" UserProfile="Profile">
+        <div class="row">
+            <div class="col-sm-3">
+                <button type="submit" class="btn btn-primary btn-block">Create profile</button>
+            </div>
+        </div>
+    </ValidateProfile>
+}
+
 
 @functions{
+    public UserView Profile { get; set; } = new UserView();
     public string Email { get; set; } = "";
     public string Password { get; set; } = "";
     public string ConfirmPassword { get; set; } = "";
+    public bool isRegistered = false;
     public bool isValid = false;
     public List<string> errors = new List<string>();
     const int MIN_LENGTH = 8;
@@ -58,7 +84,7 @@
         }
     }
 
-    private async Task SubmitForm()
+    private async Task RegisterAccount()
     {
         errors.Clear();
         ValidateInputs();
@@ -74,10 +100,11 @@
             var response = await Http.PostJsonAsync<TokenResponse>("http://localhost:5000/api/token/login", tokenvm);
             await tokenService.SaveAccessToken(response.Token);
             appState.LogUser(response.Token);
-            appState.Email = Email;
             if (!string.IsNullOrEmpty(await tokenService.GetAccessToken()))
             {
-                UriHelper.NavigateTo("/fillprofile");
+                isRegistered = true;
+                Profile.ContactEmail = Email;
+                StateHasChanged();
             }
         }
     }
@@ -126,5 +153,18 @@
     private class TokenResponse
     {
         public string Token;
+    }
+
+    private async Task SubmitForm(UIEventArgs args)
+    {
+        if (Profile.ImageUrl == null)
+            Profile.ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png";
+
+        await Http.PostJsonAsync("http://localhost:5000/api/users/profile", Profile);
+        if (await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile") != null)
+        {
+            await reloadService.ReloadPage();
+            UriHelper.NavigateTo("/myprofile");
+        }
     }
 }
