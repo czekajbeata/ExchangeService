@@ -13,13 +13,15 @@ namespace ExchangeService.Controllers.Logic
         private readonly IUserSearches userSearches;
         private readonly IUserProfiles userProfiles;
         private readonly IUnitOfWork unitOfWork;
+        private readonly MappingService mappingService;
 
-        public UserSearchesService(IGames games, IUserSearches userSearches, IUserProfiles userProfiles, IUnitOfWork unitOfWork)
+        public UserSearchesService(IGames games, IUserSearches userSearches, IUserProfiles userProfiles, IUnitOfWork unitOfWork, MappingService mappingService)
         {
             this.games = games;
             this.userSearches = userSearches;
             this.userProfiles = userProfiles;
             this.unitOfWork = unitOfWork;
+            this.mappingService = mappingService;
         }
 
         public bool CanAddSearch(int gameId, int userId)
@@ -30,11 +32,7 @@ namespace ExchangeService.Controllers.Logic
 
         public bool AddUserSearchGame(UserSearchGameDto newUserSearchGame, int userId)
         {
-            UserSearchGame newUserSearch = new UserSearchGame()
-            {
-                UserId = userId,
-                GameId = newUserSearchGame.GameId
-            };
+            UserSearchGame newUserSearch = mappingService.GetUserSearchGameFromDto(newUserSearchGame, userId);
             userSearches.AddSearchGame(newUserSearch);
             unitOfWork.CompleteWork();
             return newUserSearch.UserSearchGameId != 0;
@@ -44,14 +42,7 @@ namespace ExchangeService.Controllers.Logic
         {
             var userSearch = userSearches.GetUserSearch(userSearchId);
             var game = games.GetGame(userSearch.GameId);
-            return new UserSearchGameView()
-            {
-                UserSearchId = userSearch.UserSearchGameId,
-                GameId = userSearch.GameId,
-                UserId = userSearch.UserId,
-                ImageUrl = game.ImageUrl,
-                Title = game.Title
-            };
+            return mappingService.GetUserSearchGameView(game, userSearch);
         }
 
         public IEnumerable<UserSearchGameView> GetUserSearchGames(int userId)
@@ -60,14 +51,8 @@ namespace ExchangeService.Controllers.Logic
             List<UserSearchGameView> searchedGameViews = new List<UserSearchGameView>();
             foreach (var game in searchedGames)
             {
-                var gamePiece = GetGameDetails(game.GameId);
-                searchedGameViews.Add(new UserSearchGameView()
-                {
-                    UserSearchId = game.UserSearchGameId,
-                    GameId = game.GameId,
-                    Title = gamePiece.Title,
-                    ImageUrl = gamePiece.ImageUrl
-                });
+                var gamePiece = games.GetGame(game.GameId);
+                searchedGameViews.Add(mappingService.GetUserSearchGameView(gamePiece, game));
             }
             return searchedGameViews;
         }
@@ -77,26 +62,6 @@ namespace ExchangeService.Controllers.Logic
             bool result = userSearches.DeleteUserSearch(userSearchId);
             unitOfWork.CompleteWork();
             return result;
-        }
-        
-        private GameDto GetGameDetails(int id)
-        {
-            var game = games.GetGame(id);
-            if (game is null)
-                return null;
-            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
-            return new GameDto()
-            {
-                Description = game.Description,
-                GameId = game.GameId,
-                GenreId = game.GenreId,
-                ImageUrl = game.ImageUrl,
-                PlayerCount = playerCount,
-                MinAgeRequired = game.MinAgeRequired.ToString(),
-                Publisher = game.Publisher,
-                Title = game.Title,
-                GameTimeInMin = game.GameTimeInMin.ToString()
-            };
         }
     }
 }

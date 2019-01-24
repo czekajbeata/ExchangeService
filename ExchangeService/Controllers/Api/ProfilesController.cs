@@ -113,15 +113,12 @@ namespace ExchangeService.Controllers.Api
             {
                 return BadRequest();
             }
-
-
+            
             var user = await userManager.FindByEmailAsync(tokenvm.Email);
             var correctUser = await userManager.CheckPasswordAsync(user, tokenvm.Password);
 
             var result = await signInManager.PasswordSignInAsync(tokenvm.Email, tokenvm.Password, false, lockoutOnFailure: true);
-
-            //return StatusCode((int)HttpStatusCode.OK, user);
-
+            
             if (!correctUser)
             {
                 return BadRequest("Username or password is incorrect");

@@ -11,11 +11,13 @@ namespace ExchangeService.Controllers.Logic
     {
         private readonly IGames games;
         private readonly IUnitOfWork unitOfWork;
+        private readonly MappingService mappingService;
 
-        public GamesService(IGames games, IUnitOfWork unitOfWork)
+        public GamesService(IGames games, IUnitOfWork unitOfWork, MappingService mappingService)
         {
             this.games = games;
             this.unitOfWork = unitOfWork;
+            this.mappingService = mappingService;
         }
         
         public IEnumerable<GameView> GetAllGames(string query)
@@ -24,37 +26,15 @@ namespace ExchangeService.Controllers.Logic
             List<GameView> gameDtos = new List<GameView>();
             foreach (var game in gamesDetails)
             {
-                var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
-                gameDtos.Add(new GameView()
-                {
-                    Description = game.Description,
-                    GameId = game.GameId,
-                    GenreName = games.GetGenre(game.GenreId).Name,
-                    ImageUrl = game.ImageUrl,
-                    PlayerCount = playerCount,
-                    MinAgeRequired = game.MinAgeRequired.ToString(),
-                    Publisher = game.Publisher,
-                    Title = game.Title,
-                    GameTimeInMin = game.GameTimeInMin.ToString()
-                });
+                var genre = games.GetGenre(game.GenreId).Name;
+                gameDtos.Add(mappingService.GetGameViewFromGame(game, genre));
             }
             return gameDtos;
         }
 
         public bool AddGame(GameDto game)
         {
-            Game newGame = new Game()
-            {
-                Description = game.Description ?? String.Empty,
-                GenreId = game.GenreId,
-                ImageUrl = game.ImageUrl ?? null,
-                MaxPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item2,
-                MinPlayerCount = games.GetPlayerCounts(game.PlayerCount).Item1,
-                MinAgeRequired = Int32.Parse(game.MinAgeRequired),
-                Publisher = game.Publisher ?? String.Empty,
-                Title = game.Title,
-                GameTimeInMin = Int32.Parse(game.GameTimeInMin)
-            };
+            Game newGame = mappingService.GetGameFromGameDto(game);
             games.AddGame(newGame);
             unitOfWork.CompleteWork();
             return newGame.GameId != 0;
@@ -65,19 +45,7 @@ namespace ExchangeService.Controllers.Logic
             var game = games.GetGame(id);
             if (game is null)
                 return null;
-            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
-            return new GameDto()
-            {
-                Description = game.Description,
-                GameId = game.GameId,
-                GenreId = game.GenreId,
-                ImageUrl = game.ImageUrl,
-                PlayerCount = playerCount,
-                MinAgeRequired = game.MinAgeRequired.ToString(),
-                Publisher = game.Publisher,
-                Title = game.Title,
-                GameTimeInMin = game.GameTimeInMin.ToString()
-            };
+            return mappingService.GetGameDtoFromGame(game);
         }
 
         public GameView GetGameView(int id)
@@ -85,19 +53,8 @@ namespace ExchangeService.Controllers.Logic
             var game = games.GetGame(id);
             if (game is null)
                 return null;
-            var playerCount = game.MinPlayerCount + "-" + game.MaxPlayerCount;
-            return new GameView()
-            {
-                Description = game.Description,
-                GameId = game.GameId,
-                GenreName = games.GetGenre(game.GenreId).Name,
-                ImageUrl = game.ImageUrl,
-                PlayerCount = playerCount,
-                MinAgeRequired = game.MinAgeRequired.ToString(),
-                Publisher = game.Publisher,
-                Title = game.Title,
-                GameTimeInMin = game.GameTimeInMin.ToString()
-            };
+            var genre = games.GetGenre(game.GenreId).Name;
+            return mappingService.GetGameViewFromGame(game, genre);
         }
 
         public bool UpdateGame(GameDto updatedGame)
@@ -109,8 +66,8 @@ namespace ExchangeService.Controllers.Logic
             existingGame.Description = updatedGame.Description;
             existingGame.GenreId = updatedGame.GenreId;
             existingGame.ImageUrl = updatedGame.ImageUrl;
-            existingGame.MaxPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item2;
-            existingGame.MinPlayerCount = games.GetPlayerCounts(updatedGame.PlayerCount).Item1;
+            existingGame.MaxPlayerCount = mappingService.GetPlayerCounts(updatedGame.PlayerCount).Item2;
+            existingGame.MinPlayerCount = mappingService.GetPlayerCounts(updatedGame.PlayerCount).Item1;
             existingGame.MinAgeRequired = Int32.Parse(updatedGame.MinAgeRequired);
             existingGame.Publisher = updatedGame.Publisher;
             existingGame.Title = updatedGame.Title;

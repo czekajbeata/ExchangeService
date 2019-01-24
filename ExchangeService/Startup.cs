@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ExchangeService.Data;
@@ -18,9 +14,6 @@ using ExchangeService.Data.Persistance;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Reflection;
-using ExchangeService.Core.Entities;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace ExchangeService
@@ -55,6 +48,7 @@ namespace ExchangeService
             services.AddTransient<GamesService>();
             services.AddTransient<UserGamesService>();
             services.AddTransient<UserSearchesService>();
+            services.AddSingleton<MappingService>();
             services.AddTransient<IGames, Games>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IUserProfiles, UserProfiles>();

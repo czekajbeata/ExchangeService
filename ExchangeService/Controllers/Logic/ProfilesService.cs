@@ -16,8 +16,9 @@ namespace ExchangeService.Controllers.Logic
         private readonly IUserSearches userSearches;
         private readonly IUserGames userGames;
         private readonly IGames games;
+        private readonly MappingService mappingService;
 
-        public ProfilesService(IUserProfiles userProfiles, IUnitOfWork unitOfWork, IExchanges exchanges, IUserSearches userSearches, IUserGames userGames, IGames games)
+        public ProfilesService(IUserProfiles userProfiles, IUnitOfWork unitOfWork, IExchanges exchanges, IUserSearches userSearches, IUserGames userGames, IGames games, MappingService mappingService)
         {
             this.userProfiles = userProfiles;
             this.unitOfWork = unitOfWork;
@@ -25,6 +26,7 @@ namespace ExchangeService.Controllers.Logic
             this.userSearches = userSearches;
             this.userGames = userGames;
             this.games = games;
+            this.mappingService = mappingService;
         }
         
         public int ToNormalizedId(string innerId)
@@ -34,17 +36,7 @@ namespace ExchangeService.Controllers.Logic
 
         public bool AddUserProfile(UserView user, string innerUserId)
         {
-            User newUser = new User()
-            {
-                InnerUserId = innerUserId,
-                Location = user.Location ?? String.Empty,
-                Name = user.Name,
-                Surname = user.Surname ?? String.Empty,
-                ImageUrl = user.ImageUrl ?? String.Empty,
-                PhoneNumber = user.PhoneNumber ?? "not given",
-                ContactEmail = user.ContactEmail ?? "not given"
-
-            };
+            User newUser = mappingService.GetUserFromUserView(user, innerUserId);
             userProfiles.AddUserProfile(newUser);
             unitOfWork.CompleteWork();
             return newUser.UserId != 0;
@@ -56,22 +48,7 @@ namespace ExchangeService.Controllers.Logic
             var userExchanges = exchanges.GetUserExchanges(userId);
             userExchanges = userExchanges.Where(e => e.State != ExchangeState.Declined).ToArray();
             var comments = userProfiles.GetComments(userId);
-            var avgMark = comments.Select(c => c.Mark).Sum() / comments.Count();
-            if (!(avgMark > 0)) avgMark = 0;
-            else avgMark = Math.Round(avgMark, 2);
-            return new UserView()
-            {
-                UserId = user.UserId,
-                Location = user.Location,
-                Name = user.Name,
-                Surname = user.Surname,
-                ImageUrl = user.ImageUrl,
-                PhoneNumber = user.PhoneNumber,
-                ContactEmail = user.ContactEmail,
-                AvgMark = avgMark,
-                ExchangesCount = userExchanges.Count(),
-                ReviewsCount = comments.Count()
-            };
+            return mappingService.GetUserViewFromUser(user, comments, userExchanges.Count());
         }
 
         public bool DoesProfileExist(string innerId)
@@ -100,15 +77,7 @@ namespace ExchangeService.Controllers.Logic
             List<CommentDto> commentDtos = new List<CommentDto>();
             foreach (var comment in userComments)
             {
-                commentDtos.Add(new CommentDto()
-                {
-                    LeavingUserId = comment.LeavingUserId,
-                    CommentDate = comment.CommentDate,
-                    Mark = comment.Mark,
-                    Text = comment.Text,
-                    IsVisible = comment.IsVisible,
-                    ConnectedExchangeId = comment.ConnectedExchangeId
-                });
+                commentDtos.Add(mappingService.GetCommentDtoFromComment(comment));
             }
             return commentDtos;
         }
@@ -148,6 +117,5 @@ namespace ExchangeService.Controllers.Logic
             }
             return myMatches;
         }
-
     }
 }
