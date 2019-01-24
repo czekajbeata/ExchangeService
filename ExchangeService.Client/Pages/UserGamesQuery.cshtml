@@ -18,39 +18,36 @@ else
     <div class="container">
         <div class="row">
             <div class="col-sm-2">
-                <div class="alert alert-secondary" role="alert">
-                    <div class="row">
-                        <p>Game states: </p>
+                <div class="card">
+                    <h5 class="card-header">Filters</h5>
+                    <div class="card-body" style="padding:10px">
+                        <p class="card-text font-weight-bold">Game states: </p>
+                        @foreach (var state in gameStates)
+                        {
+                            <div>
+                                <input type="checkbox" checked="@(selectedStates.Contains(state))" onchange="@(() => ToogleStateSelect(state))" />@state
+                            </div>
+                        }
+                        <br />
+                        <p class="card-text font-weight-bold">Shipment type: </p>
+                        @foreach (var shipment in shimpments)
+                        {
+                            <div>
+                                <input type="radio" checked="@(gameShipment == shipment)" onclick="@(() => gameShipment = gameShipment == shipment ? "" : shipment)" />@shipment
+                            </div>
+                        }
+                        <br />
+                        <p class="card-text font-weight-bold">Game completeness: </p>
+                        @foreach (var complete in completeness)
+                        {
+                            <div>
+                                <input type="radio" checked="@(isComplete == complete)" onclick="@(() => isComplete = isComplete == complete ? "" : complete)" />@complete
+                            </div>
+                        }
+                        <br />
+                        <button class="btn btn-outline-primary btn-block" onclick="@(() => FilterGames())">Filter games</button>
+                        <button class="btn btn-outline-primary btn-block" onclick="@(() => ResetFilters())">Reset filters</button>
                     </div>
-                    @foreach (var state in gameStates)
-                    {
-                        <div class="row">
-                            <input type="checkbox" checked="@(selectedStates.Contains(state))" onchange="@(() => ToogleStateSelect(state))" />@state
-                        </div>
-                    }
-                    <br />
-                    <div class="row">
-                        <p>Shipment type: </p>
-                    </div>
-                    @foreach (var shipment in shimpments)
-                    {
-                        <div class="row">
-                            <input type="radio" checked="@(gameShipment == shipment)" onclick="@(() => gameShipment = gameShipment == shipment ? "" : shipment)" />@shipment
-                        </div>
-                    }
-                    <br />
-                    <div class="row">
-                        <p>Game completeness: </p>
-                    </div>
-                    @foreach (var complete in completeness)
-                    {
-                        <div class="row">
-                            <input type="radio" checked="@(isComplete == complete)" onclick="@(() => isComplete = isComplete == complete ? "" : complete)" />@complete
-                        </div>
-                    }
-                    <br/>
-                    <button class="btn btn-outline-primary btn-block" onclick="@(() => FilterGames())">Filter games</button>
-                    <button class="btn btn-outline-primary btn-block" onclick="@(() => ResetFilters())">Reset filters</button>
                 </div>
             </div>
             <div class="col-sm-10">
@@ -138,89 +135,89 @@ else
 }
 
 @functions {
-    [Parameter]
-    string GameId { get; set; }
-    GameAndUserView[] userGames;
-    GameAndUserView[] filteredUserGames;
+[Parameter]
+string GameId { get; set; }
+GameAndUserView[] userGames;
+GameAndUserView[] filteredUserGames;
 
-    string[] gameStates = new string[] { };
-    string[] shimpments = new string[] { };
-    string[] completeness = new string[] { };
+string[] gameStates = new string[] { };
+string[] shimpments = new string[] { };
+string[] completeness = new string[] { };
 
-    List<string> selectedStates = new List<string>();
-    string gameShipment;
-    string isComplete;
+List<string> selectedStates = new List<string>();
+string gameShipment;
+string isComplete;
 
-    protected override async Task OnInitAsync()
+protected override async Task OnInitAsync()
+{
+    appState.TrySetAccessTokens();
+    var usergames = await Http.GetJsonAsync<IEnumerable<GameAndUserView>>("http://localhost:5000/api/usergames/" + GameId);
+    if (appState.IsUserLoggedIn)
     {
-        appState.TrySetAccessTokens();
-        var usergames = await Http.GetJsonAsync<IEnumerable<GameAndUserView>>("http://localhost:5000/api/usergames/" + GameId);
-        if (appState.IsUserLoggedIn)
-        {
-            var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
-            usergames = usergames.Where(g => g.UserId != loggedUserId);
-        }
-        userGames = usergames.ToArray();
-        if (userGames == null || !(userGames.Count() > 0))
-        {
-            UriHelper.NavigateTo($"/usergamesfail");
-        }
-        filteredUserGames = userGames;
-        gameStates = usergames.Select(u => u.State.ToString()).ToArray();
-        shimpments = usergames.Select(u => u.Shipment.ToString()).ToArray();
-        var shipmentList = shimpments.ToList();
-        if(shipmentList.Contains(Shipment.Delivery.ToString()) && shipmentList.Contains(Shipment.Pickup.ToString()) && !shipmentList.Contains(Shipment.Any.ToString()))
-        {
-            shipmentList.Add("Any");
-            shimpments = shipmentList.ToArray();
-        }
-        completeness = usergames.Select(u => u.IsComplete.ToString()).ToArray();
+        var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
+        usergames = usergames.Where(g => g.UserId != loggedUserId);
     }
-
-    private void GetDetails(GameAndUserView row)
+    userGames = usergames.ToArray();
+    if (userGames == null || !(userGames.Count() > 0))
     {
-        UriHelper.NavigateTo($"/exchangegame/{row.UserGameId}");
+        UriHelper.NavigateTo($"/usergamesfail");
     }
-
-    private void OfferDeal(GameAndUserView row)
+    filteredUserGames = userGames;
+    gameStates = usergames.Select(u => u.State.ToString()).ToArray();
+    shimpments = usergames.Select(u => u.Shipment.ToString()).ToArray();
+    var shipmentList = shimpments.ToList();
+    if (shipmentList.Contains(Shipment.Delivery.ToString()) && shipmentList.Contains(Shipment.Pickup.ToString()) && !shipmentList.Contains(Shipment.Any.ToString()))
     {
-        UriHelper.NavigateTo($"/offerdeal/{row.UserId}");
+        shipmentList.Add("Any");
+        shimpments = shipmentList.ToArray();
     }
+    completeness = usergames.Select(u => u.IsComplete.ToString()).ToArray();
+}
 
-    private void ToogleStateSelect(string state)
-    {
-        if (selectedStates.Contains(state))
-            selectedStates.Remove(state);
-        else
-            selectedStates.Add(state);
-        StateHasChanged();
-    }
+private void GetDetails(GameAndUserView row)
+{
+    UriHelper.NavigateTo($"/exchangegame/{row.UserGameId}");
+}
 
-    private void FilterGames()
-    {
-        var filtered = userGames;
-        if (selectedStates.Count > 0)
-        {
-            filtered = filtered.Where(g => selectedStates.Contains(g.State.ToString())).ToArray();
-        }
-        if (!string.IsNullOrEmpty(isComplete))
-        {
-            filtered = filtered.Where(g => g.IsComplete.ToString() == isComplete).ToArray();
-        }
-        if (!string.IsNullOrEmpty(gameShipment) && gameShipment != "Any")
-        {
-            filtered = filtered.Where(g => g.Shipment.ToString() == gameShipment).ToArray();
-        }
-        filteredUserGames = filtered;
-        StateHasChanged();
-    }
+private void OfferDeal(GameAndUserView row)
+{
+    UriHelper.NavigateTo($"/offerdeal/{row.UserId}");
+}
 
-    private void ResetFilters()
+private void ToogleStateSelect(string state)
+{
+    if (selectedStates.Contains(state))
+        selectedStates.Remove(state);
+    else
+        selectedStates.Add(state);
+    StateHasChanged();
+}
+
+private void FilterGames()
+{
+    var filtered = userGames;
+    if (selectedStates.Count > 0)
     {
-        filteredUserGames = userGames;
-        selectedStates.Clear();
-        isComplete = string.Empty;
-        gameShipment = string.Empty;
-        StateHasChanged();
+        filtered = filtered.Where(g => selectedStates.Contains(g.State.ToString())).ToArray();
     }
+    if (!string.IsNullOrEmpty(isComplete))
+    {
+        filtered = filtered.Where(g => g.IsComplete.ToString() == isComplete).ToArray();
+    }
+    if (!string.IsNullOrEmpty(gameShipment) && gameShipment != "Any")
+    {
+        filtered = filtered.Where(g => g.Shipment.ToString() == gameShipment).ToArray();
+    }
+    filteredUserGames = filtered;
+    StateHasChanged();
+}
+
+private void ResetFilters()
+{
+    filteredUserGames = userGames;
+    selectedStates.Clear();
+    isComplete = string.Empty;
+    gameShipment = string.Empty;
+    StateHasChanged();
+}
 }

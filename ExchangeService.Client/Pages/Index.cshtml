@@ -13,49 +13,43 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-2">
-                <div class="alert alert-secondary" role="alert">
-                    <div class="row">
-                        <p>Genres: </p>
+                <div class="card">
+                    <h5 class="card-header">Filters</h5>
+                    <div class="card-body" style="padding:10px">
+                        <p class="card-text font-weight-bold">Genres: </p>
+                        @foreach (var genre in genres)
+                        {
+                            <div>
+                                <input type="checkbox" checked="@(selectedGenres.Contains(genre))" onchange="@(() => ToogleGenreSelect(genre))" />@genre
+                            </div>
+                        }
+                        <br />
+                        <p class="card-text font-weight-bold">Player counts: </p>
+                        @foreach (var player in playersCounts)
+                        {
+                            <div>
+                                <input type="checkbox" checked="@(selectedPlayerCounts.Contains(player))" onchange="@(() => TooglePlayerCountSelect(player))" />@player
+                            </div>
+                        }
+                        <br />
+                        <p class="card-text font-weight-bold">Game time to: </p>
+                        @foreach (var gameTime in gameTimes)
+                        {<div>
+                                <input type="radio" checked="@(maxGameTime == gameTime)" onclick="@(() => maxGameTime = maxGameTime == gameTime ? "" : gameTime)" />@gameTime min
+                            </div>
+                        }
+                        <br />
+                        <p class="card-text font-weight-bold">Min age from: </p>
+                        @foreach (var age in minAges)
+                        {
+                            <div>
+                                <input type="radio" checked="@(minAgeRequired == age)" onclick="@(() => minAgeRequired = minAgeRequired == age ? "" : age)" />@age
+                            </div>
+                        }
+                        <br />
+                        <button class="btn btn-outline-primary btn-block" onclick="@(() => FilterGames())">Filter games</button>
+                        <button class="btn btn-outline-primary btn-block" onclick="@(() => ResetFilters())">Reset filters</button>
                     </div>
-                    @foreach (var genre in genres)
-                    {
-                        <div class="row">
-                            <input type="checkbox" checked="@(selectedGenres.Contains(genre))" onchange="@(() => ToogleGenreSelect(genre))" />@genre
-                        </div>
-                    }
-                    <br />
-                    <div class="row">
-                        <p>Player counts: </p>
-                    </div>
-                    @foreach (var player in playersCounts)
-                    {
-                        <div class="row">
-                            <input type="checkbox" checked="@(selectedPlayerCounts.Contains(player))" onchange="@(() => TooglePlayerCountSelect(player))" />@player
-                        </div>
-                    }
-                    <br />
-                    <div class="row">
-                        <p>Game time to: </p>
-                    </div>
-                    @foreach (var gameTime in gameTimes)
-                    {
-                        <div class="row">
-                            <input type="radio" checked="@(maxGameTime == gameTime)" onclick="@(() => maxGameTime = maxGameTime == gameTime ? "" : gameTime)" />@gameTime min
-                        </div>
-                    }
-                    <br />
-                    <div class="row">
-                        <p>Min age from: </p>
-                    </div>
-                    @foreach (var age in minAges)
-                    {
-                        <div class="row">
-                            <input type="radio" checked="@(minAgeRequired == age)" onclick="@(() => minAgeRequired = minAgeRequired == age ? "" : age)" />@age
-                        </div>
-                    }
-                    <br/>
-                    <button class="btn btn-outline-primary btn-block" onclick="@(() => FilterGames())">Filter games</button>
-                    <button class="btn btn-outline-primary btn-block" onclick="@(() => ResetFilters())">Reset filters</button>
                 </div>
             </div>
             <div class="col-sm-10">
@@ -125,112 +119,112 @@
 
 @functions
 {
-    GameView[] games;
-    GameView[] filteredGames;
-    string query = null;
-    List<string> selectedGenres = new List<string>();
-    string[] genres = new string[] { };
-    List<string> selectedPlayerCounts = new List<string>();
-    string[] playersCounts = new string[] { };
-    string maxGameTime = "";
-    string[] gameTimes = new string[] { };
-    string minAgeRequired = "";
-    string[] minAges = new string[] { };
+GameView[] games;
+GameView[] filteredGames;
+string query = null;
+List<string> selectedGenres = new List<string>();
+string[] genres = new string[] { };
+List<string> selectedPlayerCounts = new List<string>();
+string[] playersCounts = new string[] { };
+string maxGameTime = "";
+string[] gameTimes = new string[] { };
+string minAgeRequired = "";
+string[] minAges = new string[] { };
 
-    [Parameter]
-    private string Query
+[Parameter]
+private string Query
+{
+    get => query;
+    set
     {
-        get => query;
-        set
-        {
-            query = value;
-            if (!string.IsNullOrEmpty(query)) FillGames().ConfigureAwait(false);
-            StateHasChanged();
-        }
-    }
-
-    protected override async Task OnInitAsync()
-    {
-        await FillGames();
-    }
-
-    private async Task FillGames()
-    {
-        appState.TrySetAccessTokens();
-        var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameView>>("http://localhost:5000/api/" + Query);
-        games = gamesByQuery.ToArray();
-        foreach (var game in games)
-        {
-            if (game.Description.Length > 110)
-            {
-                game.Description = game.Description.Substring(0, 84) + "...";
-            }
-        }
-        filteredGames = games;
-        genres = games.Select(g => g.GenreName).Distinct().ToArray();
-        playersCounts = games.Select(g => g.PlayerCount).Distinct().ToArray();
-        gameTimes = games.Select(g => g.GameTimeInMin).Distinct().ToArray();
-        minAges = games.Select(g => g.MinAgeRequired).Distinct().ToArray();
+        query = value;
+        if (!string.IsNullOrEmpty(query)) FillGames().ConfigureAwait(false);
         StateHasChanged();
     }
+}
 
-    private void GetDetails(GameView row)
-    {
-        UriHelper.NavigateTo($"/game/{row.GameId}");
-    }
+protected override async Task OnInitAsync()
+{
+    await FillGames();
+}
 
-    private void GameOffers(GameView row)
+private async Task FillGames()
+{
+    appState.TrySetAccessTokens();
+    var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameView>>("http://localhost:5000/api/" + Query);
+    games = gamesByQuery.ToArray();
+    foreach (var game in games)
     {
-        UriHelper.NavigateTo($"/games/{row.GameId}");
-    }
-
-    private void ToogleGenreSelect(string genre)
-    {
-        if (selectedGenres.Contains(genre))
-            selectedGenres.Remove(genre);
-        else
-            selectedGenres.Add(genre);
-        StateHasChanged();
-    }
-
-    private void TooglePlayerCountSelect(string playerCount)
-    {
-        if (selectedPlayerCounts.Contains(playerCount))
-            selectedPlayerCounts.Remove(playerCount);
-        else
-            selectedPlayerCounts.Add(playerCount);
-        StateHasChanged();
-    }
-
-    private void FilterGames()
-    {
-        var filtered = games;
-        if(selectedGenres.Count > 0)
+        if (game.Description.Length > 110)
         {
-            filtered = filtered.Where(g => selectedGenres.Contains(g.GenreName)).ToArray();
+            game.Description = game.Description.Substring(0, 84) + "...";
         }
-        if (selectedPlayerCounts.Count > 0)
-        {
-            filtered = filtered.Where(g => selectedPlayerCounts.Contains(g.PlayerCount)).ToArray();
-        }
-        if(!string.IsNullOrEmpty(minAgeRequired))
-        {
-            filtered = filtered.Where(g => Int32.Parse(g.MinAgeRequired) >= Int32.Parse(minAgeRequired)).ToArray();
-        }
-        if (!string.IsNullOrEmpty(maxGameTime))
-        {
-            filtered = filtered.Where(g => Int32.Parse(g.GameTimeInMin) <= Int32.Parse(maxGameTime)).ToArray();
-        }
-        filteredGames = filtered;
-        StateHasChanged();
     }
+    filteredGames = games;
+    genres = games.Select(g => g.GenreName).Distinct().ToArray();
+    playersCounts = games.Select(g => g.PlayerCount).Distinct().ToArray();
+    gameTimes = games.Select(g => g.GameTimeInMin).Distinct().ToArray();
+    minAges = games.Select(g => g.MinAgeRequired).Distinct().ToArray();
+    StateHasChanged();
+}
 
-    private void ResetFilters()
+private void GetDetails(GameView row)
+{
+    UriHelper.NavigateTo($"/game/{row.GameId}");
+}
+
+private void GameOffers(GameView row)
+{
+    UriHelper.NavigateTo($"/games/{row.GameId}");
+}
+
+private void ToogleGenreSelect(string genre)
+{
+    if (selectedGenres.Contains(genre))
+        selectedGenres.Remove(genre);
+    else
+        selectedGenres.Add(genre);
+    StateHasChanged();
+}
+
+private void TooglePlayerCountSelect(string playerCount)
+{
+    if (selectedPlayerCounts.Contains(playerCount))
+        selectedPlayerCounts.Remove(playerCount);
+    else
+        selectedPlayerCounts.Add(playerCount);
+    StateHasChanged();
+}
+
+private void FilterGames()
+{
+    var filtered = games;
+    if (selectedGenres.Count > 0)
     {
-        filteredGames = games;
-        selectedGenres.Clear();
-        selectedPlayerCounts.Clear();
-        minAgeRequired = "";
-        maxGameTime = "";
+        filtered = filtered.Where(g => selectedGenres.Contains(g.GenreName)).ToArray();
     }
+    if (selectedPlayerCounts.Count > 0)
+    {
+        filtered = filtered.Where(g => selectedPlayerCounts.Contains(g.PlayerCount)).ToArray();
+    }
+    if (!string.IsNullOrEmpty(minAgeRequired))
+    {
+        filtered = filtered.Where(g => Int32.Parse(g.MinAgeRequired) >= Int32.Parse(minAgeRequired)).ToArray();
+    }
+    if (!string.IsNullOrEmpty(maxGameTime))
+    {
+        filtered = filtered.Where(g => Int32.Parse(g.GameTimeInMin) <= Int32.Parse(maxGameTime)).ToArray();
+    }
+    filteredGames = filtered;
+    StateHasChanged();
+}
+
+private void ResetFilters()
+{
+    filteredGames = games;
+    selectedGenres.Clear();
+    selectedPlayerCounts.Clear();
+    minAgeRequired = "";
+    maxGameTime = "";
+}
 }
