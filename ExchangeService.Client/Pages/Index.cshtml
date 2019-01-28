@@ -20,7 +20,7 @@
                         @foreach (var genre in genres)
                         {
                             <div>
-                                <input type="checkbox" checked="@(selectedGenres.Contains(genre))" onchange="@(() => ToogleGenreSelect(genre))" />@genre
+                                <input type="checkbox" checked="@(selectedGenres.Contains(genre))" onchange="@(() => ToogleGenreSelect(genre))" /> @genre
                             </div>
                         }
                         <br />
@@ -28,14 +28,14 @@
                         @foreach (var player in playersCounts)
                         {
                             <div>
-                                <input type="checkbox" checked="@(selectedPlayerCounts.Contains(player))" onchange="@(() => TooglePlayerCountSelect(player))" />@player
+                                <input type="checkbox" checked="@(selectedPlayerCounts.Contains(player))" onchange="@(() => TooglePlayerCountSelect(player))" /> @player
                             </div>
                         }
                         <br />
                         <p class="card-text font-weight-bold">Game time to: </p>
                         @foreach (var gameTime in gameTimes)
                         {<div>
-                                <input type="radio" checked="@(maxGameTime == gameTime)" onclick="@(() => maxGameTime = maxGameTime == gameTime ? "" : gameTime)" />@gameTime min
+                                <input type="radio" checked="@(maxGameTime == gameTime)" onclick="@(() => maxGameTime = maxGameTime == gameTime ? "" : gameTime)" /> @gameTime min
                             </div>
                         }
                         <br />
@@ -43,7 +43,7 @@
                         @foreach (var age in minAges)
                         {
                             <div>
-                                <input type="radio" checked="@(minAgeRequired == age)" onclick="@(() => minAgeRequired = minAgeRequired == age ? "" : age)" />@age
+                                <input type="radio" checked="@(minAgeRequired == age)" onclick="@(() => minAgeRequired = minAgeRequired == age ? "" : age)" /> @age
                             </div>
                         }
                         <br />
@@ -57,8 +57,8 @@
                     <thead>
                         <tr>
                             <th style="width: 30%">Game</th>
-                            <th style="width: 10%">Title</th>
-                            <th style="width: 20%">Genre</th>
+                            <th style="width: 15%">Title</th>
+                            <th style="width: 15%">Genre</th>
                             <th style="width: 30%">Description</th>
                             <th style="width: 10%"></th>
                         </tr>
@@ -70,7 +70,9 @@
                                 <td>
                                     <div class="row">
                                         <div class="col-sm-5">
-                                            <img src="@gameRow.ImageUrl" width="100" height="100" />
+                                            <div class="row justify-content-center">
+                                                <img src="@gameRow.ImageUrl" style="max-width:100px; max-height:100px" />
+                                            </div>
                                         </div>
                                         <div class="col-sm-7">
                                             <div class="row">
@@ -119,112 +121,116 @@
 
 @functions
 {
-GameView[] games;
-GameView[] filteredGames;
-string query = null;
-List<string> selectedGenres = new List<string>();
-string[] genres = new string[] { };
-List<string> selectedPlayerCounts = new List<string>();
-string[] playersCounts = new string[] { };
-string maxGameTime = "";
-string[] gameTimes = new string[] { };
-string minAgeRequired = "";
-string[] minAges = new string[] { };
+    GameView[] games;
+    GameView[] filteredGames;
+    string query = null;
+    List<string> selectedGenres = new List<string>();
+    string[] genres = new string[] { };
+    List<string> selectedPlayerCounts = new List<string>();
+    string[] playersCounts = new string[] { };
+    string maxGameTime = "";
+    string[] gameTimes = new string[] { };
+    string minAgeRequired = "";
+    string[] minAges = new string[] { };
 
-[Parameter]
-private string Query
-{
-    get => query;
-    set
+    [Parameter]
+    private string Query
     {
-        query = value;
-        if (!string.IsNullOrEmpty(query)) FillGames().ConfigureAwait(false);
-        StateHasChanged();
-    }
-}
-
-protected override async Task OnInitAsync()
-{
-    await FillGames();
-}
-
-private async Task FillGames()
-{
-    appState.TrySetAccessTokens();
-    var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameView>>("http://localhost:5000/api/" + Query);
-    games = gamesByQuery.ToArray();
-    foreach (var game in games)
-    {
-        if (game.Description.Length > 110)
+        get => query;
+        set
         {
-            game.Description = game.Description.Substring(0, 84) + "...";
+            query = value;
+            if (!string.IsNullOrEmpty(query)) FillGames().ConfigureAwait(false);
+            StateHasChanged();
         }
     }
-    filteredGames = games;
-    genres = games.Select(g => g.GenreName).Distinct().ToArray();
-    playersCounts = games.Select(g => g.PlayerCount).Distinct().ToArray();
-    gameTimes = games.Select(g => g.GameTimeInMin).Distinct().ToArray();
-    minAges = games.Select(g => g.MinAgeRequired).Distinct().ToArray();
-    StateHasChanged();
-}
 
-private void GetDetails(GameView row)
-{
-    UriHelper.NavigateTo($"/game/{row.GameId}");
-}
-
-private void GameOffers(GameView row)
-{
-    UriHelper.NavigateTo($"/games/{row.GameId}");
-}
-
-private void ToogleGenreSelect(string genre)
-{
-    if (selectedGenres.Contains(genre))
-        selectedGenres.Remove(genre);
-    else
-        selectedGenres.Add(genre);
-    StateHasChanged();
-}
-
-private void TooglePlayerCountSelect(string playerCount)
-{
-    if (selectedPlayerCounts.Contains(playerCount))
-        selectedPlayerCounts.Remove(playerCount);
-    else
-        selectedPlayerCounts.Add(playerCount);
-    StateHasChanged();
-}
-
-private void FilterGames()
-{
-    var filtered = games;
-    if (selectedGenres.Count > 0)
+    protected override async Task OnInitAsync()
     {
-        filtered = filtered.Where(g => selectedGenres.Contains(g.GenreName)).ToArray();
+        await FillGames();
     }
-    if (selectedPlayerCounts.Count > 0)
-    {
-        filtered = filtered.Where(g => selectedPlayerCounts.Contains(g.PlayerCount)).ToArray();
-    }
-    if (!string.IsNullOrEmpty(minAgeRequired))
-    {
-        filtered = filtered.Where(g => Int32.Parse(g.MinAgeRequired) >= Int32.Parse(minAgeRequired)).ToArray();
-    }
-    if (!string.IsNullOrEmpty(maxGameTime))
-    {
-        filtered = filtered.Where(g => Int32.Parse(g.GameTimeInMin) <= Int32.Parse(maxGameTime)).ToArray();
-    }
-    filteredGames = filtered;
-    StateHasChanged();
-}
 
-private void ResetFilters()
-{
-    filteredGames = games;
-    selectedGenres.Clear();
-    selectedPlayerCounts.Clear();
-    minAgeRequired = "";
-    maxGameTime = "";
-}
+    private async Task FillGames()
+    {
+        appState.TrySetAccessTokens();
+        var gamesByQuery = await Http.GetJsonAsync<IEnumerable<GameView>>("http://localhost:5000/api/" + Query);
+        games = gamesByQuery.ToArray();
+        foreach (var game in games)
+        {
+            if (game.Description.Length > 110)
+            {
+                game.Description = game.Description.Substring(0, 80) + "...";
+            }
+        }
+        filteredGames = games;
+        genres = games.Select(g => g.GenreName).Distinct().ToArray();
+        genres = genres.OrderBy(g => g).ToArray();
+        playersCounts = games.Select(g => g.PlayerCount).Distinct().ToArray();
+        playersCounts = playersCounts.OrderBy(g => g).ToArray();
+        gameTimes = games.Select(g => g.GameTimeInMin).Distinct().ToArray();
+        gameTimes = gameTimes.OrderBy(g => Int32.Parse(g)).ToArray();
+        minAges = games.Select(g => g.MinAgeRequired).Distinct().ToArray();
+        minAges = minAges.OrderBy(g => Int32.Parse(g)).ToArray();
+        StateHasChanged();
+    }
+
+    private void GetDetails(GameView row)
+    {
+        UriHelper.NavigateTo($"/game/{row.GameId}");
+    }
+
+    private void GameOffers(GameView row)
+    {
+        UriHelper.NavigateTo($"/games/{row.GameId}");
+    }
+
+    private void ToogleGenreSelect(string genre)
+    {
+        if (selectedGenres.Contains(genre))
+            selectedGenres.Remove(genre);
+        else
+            selectedGenres.Add(genre);
+        StateHasChanged();
+    }
+
+    private void TooglePlayerCountSelect(string playerCount)
+    {
+        if (selectedPlayerCounts.Contains(playerCount))
+            selectedPlayerCounts.Remove(playerCount);
+        else
+            selectedPlayerCounts.Add(playerCount);
+        StateHasChanged();
+    }
+
+    private void FilterGames()
+    {
+        var filtered = games;
+        if (selectedGenres.Count > 0)
+        {
+            filtered = filtered.Where(g => selectedGenres.Contains(g.GenreName)).ToArray();
+        }
+        if (selectedPlayerCounts.Count > 0)
+        {
+            filtered = filtered.Where(g => selectedPlayerCounts.Contains(g.PlayerCount)).ToArray();
+        }
+        if (!string.IsNullOrEmpty(minAgeRequired))
+        {
+            filtered = filtered.Where(g => Int32.Parse(g.MinAgeRequired) >= Int32.Parse(minAgeRequired)).ToArray();
+        }
+        if (!string.IsNullOrEmpty(maxGameTime))
+        {
+            filtered = filtered.Where(g => Int32.Parse(g.GameTimeInMin) <= Int32.Parse(maxGameTime)).ToArray();
+        }
+        filteredGames = filtered;
+        StateHasChanged();
+    }
+
+    private void ResetFilters()
+    {
+        filteredGames = games;
+        selectedGenres.Clear();
+        selectedPlayerCounts.Clear();
+        minAgeRequired = "";
+        maxGameTime = "";
+    }
 }

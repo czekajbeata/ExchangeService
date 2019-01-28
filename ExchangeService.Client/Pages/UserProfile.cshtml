@@ -56,7 +56,7 @@ else
                     @for (int i = 0; i < userGames.Count(); i++)
                     {
                         <div class="col-sm-2">
-                            <div><img src="@userGames[i].ImageUrl" width="100" height="100" /></div>
+                            <div><img src="@userGames[i].ImageUrl" style="max-width:100px; max-height:100px"/></div>
                             <div><a href="/exchangegame/@userGames[i].UserGameId">@userGames[i].Title</a></div>
                         </div>
                     }
@@ -75,7 +75,7 @@ else
                     @for (int i = 0; i < userSearchGames.Count(); i++)
                     {
                         <div class="col-sm-2">
-                            <div><img src="@userSearchGames[i].ImageUrl" width="100" height="100" /></div>
+                            <div><img src="@userSearchGames[i].ImageUrl" style="max-width:100px; max-height:100px"/></div>
                             <div><a href="/game/@userSearchGames[i].GameId">@userSearchGames[i].Title</a></div>
                         </div>
                     }
@@ -108,7 +108,7 @@ else
                                             @comentators[i].Name @comentators[i].Surname
                                         </div>
                                         <div class="row justify-content-center">
-                                            <img src="@comentators[i].ImageUrl" width="100" height="100" />
+                                            <img src="@comentators[i].ImageUrl" style="max-width:100px; max-height:100px"/>
                                         </div>
                                     </td>
                                     <td>@comments[i].CommentDate.ToShortDateString()</td>

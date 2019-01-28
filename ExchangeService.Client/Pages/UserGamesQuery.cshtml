@@ -69,7 +69,7 @@ else
                                 <td>
                                     <div class="row">
                                         <div class="col-sm-5">
-                                            <img src="@gameRow.ImageUrl" width="80" height="80" />
+                                            <img src="@gameRow.ImageUrl" style="max-height:90px; max-width:90px" />
                                         </div>
                                         <div class="col-sm-7">
                                             <div class="row">
@@ -104,15 +104,15 @@ else
                                 <td>@gameRow.Shipment</td>
                                 <td>
                                     <div class="row">
-                                        <div class="col-sm-6">
-                                            <img src="@gameRow.UserImageUrl" width="80" height="80" />
+                                        <div class="col-sm-6 ">
+                                            <img src="@gameRow.UserImageUrl" style="max-height:90px; max-width:90px" />
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="row">
                                                 @gameRow.Name @gameRow.Surname
                                             </div>
                                             <div class="row">
-                                                <i class="fas fa-map-marker-alt" /> @gameRow.Location
+                                                <i class="fas fa-map-marker-alt"  style="padding-right:5px"/> @gameRow.Location
                                             </div>
                                             <div class="row">
                                                 Avg mark: @gameRow.AvgMark
