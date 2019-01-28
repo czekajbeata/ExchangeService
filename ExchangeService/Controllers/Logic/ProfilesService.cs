@@ -61,7 +61,7 @@ namespace ExchangeService.Controllers.Logic
             var existingProfile = userProfiles.GetUserProfile(user.UserId);
             if (existingProfile == null)
                 return false;
-            existingProfile.ImageUrl = user.ImageUrl;
+            existingProfile.ImageUrl = String.IsNullOrEmpty(user.ImageUrl) ? "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png" : user.ImageUrl;
             existingProfile.Location = user.Location;
             existingProfile.Name = user.Name;
             existingProfile.Surname = user.Surname;

@@ -69,7 +69,7 @@ namespace ExchangeService.Controllers.Logic
                 Location = user.Location ?? String.Empty,
                 Name = user.Name,
                 Surname = user.Surname ?? String.Empty,
-                ImageUrl = user.ImageUrl ?? String.Empty,
+                ImageUrl = String.IsNullOrEmpty(user.ImageUrl) ? "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png" : user.ImageUrl,
                 PhoneNumber = user.PhoneNumber ?? "not given",
                 ContactEmail = user.ContactEmail ?? "not given"
             };

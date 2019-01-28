@@ -1,49 +1,50 @@
 ﻿@using ExchangeService.Shared.Resources;
-@using ExchangeService.Client.Services;
 @inject HttpClient Http
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <div class="container">
-    <div class="alert alert-secondary" role="alert">
-        <div class="row justify-content-center">
-            <img src="@Profile.ImageUrl" width="150" height="150">
-        </div>
-        <div class="row justify-content-center">
-            <p class="font-weight-bold">@Profile.Name @Profile.Surname</p>
-        </div>
-        <div class="row" style="padding:4px">
-            <div class="col-sm-2">
-                <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+    <div class="card">
+        <div class="card-header ">
+            <div class="row justify-content-center">
+                <img src="@Profile.ImageUrl" width="150" height="150">
             </div>
-            <div class="col-sm-10">
-                <p class="font-weight-normal">@Profile.Location</p>
+            <div class="row justify-content-center">
+                <h5>@Profile.Name @Profile.Surname</h5>
             </div>
-        </div>
-        <div class="row" style="padding:4px">
-            <div class="col-sm-9">
-                <p class="font-weight-normal">Exchanges made:</p>
-            </div>
-            <div class="col-sm-3">
-                @Profile.ExchangesCount
+            <div class="row justify-content-center">
+                <p>
+                    <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                    @Profile.Location
+                </p>
             </div>
         </div>
-        <div class="row" style="padding:4px">
-            <div class="col-sm-9">
-                <p class="font-weight-normal">Reviews:</p>
+        <div class="card-body">
+            <div class="row" style="padding:4px">
+                <div class="col-sm-9">
+                    <p class="font-weight-normal">Exchanges made:</p>
+                </div>
+                <div class="col-sm-3">
+                    @Profile.ExchangesCount
+                </div>
             </div>
-            <div class="col-sm-3">
-                @Profile.ReviewsCount
+            <div class="row" style="padding:4px">
+                <div class="col-sm-9">
+                    <p class="font-weight-normal">Reviews:</p>
+                </div>
+                <div class="col-sm-3">
+                    @Profile.ReviewsCount
+                </div>
             </div>
+            <div class="row" style="padding:4px">
+                <div class="col-sm-9">
+                    <p class="font-weight-normal">Average mark:</p>
+                </div>
+                <div class="col-sm-3">
+                    @Profile.AvgMark
+                </div>
+            </div>
+                @ChildContent
         </div>
-        <div class="row" style="padding:4px">
-            <div class="col-sm-9">
-                <p class="font-weight-normal">Average mark:</p>
-            </div>
-            <div class="col-sm-3">
-                @Profile.AvgMark
-            </div>
-        </div>
-        @ChildContent
     </div>
 </div>
 
