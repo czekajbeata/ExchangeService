@@ -25,16 +25,20 @@ else
                     <div class="col-sm-3">
                         <ProfileDetails Profile="MyProfile" />
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3" style="text-align:left">
+                        <br />
+                        <br />
                         @foreach (var myGame in myGames)
                         {
-                            <input type="checkbox" checked="@(myGamesIds.Contains(myGame.GameId))" onchange="@(() => ToogleMyGamesForExchange(myGame))" />@myGame.Title <br />
+                            <input type="checkbox" checked="@(myGamesIds.Contains(myGame.GameId))" onchange="@(() => ToogleMyGamesForExchange(myGame))" /> @myGame.Title <br />
                         }
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3" style="text-align:right">
+                        <br />
+                        <br />
                         @foreach (var otherGame in otherGames)
                         {
-                            <input type="checkbox" checked="@(otherGamesIds.Contains(otherGame.GameId))" onchange="@(() => ToogleOtherGamesForExchange(otherGame))" />@otherGame.Title <br />
+                            @otherGame.Title <input type="checkbox" checked="@(otherGamesIds.Contains(otherGame.GameId))" onchange="@(() => ToogleOtherGamesForExchange(otherGame))" /><br />
                         }
                     </div>
                     <div class="col-sm-3">

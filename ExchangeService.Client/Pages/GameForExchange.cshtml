@@ -60,6 +60,8 @@
         UserGameView = await Http.GetJsonAsync<UserGameDto>("http://localhost:5000/api/users/game/" + UserGameId);
         GameView = await Http.GetJsonAsync<GameView>("http://localhost:5000/api/games/getview/" + UserGameView.GameId);
 
+        Console.WriteLine("got game");
+
         if (appState.IsUserLoggedIn)
         {
             var loggedUserId = await Http.GetJsonAsync<int>("http://localhost:5000/api/users/id");
@@ -68,6 +70,8 @@
         }
 
         GameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + UserGameView.UserId);
+
+        Console.WriteLine("got owner");
     }
 
     private void ToogleContactDetails()
