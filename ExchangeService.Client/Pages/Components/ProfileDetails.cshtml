@@ -4,7 +4,7 @@
 
 <div class="container">
     <div class="card">
-        <div class="card-header ">
+        <div class="card-header">
             <div class="row justify-content-center">
                 <img src="@Profile.ImageUrl" width="150" height="150">
             </div>
@@ -12,38 +12,24 @@
                 <h5>@Profile.Name @Profile.Surname</h5>
             </div>
             <div class="row justify-content-center">
-                <p>
-                    <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
-                    @Profile.Location
-                </p>
+                <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
+                @Profile.Location
             </div>
         </div>
         <div class="card-body">
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Exchanges made:</p>
-                </div>
-                <div class="col-sm-3">
-                    @Profile.ExchangesCount
-                </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Reviews:</p>
-                </div>
-                <div class="col-sm-3">
-                    @Profile.ReviewsCount
-                </div>
-            </div>
-            <div class="row" style="padding:4px">
-                <div class="col-sm-9">
-                    <p class="font-weight-normal">Average mark:</p>
-                </div>
-                <div class="col-sm-3">
-                    @Profile.AvgMark
-                </div>
-            </div>
-                @ChildContent
+            <p class="card-text">
+                Exchanges made:
+                @Profile.ExchangesCount
+            </p>
+            <p class="card-text">
+                Reviews:
+                @Profile.ReviewsCount
+            </p>
+            <p class="card-text">
+                Average mark:
+                @Profile.AvgMark
+            </p>
+            @ChildContent
         </div>
     </div>
 </div>
