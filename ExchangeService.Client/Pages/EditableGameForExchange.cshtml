@@ -12,69 +12,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-3">
-
-            <div class="alert alert-secondary" role="alert">
-                <div class="row justify-content-center">
-                    <img src="@gameOwner.ImageUrl" width="150" height="150">
-                </div>
-                <div class="row justify-content-center">
-                    <p class="font-weight-bold">@gameOwner.Name @gameOwner.Surname</p>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-2">
-                        <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
-                    </div>
-                    <div class="col-sm-10">
-                        <p class="font-weight-normal">@gameOwner.Location</p>
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Exchanges made:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @gameOwner.ExchangesCount
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Reviews:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @gameOwner.ReviewsCount
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Average mark:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @gameOwner.AvgMark
-                    </div>
-                </div>
-
-                <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
-                @if (contactDetailsVisible)
-                {
-                    <br />
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-2">
-                            <span class="fas fa-phone" style="font-size: 24px"></span>
-                        </div>
-                        <div class="col-sm-10">
-                            <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
-                        </div>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-2">
-                            <span class="fas fa-envelope" style="font-size: 24px"></span>
-                        </div>
-                        <div class="col-sm-10">
-                            <p class="font-weight-normal">@gameOwner.ContactEmail</p>
-                        </div>
-                    </div>
-                }
-            </div>
+            <ProfileDetails Profile="GameOwner"/>
         </div>
         <div class="col-sm-9">
             <GameDetails Game="GameView" />
@@ -98,7 +36,7 @@
     GameView GameView { get; set; } = new GameView();
     UserGameDto UserGameView { get; set; } = new UserGameDto();
     List<string> GamePictures { get; set; } = new List<string>();
-    UserView gameOwner { get; set; } = new UserView();
+    UserView GameOwner { get; set; } = new UserView();
     DropDownItem[] genres;
     bool contactDetailsVisible = false;
     string contactDetailsButton = "Show contact details";
@@ -114,8 +52,8 @@
         GameView = await Http.GetJsonAsync<GameView>("http://localhost:5000/api/games/getview/" + UserGameView.GameId);
         GamePictures = UserGameView.UserImages.ToList();
         genres = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/genres");
-        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
-        if (gameOwner.UserId != UserGameView.UserId)
+        GameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/myprofile");
+        if (GameOwner.UserId != UserGameView.UserId)
         {
             UriHelper.NavigateTo("/gameeditfail");
         }

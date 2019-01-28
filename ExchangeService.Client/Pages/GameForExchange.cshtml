@@ -12,46 +12,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-3">
-            <div class="alert alert-secondary" role="alert">
-                <div class="row justify-content-center">
-                    <img src="@gameOwner.ImageUrl" width="150" height="150">
-                </div>
-                <div class="row justify-content-center">
-                    <p class="font-weight-bold">@gameOwner.Name @gameOwner.Surname</p>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-2">
-                        <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
-                    </div>
-                    <div class="col-sm-10">
-                        <p class="font-weight-normal">@gameOwner.Location</p>
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Exchanges made:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @gameOwner.ExchangesCount
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Reviews:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @gameOwner.ReviewsCount
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Average mark:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @gameOwner.AvgMark
-                    </div>
-                </div>
-
+            <ProfileDetails Profile="GameOwner">
                 <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
                 @if (contactDetailsVisible)
                 {
@@ -61,7 +22,7 @@
                             <span class="fas fa-phone" style="font-size: 24px"></span>
                         </div>
                         <div class="col-sm-10">
-                            <p class="font-weight-normal">@gameOwner.PhoneNumber</p>
+                            <p class="font-weight-normal">@GameOwner.PhoneNumber</p>
                         </div>
                     </div>
                     <div class="row" style="padding:4px">
@@ -69,13 +30,13 @@
                             <span class="fas fa-envelope" style="font-size: 24px"></span>
                         </div>
                         <div class="col-sm-10">
-                            <p class="font-weight-normal">@gameOwner.ContactEmail</p>
+                            <p class="font-weight-normal">@GameOwner.ContactEmail</p>
                         </div>
                     </div>
                 }
-                <button type="button" class="btn btn-primary btn-block" onclick=@(() => VisitProfile())>Visit profile</button>
                 <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
-            </div>
+                <button type="button" class="btn btn-primary btn-block" onclick=@(() => VisitProfile())>Visit profile</button>
+            </ProfileDetails>
         </div>
         <div class="col-sm-9">
             <GameDetails Game="GameView" />
@@ -89,7 +50,7 @@
     string UserGameId { get; set; }
     GameView GameView { get; set; } = new GameView();
     UserGameDto UserGameView { get; set; } = new UserGameDto();
-    UserView gameOwner { get; set; } = new UserView();
+    UserView GameOwner { get; set; } = new UserView();
     bool contactDetailsVisible = false;
     string contactDetailsButton = "Show contact details";
 
@@ -106,7 +67,7 @@
                 UriHelper.NavigateTo($"/editableexchangegame/{UserGameId}");
         }
 
-        gameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + UserGameView.UserId);
+        GameOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + UserGameView.UserId);
     }
 
     private void ToogleContactDetails()
@@ -125,11 +86,11 @@
 
     private void OfferDeal()
     {
-        UriHelper.NavigateTo($"/offerdeal/{gameOwner.UserId}");
+        UriHelper.NavigateTo($"/offerdeal/{GameOwner.UserId}");
     }
 
     private void VisitProfile()
     {
-        UriHelper.NavigateTo($"/profile/{gameOwner.UserId}");
+        UriHelper.NavigateTo($"/profile/{GameOwner.UserId}");
     }
 }

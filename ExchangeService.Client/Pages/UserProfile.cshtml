@@ -7,243 +7,198 @@
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 
-@if (profileOwner == null)
+@if (ProfileOwner == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
     <br />
-    <h1>@profileOwner.Name's profile</h1>
+    <h1>@ProfileOwner.Name's profile</h1>
     <br />
-
-    <div class="row" style="padding:4px">
-
-        <div class="col-sm-3">
-            <div class="alert alert-secondary" role="alert">
-                <div class="row justify-content-center">
-                    <img src="@profileOwner.ImageUrl" width="150" height="150">
-                </div>
-                <div class="row justify-content-center">
-                    <p class="font-weight-bold">@profileOwner.Name @profileOwner.Surname</p>
+    <div class="container">
+        <div class="row" style="padding:4px">
+            <div class="col-sm-3">
+                <ProfileDetails Profile="ProfileOwner">
+                    <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
+                    @if (contactDetailsVisible)
+                    {
+                        <br />
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-2">
+                                <span class="fas fa-phone" style="font-size: 24px"></span>
+                            </div>
+                            <div class="col-sm-10">
+                                <p class="font-weight-normal">@ProfileOwner.PhoneNumber</p>
+                            </div>
+                        </div>
+                        <div class="row" style="padding:4px">
+                            <div class="col-sm-2">
+                                <span class="fas fa-envelope" style="font-size: 24px"></span>
+                            </div>
+                            <div class="col-sm-10">
+                                <p class="font-weight-normal">@ProfileOwner.ContactEmail</p>
+                            </div>
+                        </div>
+                    }
+                    <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
+                </ProfileDetails>
+            </div>
+            <div class="col-sm-9">
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-12">
+                        <div class="alert alert-primary" role="alert">
+                            Games for exchange
+                        </div>
+                    </div>
                 </div>
                 <div class="row" style="padding:4px">
-                    <div class="col-sm-2">
-                        <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
-                    </div>
-                    <div class="col-sm-10">
-                        <p class="font-weight-normal">@profileOwner.Location</p>
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Exchanges made:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @profileOwner.ExchangesCount
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Reviews:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @profileOwner.ReviewsCount
-                    </div>
-                </div>
-                <div class="row" style="padding:4px">
-                    <div class="col-sm-9">
-                        <p class="font-weight-normal">Average mark:</p>
-                    </div>
-                    <div class="col-sm-3">
-                        @profileOwner.AvgMark
-                    </div>
-                </div>
-
-                <button type="button" class="btn btn-primary btn-block" onclick=@(() => ToogleContactDetails())>@contactDetailsButton</button>
-                @if (contactDetailsVisible)
-                {
-                    <br />
-                    <div class="row" style="padding:4px">
+                    @for (int i = 0; i < userGames.Count(); i++)
+                    {
                         <div class="col-sm-2">
-                            <span class="fas fa-phone" style="font-size: 24px"></span>
+                            <div><img src="@userGames[i].ImageUrl" width="100" height="100" /></div>
+                            <div><a href="/exchangegame/@userGames[i].UserGameId">@userGames[i].Title</a></div>
                         </div>
-                        <div class="col-sm-10">
-                            <p class="font-weight-normal">@profileOwner.PhoneNumber</p>
+                    }
+                </div>
+                <br />
+                <br />
+
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-12">
+                        <div class="alert alert-primary" role="alert">
+                            Games searches
                         </div>
                     </div>
-                    <div class="row" style="padding:4px">
+                </div>
+                <div class="row" style="padding:4px">
+                    @for (int i = 0; i < userSearchGames.Count(); i++)
+                    {
                         <div class="col-sm-2">
-                            <span class="fas fa-envelope" style="font-size: 24px"></span>
+                            <div><img src="@userSearchGames[i].ImageUrl" width="100" height="100" /></div>
+                            <div><a href="/game/@userSearchGames[i].GameId">@userSearchGames[i].Title</a></div>
                         </div>
-                        <div class="col-sm-10">
-                            <p class="font-weight-normal">@profileOwner.ContactEmail</p>
+                    }
+                </div>
+                <br />
+                <br />
+                <div class="row" style="padding:4px">
+                    <div class="col-sm-12">
+                        <div class="alert alert-primary" role="alert">
+                            Reviews
                         </div>
                     </div>
-                }
-                <button type="button" class="btn btn-primary btn-block" onclick=@(() => OfferDeal())>Offer a deal</button>
-            </div>
-        </div>
-
-        <div class="col-sm-9">
-
-            <div class="row" style="padding:4px">
-                <div class="col-sm-12">
-                    <div class="alert alert-primary" role="alert">
-                        Games for exchange
-                    </div>
                 </div>
-            </div>
-            <div class="row" style="padding:4px">
-                @for (int i = 0; i < userGames.Count(); i++)
+                @if (comments.Count() > 0 || comments.SingleOrDefault(c => c.IsVisible) != null)
                 {
-                    <div class="col-sm-2">
-                        <div><img src="@userGames[i].ImageUrl" width="100" height="100" /></div>
-                        <div><a href="/exchangegame/@userGames[i].UserGameId">@userGames[i].Title</a></div>
-                    </div>
-                }
-            </div>
-            <br />
-            <br />
-
-            <div class="row" style="padding:4px">
-                <div class="col-sm-12">
-                    <div class="alert alert-primary" role="alert">
-                        Games searches
-                    </div>
-                </div>
-            </div>
-            <div class="row" style="padding:4px">
-                @for (int i = 0; i < userSearchGames.Count(); i++)
-                {
-                    <div class="col-sm-2">
-                        <div><img src="@userSearchGames[i].ImageUrl" width="100" height="100" /></div>
-                        <div><a href="/game/@userSearchGames[i].GameId">@userSearchGames[i].Title</a></div>
-                    </div>
-                }
-            </div>
-            <br />
-            <br />
-
-            <div class="row" style="padding:4px">
-                <div class="col-sm-12">
-                    <div class="alert alert-primary" role="alert">
-                        Reviews
-                    </div>
-                </div>
-            </div>
-            @if (comments.Count() > 0 || comments.SingleOrDefault(c => c.IsVisible) != null)
-            {
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th style="width: 20%">Username</th>
-                            <th style="width: 20%">Comment date</th>
-                            <th style="width: 60%">Content</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < comments.Count(); i++)
-                        {
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>
-                                    <div class="row justify-content-center">
-                                        @comentators[i].Name @comentators[i].Surname
-                                    </div>
-                                    <div class="row justify-content-center">
-                                        <img src="@comentators[i].ImageUrl" width="100" height="100" />
-                                    </div>
-                                </td>
-                                <td>@comments[i].CommentDate.ToShortDateString()</td>
-                                <td>
-                                    <div class="row" style="padding:4px">
-                                        Mark: @comments[i].Mark
-                                    </div>
-                                    <div class="row" style="padding:4px">
-                                        @comments[i].Text
-                                    </div>
-                                </td>
+                                <th style="width: 20%">Username</th>
+                                <th style="width: 20%">Comment date</th>
+                                <th style="width: 60%">Content</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <div class="row" style="padding:4px">
-                    <p class="font-italic">This user has no reviews.</p>
-                </div>
-            }
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < comments.Count(); i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="row justify-content-center">
+                                            @comentators[i].Name @comentators[i].Surname
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <img src="@comentators[i].ImageUrl" width="100" height="100" />
+                                        </div>
+                                    </td>
+                                    <td>@comments[i].CommentDate.ToShortDateString()</td>
+                                    <td>
+                                        <div class="row" style="padding:4px">
+                                            Mark: @comments[i].Mark
+                                        </div>
+                                        <div class="row" style="padding:4px">
+                                            @comments[i].Text
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="row" style="padding:4px">
+                        <p class="font-italic">This user has no reviews.</p>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-
 }
 
 
 @functions {
-[Parameter]
-string UserId { get; set; }
+    [Parameter]
+    string UserId { get; set; }
 
-UserView profileOwner;
-CommentDto[] comments = new CommentDto[] { };
-List<UserView> comentators = new List<UserView>() { };
-UserGameView[] userGames = new UserGameView[] { };
-UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
-bool contactDetailsVisible = false;
-string contactDetailsButton = "Show contact details";
+    UserView ProfileOwner { get; set; } = new UserView();
+    CommentDto[] comments = new CommentDto[] { };
+    List<UserView> comentators = new List<UserView>() { };
+    UserGameView[] userGames = new UserGameView[] { };
+    UserSearchGameView[] userSearchGames = new UserSearchGameView[] { };
+    bool contactDetailsVisible = false;
+    string contactDetailsButton = "Show contact details";
 
-
-protected override async Task OnInitAsync()
-{
-    appState.TrySetAccessTokens();
-    int profileOwnersId = Int32.Parse(UserId);
-    profileOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + profileOwnersId);
-    if (appState.IsUserLoggedIn)
+    protected override async Task OnInitAsync()
     {
-        var myProfile = await appState.GetMyProfile();
-        if (myProfile.UserId == profileOwner.UserId)
+        appState.TrySetAccessTokens();
+        int profileOwnersId = Int32.Parse(UserId);
+        ProfileOwner = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + profileOwnersId);
+        if (appState.IsUserLoggedIn)
         {
-            UriHelper.NavigateTo("/myprofile");
+            var myProfile = await appState.GetMyProfile();
+            if (myProfile.UserId == ProfileOwner.UserId)
+            {
+                UriHelper.NavigateTo("/myprofile");
+            }
+        }
+
+        var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
+        if (result.Count() > 0) await FillComents(result);
+
+        var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + profileOwnersId);
+        userGames = toExchange.ToArray();
+        var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + profileOwnersId);
+        userSearchGames = forSearch.ToArray();
+    }
+
+    private async Task FillComents(IEnumerable<CommentDto> dbComments)
+    {
+        var commentList = dbComments.ToList();
+        commentList.Reverse();
+        comments = commentList.ToArray();
+        foreach (var comment in comments)
+        {
+            comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
         }
     }
 
-    var result = await Http.GetJsonAsync<IEnumerable<CommentDto>>("http://localhost:5000/api/users/comments/" + profileOwnersId);
-    if (result.Count() > 0) await FillComents(result);
-
-    var toExchange = await Http.GetJsonAsync<IEnumerable<UserGameView>>("http://localhost:5000/api/users/games/" + profileOwnersId);
-    userGames = toExchange.ToArray();
-    var forSearch = await Http.GetJsonAsync<IEnumerable<UserSearchGameView>>("http://localhost:5000/api/users/searches/" + profileOwnersId);
-    userSearchGames = forSearch.ToArray();
-}
-
-private async Task FillComents(IEnumerable<CommentDto> dbComments)
-{
-    var commentList = dbComments.ToList();
-    commentList.Reverse();
-    comments = commentList.ToArray();
-    foreach (var comment in comments)
+    private void OfferDeal()
     {
-        comentators.Add(await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + comment.LeavingUserId));
+        UriHelper.NavigateTo($"/offerdeal/{ProfileOwner.UserId}");
     }
-}
 
-private void ToogleContactDetails()
-{
-    if (contactDetailsVisible)
+    private void ToogleContactDetails()
     {
-        contactDetailsVisible = false;
-        contactDetailsButton = "Show contact details";
+        if (contactDetailsVisible)
+        {
+            contactDetailsVisible = false;
+            contactDetailsButton = "Show contact details";
+        }
+        else
+        {
+            contactDetailsVisible = true;
+            contactDetailsButton = "Hide contact details";
+        }
     }
-    else
-    {
-        contactDetailsVisible = true;
-        contactDetailsButton = "Hide contact details";
-    }
-}
-
-private void OfferDeal()
-{
-    UriHelper.NavigateTo($"/offerdeal/{profileOwner.UserId}");
-}
-
 }

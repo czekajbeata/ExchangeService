@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Pages\Components\ProfileDetails.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Pages\Components\UserGameDetails.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

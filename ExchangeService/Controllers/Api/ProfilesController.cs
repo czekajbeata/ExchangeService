@@ -127,7 +127,6 @@ namespace ExchangeService.Controllers.Api
             return Ok(new { token = GenerateToken(tokenvm.Email) });
         }
 
-
         [Authorize]
         [HttpPut("api/users/profile")]
         public IActionResult UpdateProfile([FromBody] UserView user)
