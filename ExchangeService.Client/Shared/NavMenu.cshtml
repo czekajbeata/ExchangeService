@@ -1,11 +1,12 @@
 ﻿@using ExchangeService.Shared.Resources;
 @using ExchangeService.Client.Services;
 @inject AppState appState
+@inject ReloadService reloadService
 @inject HttpClient Http
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <nav class="navbar navbar-expand-lg navbar-dark" style="padding-left:12.5%; padding-right:12.5%; background-color:#003380">
-    <a class="navbar-brand" href="#">Home</a>
+    <a class="navbar-brand" href="#" onclick="@(async () => await Refresh())">Home</a>
     <div class="row">
         <div class="col-sm-1" />
         <div class="col-sm-7">
@@ -45,41 +46,46 @@
 
 
 @functions {
-    [Parameter]
-    bool IsDropdownOpen { get; set; }  = false;
-    [Parameter]
-    private Action<bool> IsDropdownOpenChanged { get; set; }
+[Parameter]
+bool IsDropdownOpen { get; set; } = false;
+[Parameter]
+private Action<bool> IsDropdownOpenChanged { get; set; }
 
-    bool isUserLogged = false;
-    string loggedUserName = "";
-    string Search { get; set; } = "";
+bool isUserLogged = false;
+string loggedUserName = "";
+string Search { get; set; } = "";
 
-    void ToggleNavDropdown()
+void ToggleNavDropdown()
+{
+    IsDropdownOpen = !IsDropdownOpen;
+}
+
+void CloseNavDropdown()
+{
+    IsDropdownOpen = false;
+}
+
+protected override async Task OnInitAsync()
+{
+    if (appState.IsUserLoggedIn)
     {
-        IsDropdownOpen = !IsDropdownOpen;
+        var user = await appState.GetMyProfile();
+        loggedUserName = user.Name + " " + user.Surname;
+        isUserLogged = true;
     }
+}
 
-    void  CloseNavDropdown()
-    {
-        IsDropdownOpen = false;
-    }
+private void SearchGames()
+{
+    StateHasChanged();
+    UriHelper.NavigateTo($"/{Search}");
+    Search = string.Empty;
+}
 
-    protected override async Task OnInitAsync()
-    {
-        if (appState.IsUserLoggedIn)
-        {
-            var user = await appState.GetMyProfile();
-            loggedUserName = user.Name + " " + user.Surname;
-            isUserLogged = true;
-        }
-    }
+private async Task Refresh()
+{
 
-    private void SearchGames()
-    {
-        StateHasChanged();
-        UriHelper.NavigateTo($"/{Search}");
-        Search = string.Empty;
-    }
-
+    await reloadService.ReloadPage();
+}
 
 }

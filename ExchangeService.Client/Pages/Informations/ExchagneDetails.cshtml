@@ -7,7 +7,7 @@
 @inject AppState appState
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-@if (Exchange == null || myProfile == null || otherUser == null)
+@if (Exchange == null || MyProfile == null || OtherUser == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -16,46 +16,7 @@ else
     <div class="container">
         <div class="row">
             <div class="col-sm-3">
-                <div class="alert alert-secondary" role="alert">
-                    <div class="row justify-content-center">
-                        <img src="@myProfile.ImageUrl" width="150" height="150">
-                    </div>
-                    <div class="row justify-content-center">
-                        <p class="font-weight-bold">@myProfile.Name @myProfile.Surname</p>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-2">
-                            <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
-                        </div>
-                        <div class="col-sm-10">
-                            <p class="font-weight-normal">@myProfile.Location</p>
-                        </div>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-9">
-                            <p class="font-weight-normal">Exchanges made:</p>
-                        </div>
-                        <div class="col-sm-3">
-                            @myProfile.ExchangesCount
-                        </div>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-9">
-                            <p class="font-weight-normal">Reviews:</p>
-                        </div>
-                        <div class="col-sm-3">
-                            @myProfile.ReviewsCount
-                        </div>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-9">
-                            <p class="font-weight-normal">Average mark:</p>
-                        </div>
-                        <div class="col-sm-3">
-                            @myProfile.AvgMark
-                        </div>
-                    </div>
-                </div>
+                <ProfileDetails Profile="MyProfile" />
             </div>
             <div class="col-sm-6">
                 <br/>
@@ -105,49 +66,12 @@ else
                      </div>
             </div>
             <div class="col-sm-3">
-                <div class="alert alert-secondary" role="alert">
-                    <div class="row justify-content-center">
-                        <img src="@otherUser.ImageUrl" width="150" height="150">
-                    </div>
-                    <div class="row justify-content-center">
-                        <p class="font-weight-bold">@otherUser.Name @otherUser.Surname</p>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-2">
-                            <i class="fas fa-map-marker-alt" style="font-size: 18px"></i>
-                        </div>
-                        <div class="col-sm-10">
-                            <p class="font-weight-normal">@otherUser.Location</p>
-                        </div>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-9">
-                            <p class="font-weight-normal">Exchanges made:</p>
-                        </div>
-                        <div class="col-sm-3">
-                            @otherUser.ExchangesCount
-                        </div>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-9">
-                            <p class="font-weight-normal">Reviews:</p>
-                        </div>
-                        <div class="col-sm-3">
-                            @otherUser.ReviewsCount
-                        </div>
-                    </div>
-                    <div class="row" style="padding:4px">
-                        <div class="col-sm-9">
-                            <p class="font-weight-normal">Average mark:</p>
-                        </div>
-                        <div class="col-sm-3">
-                            @otherUser.AvgMark
-                        </div>
-                    </div>
-                </div>
+                <ProfileDetails Profile="OtherUser" />
             </div>
         </div>
         <div class="row">
+            <br />
+            <br />
             <br />
             <div class="col-sm-3">
                 <a role="button" class="btn btn-secondary btn-block" href="/myexchanges">Back to exchanges</a>
@@ -160,16 +84,16 @@ else
     [Parameter]
     string ExchangeId { get; set; }
     ExchangeDto Exchange { get; set; }
-    UserView myProfile;
-    UserView otherUser;
+    UserView MyProfile { get; set; }
+    UserView OtherUser { get; set; }
     DropDownItem[] games;
 
     protected override async Task OnInitAsync()
     {
         appState.TrySetAccessTokens();
-        myProfile = await appState.GetMyProfile();
+        MyProfile = await appState.GetMyProfile();
         Exchange = await Http.GetJsonAsync<ExchangeDto>("http://localhost:5000/api/users/exchange/" + ExchangeId);
-        otherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + Exchange.OtherUserId);
+        OtherUser = await Http.GetJsonAsync<UserView>("http://localhost:5000/api/users/" + Exchange.OtherUserId);
         games = await Http.GetJsonAsync<DropDownItem[]>("http://localhost:5000/api/games/");
     }
 }
