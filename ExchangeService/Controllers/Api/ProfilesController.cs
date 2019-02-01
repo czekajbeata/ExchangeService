@@ -88,11 +88,6 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/token/register")]
         public async Task<IActionResult> Register([FromBody] TokenViewModel tokenvm)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
             var result = await userManager.CreateAsync(new IdentityUser()
             {
                 UserName = tokenvm.Email,
@@ -109,11 +104,6 @@ namespace ExchangeService.Controllers.Api
         [HttpPost("api/token/login")]
         public async Task<IActionResult> Login([FromBody] TokenViewModel tokenvm)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            
             var user = await userManager.FindByEmailAsync(tokenvm.Email);
             var correctUser = await userManager.CheckPasswordAsync(user, tokenvm.Password);
 
