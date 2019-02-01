@@ -101,8 +101,7 @@ namespace ExchangeService.Controllers.Logic
                 var profile = userProfiles.GetUserProfile(user);
                 var comments = userProfiles.GetComments(user);
                 var avgMark = comments.Select(c => c.Mark).Sum() / comments.Count();
-                if (!(avgMark > 0)) avgMark = 0;
-                else avgMark = Math.Round(avgMark, 2);
+                avgMark =!(avgMark > 0) ?  0 : Math.Round(avgMark, 2);
 
                 myMatches.Add(new MatchAndUserView()
                 {
